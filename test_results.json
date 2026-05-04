@@ -1,0 +1,22 @@
+{
+  "users": {
+    "status": 200,
+    "ok": true,
+    "body": "[{\"_id\":\"69c665b4f6ce0678a492a0fd\",\"name\":\"Test HR\",\"email\":\"test1774609844727@gmail.com\",\"role\":\"hr\",\"calendarToken\":null,\"bio\":\"\",\"avatar\":\"\",\"isBlocked\":false,\"createdAt\":\"2026-03-27T11:10:44.737Z\",\"updatedAt\":\"2026-03-27T11:10:44.737Z\",\"__v\":0},{\"_id\":\"69c6659bf6ce0678a492a0f7\",\"name\":\"Test HR\",\"email\":\"test1774609819591@gmail.com\",\"role\":\"hr\",\"calendarToken\":null,\"bio\":\"\",\"avatar\":\"\",\"isBlocked\":false,\"createdAt\":\"2026-03-27T11:10:19.602Z\",\"updatedAt\":\"2026-03-27T11:10:19.602Z\",\"__v\":0},{\"_id\":\"69c664a4f6ce0678a492a0e5\",\"name\":\"Pooja\",\"email\":\"pooja@gmail.com\",\"role\":\"client\",\"calendarToken\":null,\"bio\":\"\",\"avatar\":\"\",\"isBlocked\":false,\"createdAt\":\"2026-03-27T11:06:12.995Z\",\"updatedAt\":\"2026-03-27T11:06:12.995Z\",\"__v\":0},{\"_id\":\"69c65317f6ce0678a4929fcf\",\"name\":\"Deepu\",\"email\":\"vaideedeepu@gmail.com\",\"role\":\"hr\",\"calendarToken\":null,\"bio\":\"\",\"avatar\":\"\",\"isBlocked\":false,\"createdAt\":\"2026-03-27T09:51:19.901Z\",\"updatedAt\":\"2026-03-27T09:51:19.901Z\",\"__v\":0},{\"_id\":\"69c65241f6ce0678a4929f5f\",\"name\":\"vaideeswari\",\"email\":\"vaideeswari8@gmail.com\",\"role\":\"user\",\"calendarToken\":null,\"bio\":\"\",\"avatar\":\"\",\"isBlocked\":false,\"createdAt\":\"2026-03-27T09:47:45.188Z\",\"updatedAt\":\"2026-03-27T09:47:45.188Z\",\"__v\":0},{\"_id\":\"69c64c745cf6dbcf26cfbbbc\",\"name\":\"Pooja HR\",\"email\":\"poojahr@gmail.com\",\"role\":\"hr\",\"calendarToken\":null,\"bio\":\"\",\"avatar\":\"\",\"isBlocked\":false,\"createdAt\":\"2026-03-27T09:23:00.069Z\",\"updatedAt\":\"2026-03-27T09:23:00.069Z\",\"__v\":0},{\"_id\":\"69c64c735cf6dbcf26cfbbb8\",\"name\":\"Vaideeswari HR\",\"email\":\"vaideeswarihr@gmail.com\",\"role\":\"hr\",\"calendarToken\":null,\"bio\":\"\",\"avatar\":\"\",\"isBlocked\":false,\"createdAt\":\"2026-03-27T09:22:59.937Z\",\"updatedAt\":\"2026-03-27T09:22:59.937Z\",\"__v\":0},{\"calendarToken\":null,\"_id\":\"69c62bc2e915e89920837f5b\",\"name\":\"Vaideeswari\",\"email\":\"info@forgeindia.com\",\"role\":\"admin\",\"__v\":0,\"avatar\":\"\",\"bio\":\"\",\"isBlocked\":false,\"updatedAt\":\"2026-03-27T08:21:22.583Z\"},{\"calendarToken\":null,\"bio\":\"\",\"avatar\":\"\",\"isBlocked\":false,\"_id\":\"69c62d2dad826c8b41e44de5\",\"name\":\"Admin User\",\"email\":\"admin@gmail.com\",\"role\":\"admin\",\"__v\":0}]"
+  },
+  "hr_list": {
+    "status": 200,
+    "ok": true,
+    "body": "[{\"_id\":\"69c64c735cf6dbcf26cfbbb8\",\"name\":\"Vaideeswari HR\",\"email\":\"vaideeswarihr@gmail.com\"},{\"_id\":\"69c64c745cf6dbcf26cfbbbc\",\"name\":\"Pooja HR\",\"email\":\"poojahr@gmail.com\"},{\"_id\":\"69c65317f6ce0678a4929fcf\",\"name\":\"Deepu\",\"email\":\"vaideedeepu@gmail.com\"},{\"_id\":\"69c6659bf6ce0678a492a0f7\",\"name\":\"Test HR\",\"email\":\"test1774609819591@gmail.com\"},{\"_id\":\"69c665b4f6ce0678a492a0fd\",\"name\":\"Test HR\",\"email\":\"test1774609844727@gmail.com\"}]"
+  },
+  "analytics": {
+    "status": 200,
+    "ok": true,
+    "body": "{\"total\":3,\"completed\":0,\"pending\":2,\"cancelled\":0,\"peakTimes\":[{\"hour\":\"10 AM\",\"count\":12},{\"hour\":\"11 AM\",\"count\":18},{\"hour\":\"02 PM\",\"count\":15},{\"hour\":\"04 PM\",\"count\":9}]}"
+  },
+  "create_hr": {
+    "status": 201,
+    "ok": true,
+    "body": "{\"message\":\"HR account created successfully\"}"
+  }
+}

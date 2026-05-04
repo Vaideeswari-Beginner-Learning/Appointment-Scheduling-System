@@ -1,0 +1,10 @@
+{
+  "my_appointments": {
+    "status": 200,
+    "ok": true
+  },
+  "slots_available": {
+    "status": 200,
+    "ok": true
+  }
+}
