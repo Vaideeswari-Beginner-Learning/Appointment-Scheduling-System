@@ -25,6 +25,7 @@ const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const [allUsers, setAllUsers] = useState([]);
     const [saasRequests, setSaasRequests] = useState([]);
+    const [sectors, setSectors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('pending');
@@ -37,12 +38,14 @@ const AdminDashboard = () => {
         const token = localStorage.getItem('token');
         if (!token) return navigate('/login');
         try {
-            const [usersRes, saasRes] = await Promise.all([
+            const [usersRes, saasRes, sectorsRes] = await Promise.all([
                 axios.get(`${API_BASE_URL}/users`, { headers: { 'x-auth-token': token } }),
-                axios.get(`${API_BASE_URL}/saas/requests`, { headers: { 'x-auth-token': token } }).catch(() => ({ data: [] }))
+                axios.get(`${API_BASE_URL}/saas/requests`, { headers: { 'x-auth-token': token } }).catch(() => ({ data: [] })),
+                axios.get(`${API_BASE_URL}/sectors`, { headers: { 'x-auth-token': token } }).catch(() => ({ data: [] }))
             ]);
             setAllUsers(usersRes.data);
             setSaasRequests(saasRes.data);
+            setSectors(sectorsRes.data);
         } catch (err) { console.error(err); } finally { setLoading(false); }
     };
 
@@ -295,6 +298,50 @@ const AdminDashboard = () => {
                                             <tr><td>Yesterday</td><td><b>System</b></td><td>Auto-Deactivated</td><td>Expired Corp</td></tr>
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'sectors' && (
+                            <div className="fade-in">
+                                <div className="table-header">
+                                    <h2>💼 Industry Sectors</h2>
+                                    <button className="action-btn" style={{ background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Plus size={18} /> New Sector
+                                    </button>
+                                </div>
+                                <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                                    {sectors.map((s, i) => (
+                                        <motion.div 
+                                            key={s._id} 
+                                            initial={{ opacity: 0, scale: 0.9 }} 
+                                            animate={{ opacity: 1, scale: 1 }} 
+                                            transition={{ delay: i * 0.05 }}
+                                            className="data-table-container shadow-hover"
+                                            style={{ padding: '25px', display: 'flex', alignItems: 'center', gap: '20px' }}
+                                        >
+                                            <div style={{ background: '#EEF2FF', color: '#6366F1', padding: '15px', borderRadius: '16px' }}>
+                                                {s.icon === 'Heart' && <Heart size={24}/>}
+                                                {s.icon === 'Sparkles' && <Sparkles size={24}/>}
+                                                {s.icon === 'Home' && <Home size={24}/>}
+                                                {s.icon === 'Car' && <Car size={24}/>}
+                                                {s.icon === 'Dumbbell' && <Dumbbell size={24}/>}
+                                                {s.icon === 'GraduationCap' && <GraduationCap size={24}/>}
+                                                {s.icon === 'Wrench' && <Wrench size={24}/>}
+                                                {s.icon === 'Gavel' && <Gavel size={24}/>}
+                                                {s.icon === 'Music' && <Music size={24}/>}
+                                                {!['Heart', 'Sparkles', 'Home', 'Car', 'Dumbbell', 'GraduationCap', 'Wrench', 'Gavel', 'Music'].includes(s.icon) && <Briefcase size={24}/>}
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A' }}>{s.name}</div>
+                                                <div style={{ fontSize: '12px', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>{s.category}</div>
+                                            </div>
+                                            <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
+                                                <button className="action-btn" title="Edit"><Edit2 size={16}/></button>
+                                                <button className="action-btn" title="Delete" style={{ color: '#EF4444' }}><Trash2 size={16}/></button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
                                 </div>
                             </div>
                         )}
