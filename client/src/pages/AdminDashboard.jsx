@@ -248,6 +248,86 @@ const AdminDashboard = () => {
                             </div>
                         )}
 
+                        {activeTab === 'requests' && (
+                            <div className="fade-in">
+                                <div className="table-header">
+                                    <h2>📥 Client SaaS Requests</h2>
+                                    <div style={{ display: 'flex', gap: '15px' }}>
+                                        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="form-input" style={{ width: '180px', padding: '8px' }}>
+                                            <option value="pending">Pending</option>
+                                            <option value="approved">Approved</option>
+                                            <option value="rejected">Rejected</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="data-table-container">
+                                    <table className="data-table">
+                                        <thead><tr><th>Client</th><th>Request Type</th><th>Reason</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+                                        <tbody>
+                                            {saasRequests.filter(r => r.status === statusFilter).map((req, i) => (
+                                                <motion.tr key={req._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.1 }}>
+                                                    <td>
+                                                        <div style={{ fontWeight: 900 }}>{req.clientName || req.clientId?.name}</div>
+                                                        <div style={{ fontSize: '11px', color: '#64748B' }}>{req.clientId?.email}</div>
+                                                    </td>
+                                                    <td><span style={{ fontWeight: 800, color: '#6366F1' }}>{req.type?.replace('_', ' ').toUpperCase()}</span></td>
+                                                    <td style={{ fontSize: '13px', color: '#475569', maxWidth: '200px' }}>{req.message}</td>
+                                                    <td style={{ fontSize: '12px' }}>{new Date(req.createdAt).toLocaleDateString()}</td>
+                                                    <td>
+                                                        <span className={`status-badge ${req.status === 'approved' ? 'status-paid' : req.status === 'pending' ? 'status-pending' : 'status-failed'}`}>
+                                                            {req.status.toUpperCase()}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        {req.status === 'pending' && (
+                                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                                <button onClick={() => alert("Approving...")} className="action-btn" title="Approve" style={{ color: '#10B981' }}><CheckCircle size={16}/></button>
+                                                                <button onClick={() => alert("Rejecting...")} className="action-btn" title="Reject" style={{ color: '#EF4444' }}><XCircle size={16}/></button>
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                </motion.tr>
+                                            ))}
+                                            {saasRequests.filter(r => r.status === statusFilter).length === 0 && (
+                                                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>No {statusFilter} requests found.</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'plans' && (
+                            <div className="fade-in">
+                                <div className="table-header">
+                                    <h2>💎 Subscription Architecture</h2>
+                                    <button className="action-btn" style={{ background: '#0F172A', color: 'white' }}>+ Define New Tier</button>
+                                </div>
+                                <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px' }}>
+                                    {[
+                                        { name: 'Starter', price: '$0', color: '#94A3B8', features: ['50 Appointments', '1 Service', 'Basic Analytics'] },
+                                        { name: 'Pro Business', price: '$49', color: '#6366F1', features: ['Unlimited Bookings', '10 Staff Members', 'AI Scheduling', 'Advanced Reports'], active: true },
+                                        { name: 'Enterprise', price: 'Custom', color: '#0F172A', features: ['Global Presence', 'Dedicated Support', 'White-labeling', 'API Access'] }
+                                    ].map((plan, i) => (
+                                        <div key={i} className="data-table-container shadow-hover" style={{ padding: '35px', borderRadius: '32px', border: plan.active ? '2px solid #6366F1' : '1px solid #F1F5F9', position: 'relative' }}>
+                                            {plan.active && <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#6366F1', color: 'white', fontSize: '10px', padding: '4px 12px', borderRadius: '20px', fontWeight: 900 }}>MOST POPULAR</div>}
+                                            <div style={{ fontSize: '12px', fontWeight: 900, color: '#64748B', textTransform: 'uppercase', marginBottom: '8px' }}>Tier Level {i+1}</div>
+                                            <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0F172A', marginBottom: '8px' }}>{plan.name}</h3>
+                                            <div style={{ fontSize: '32px', fontWeight: 950, color: plan.color, marginBottom: '24px' }}>{plan.price}<small style={{ fontSize: '14px', color: '#64748B', fontWeight: 600 }}>/month</small></div>
+                                            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '30px' }}>
+                                                {plan.features.map((f, j) => (
+                                                    <li key={j} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#475569' }}>
+                                                        <CheckCircle size={14} color="#10B981"/> {f}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            <button className="action-btn" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: plan.active ? '#6366F1' : '#F1F5F9', color: plan.active ? 'white' : '#475569', fontWeight: 900 }}>Configure Tier</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {activeTab === 'announcements' && (
                             <div className="fade-in">
                                 <div className="table-header">
