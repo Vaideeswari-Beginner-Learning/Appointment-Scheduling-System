@@ -111,9 +111,24 @@ const Register = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', background: '#F8FAFC', fontFamily: "'Outfit', sans-serif" }}>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ width: '100%', maxWidth: '480px', background: 'white', padding: '48px', borderRadius: '32px', boxShadow: '0 20px 50px rgba(0,0,0,0.05)' }}>
+        <div className="register-page" style={{ minHeight: '100vh', display: 'flex', background: '#F8FAFC', fontFamily: "'Outfit', sans-serif" }}>
+            <style>{`
+                @media (max-width: 968px) {
+                    .register-page { flex-direction: column !important; }
+                    .register-info-panel { display: none !important; }
+                    .register-form-container { padding: 24px !important; width: 100% !important; }
+                    .register-card { padding: 32px !important; border-radius: 24px !important; }
+                    .register-title { fontSize: 26px !important; }
+                }
+            `}</style>
+            <div className="register-form-container" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
+                <motion.form 
+                    onSubmit={(e) => { e.preventDefault(); handleNext(); }}
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    className="register-card"
+                    style={{ width: '100%', maxWidth: '480px', background: 'white', padding: '48px', borderRadius: '32px', boxShadow: '0 20px 50px rgba(0,0,0,0.05)' }}
+                >
                     
                     {step < 4 && (
                         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -188,9 +203,9 @@ const Register = () => {
                             </button>
                         </div>
                     )}
-                </motion.div>
+                </motion.form>
             </div>
-            <div style={{ flex: 1, background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', padding: '80px', position: 'relative', overflow: 'hidden' }}>
+            <div className="register-info-panel" style={{ flex: 1, background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', padding: '80px', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
                 <div style={{ position: 'absolute', bottom: '-50px', left: '-50px', width: '200px', height: '200px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
                 

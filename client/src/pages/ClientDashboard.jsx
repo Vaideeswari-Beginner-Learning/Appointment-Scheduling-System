@@ -5,7 +5,8 @@ import {
     Settings, PieChart, Activity, Bell, User as UserIcon, Trash2, StopCircle, 
     Video, CheckCircle, Clock, Building, Scissors, Hospital, GripVertical, ChevronDown, X, XCircle, 
     ArrowRight, CreditCard, QrCode, Sparkles, ShieldCheck, Building2, ExternalLink, Play, MapPin,
-    Wrench, BookOpen, Zap, ShoppingBag
+    Wrench, BookOpen, Zap, ShoppingBag, Car, GraduationCap, Music, Dumbbell, Gavel, Heart, Home,
+    Laptop, Cpu, Scale, Camera
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -2077,7 +2078,49 @@ const ClientDashboard = () => {
                         {onboardingStep === 1 && (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
                                 {Array.from(new Set(allSectors.map(s => s.category))).map(cat => {
-                                    const icon = allSectors.find(s => s.category === cat)?.icon || <Building2 />;
+                                    const iconName = allSectors.find(s => s.category === cat)?.icon;
+                                    
+                                    const getIconColor = (name) => {
+                                        switch(name) {
+                                            case 'Hospital': return '#EF4444';
+                                            case 'Heart': return '#F43F5E';
+                                            case 'Scissors': return '#EC4899';
+                                            case 'Home': return '#F59E0B';
+                                            case 'Car': return '#3B82F6';
+                                            case 'Dumbbell': return '#10B981';
+                                            case 'GraduationCap': return '#8B5CF6';
+                                            case 'Laptop': return '#6366F1';
+                                            case 'Cpu': return '#06B6D4';
+                                            case 'Wrench': return '#64748B';
+                                            case 'Scale': return '#1E293B';
+                                            case 'Camera': return '#F43F5E';
+                                            case 'Calendar': return '#4F46E5';
+                                            case 'Gavel': return '#78350F';
+                                            case 'Music': return '#D946EF';
+                                            case 'Sparkles': return '#F59E0B';
+                                            default: return '#4F46E5';
+                                        }
+                                    };
+                                    const iconColor = getIconColor(iconName);
+
+                                    let iconComponent = <Building2 size={32} color={iconColor} />;
+                                    if (iconName === 'Heart') iconComponent = <Heart size={32} color={iconColor} />;
+                                    else if (iconName === 'Sparkles') iconComponent = <Sparkles size={32} color={iconColor} />;
+                                    else if (iconName === 'Home') iconComponent = <Home size={32} color={iconColor} />;
+                                    else if (iconName === 'Car') iconComponent = <Car size={32} color={iconColor} />;
+                                    else if (iconName === 'Dumbbell') iconComponent = <Dumbbell size={32} color={iconColor} />;
+                                    else if (iconName === 'GraduationCap') iconComponent = <GraduationCap size={32} color={iconColor} />;
+                                    else if (iconName === 'Laptop') iconComponent = <Laptop size={32} color={iconColor} />;
+                                    else if (iconName === 'Cpu') iconComponent = <Cpu size={32} color={iconColor} />;
+                                    else if (iconName === 'Wrench') iconComponent = <Wrench size={32} color={iconColor} />;
+                                    else if (iconName === 'Scale') iconComponent = <Scale size={32} color={iconColor} />;
+                                    else if (iconName === 'Camera') iconComponent = <Camera size={32} color={iconColor} />;
+                                    else if (iconName === 'Calendar') iconComponent = <Calendar size={32} color={iconColor} />;
+                                    else if (iconName === 'Gavel') iconComponent = <Gavel size={32} color={iconColor} />;
+                                    else if (iconName === 'Music') iconComponent = <Music size={32} color={iconColor} />;
+                                    else if (iconName === 'Hospital') iconComponent = <Hospital size={32} color={iconColor} />;
+                                    else if (iconName === 'Scissors') iconComponent = <Scissors size={32} color={iconColor} />;
+                                    
                                     return (
                                         <div 
                                             key={cat}
@@ -2089,7 +2132,7 @@ const ClientDashboard = () => {
                                             onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#4F46E5'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
                                             onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.transform = 'translateY(0)'; }}
                                         >
-                                            <div style={{ fontSize: '32px' }}>{icon}</div>
+                                            <div style={{ fontSize: '32px' }}>{iconComponent}</div>
                                             <div style={{ fontWeight: 900, color: '#0F172A' }}>{cat}</div>
                                         </div>
                                     );

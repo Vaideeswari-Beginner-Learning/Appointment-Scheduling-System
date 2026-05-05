@@ -7,7 +7,7 @@ import {
     ChevronDown, CheckCircle, Zap, Globe, Sparkles, Rocket,
     Heart, GraduationCap, Hotel as HotelIcon, 
     Car, Dumbbell, Gavel, Home, Wrench, 
-    Music, ShoppingCart, MessageCircle
+    Music, ShoppingCart, MessageCircle, Smartphone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -18,6 +18,7 @@ const LandingPage = () => {
     const [isYearly, setIsYearly] = useState(false);
     const [activeFaq, setActiveFaq] = useState(null);
     const [currentSectorIndex, setCurrentSectorIndex] = useState(0);
+    const [isMoreOpen, setIsMoreOpen] = useState(false);
 
     const heroSectors = [
         { label: 'Healthcare', icon: <Heart size={16} />, image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80' },
@@ -70,13 +71,25 @@ const LandingPage = () => {
     return (
         <div style={{ background: '#0F172A', minHeight: '100vh', color: 'white', overflowX: 'hidden', fontFamily: "'Inter', sans-serif" }}>
             
+            <style>{`
+                @media (max-width: 968px) {
+                    .nav-links-desktop { display: none !important; }
+                    .hero-title { font-size: 36px !important; }
+                    .hero-sub { font-size: 16px !important; }
+                    .navbar-inner { padding: 0 20px !important; height: 70px !important; }
+                    .hero-section { padding-top: 60px !important; }
+                    .hero-image-container { min-height: 300px !important; height: auto !important; }
+                    .hero-image-container img { height: 350px !important; }
+                }
+            `}</style>
+            
             {/* 1. NAVBAR (Ultra Modern) */}
             <header style={{ 
                 position: 'fixed', top: 0, width: '100%', zIndex: 1000, 
                 background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(16px)',
                 borderBottom: '1px solid rgba(255,255,255,0.05)'
             }}>
-                <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '90px', padding: '0 40px', maxWidth: '1400px', margin: '0 auto' }}>
+                <div className="container navbar-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '90px', padding: '0 40px', maxWidth: '1400px', margin: '0 auto' }}>
                     <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
                         <div style={{ background: 'white', padding: '6px', borderRadius: '12px', display: 'flex' }}>
                             <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
@@ -84,7 +97,7 @@ const LandingPage = () => {
                         <span style={{ fontSize: '24px', fontWeight: 950, color: 'white', letterSpacing: '-0.5px' }}>Smart<span style={{ color: '#818CF8' }}>Scheduler</span></span>
                     </Link>
 
-                    <nav style={{ display: 'flex', gap: '40px', alignItems: 'center', fontWeight: 600, color: '#94A3B8' }}>
+                    <nav className="nav-links-desktop" style={{ display: 'flex', gap: '40px', alignItems: 'center', fontWeight: 600, color: '#94A3B8' }}>
                         <a href="#features" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }}>Features</a>
                         <a href="#industries" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }}>Industries</a>
                         <a href="#pricing" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }}>Pricing</a>
@@ -92,12 +105,12 @@ const LandingPage = () => {
                     </nav>
 
                     <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                        <Link to="/login" style={{ color: 'white', fontWeight: 700, textDecoration: 'none', padding: '12px 24px', fontSize: '15px' }}>Sign In</Link>
+                        <Link className="nav-links-desktop" to="/login" style={{ color: 'white', fontWeight: 700, textDecoration: 'none', padding: '12px 24px', fontSize: '15px' }}>Sign In</Link>
                         <Link to="/register" style={{ 
                             background: 'white', color: '#0F172A', 
                             borderRadius: '14px', padding: '12px 28px', fontWeight: 800, textDecoration: 'none',
                             fontSize: '15px', transition: 'transform 0.2s, box-shadow 0.2s'
-                        }}>Get Started Free</Link>
+                        }}>Get Started</Link>
                     </div>
                 </div>
             </header>
@@ -105,7 +118,7 @@ const LandingPage = () => {
             <main style={{ paddingTop: '90px' }}>
                 
                 {/* 2. HERO SECTION (Parallax & Premium) */}
-                <section style={{ position: 'relative', padding: '100px 24px 120px', overflow: 'hidden' }}>
+                <section className="hero-section" style={{ position: 'relative', padding: '100px 24px 120px', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}>
                         <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', width: '1000px', height: '600px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%)', filter: 'blur(80px)' }}></div>
                     </div>
@@ -121,16 +134,16 @@ const LandingPage = () => {
                                 <Sparkles size={16} /> <span>Trusted by 5,000+ businesses globally</span>
                             </div>
                             
-                            <h1 style={{ fontSize: '64px', fontWeight: 950, lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-1.5px' }}>
+                            <h1 className="hero-title" style={{ fontSize: '64px', fontWeight: 950, lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-1.5px' }}>
                                 The Operating System for <br/>
                                 <span style={{ background: 'linear-gradient(to right, #818CF8, #C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Modern Service Economy</span>
                             </h1>
                             
-                            <p style={{ fontSize: '20px', color: '#94A3B8', maxWidth: '800px', margin: '0 auto 48px', lineHeight: 1.6 }}>
+                            <p className="hero-sub" style={{ fontSize: '20px', color: '#94A3B8', maxWidth: '800px', margin: '0 auto 48px', lineHeight: 1.6 }}>
                                 Automate your entire booking lifecycle, manage global teams, and scale your operations with AI-driven scheduling intelligence.
                             </p>
                             
-                            <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '80px' }}>
+                             <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '80px', flexWrap: 'wrap' }}>
                                 <Link to="/register" style={{ 
                                     background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', color: 'white', 
                                     height: '60px', padding: '0 40px', borderRadius: '18px', fontWeight: 900,
@@ -139,6 +152,56 @@ const LandingPage = () => {
                                 }}>
                                     Launch Your Portal <ArrowRight size={20} />
                                 </Link>
+
+                                <div style={{ position: 'relative', height: '60px' }}>
+                                    <button 
+                                        onClick={() => setIsMoreOpen(!isMoreOpen)}
+                                        style={{ 
+                                            height: '100%', background: 'rgba(255,255,255,0.05)', color: 'white', 
+                                            padding: '0 30px', borderRadius: '18px', fontWeight: 800,
+                                            fontSize: '17px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
+                                            display: 'flex', alignItems: 'center', gap: '15px', backdropFilter: 'blur(10px)'
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <span style={{ background: 'white', color: '#4F46E5', padding: '4px', borderRadius: '6px', display: 'flex' }}>
+                                                {heroSectors[currentSectorIndex].icon}
+                                            </span>
+                                            <span>{heroSectors[currentSectorIndex].label}</span>
+                                        </div>
+                                        <ChevronDown size={18} style={{ transform: isMoreOpen ? 'rotate(180deg)' : 'none', transition: '0.3s' }} />
+                                    </button>
+                                    <AnimatePresence>
+                                        {isMoreOpen && (
+                                            <motion.div 
+                                                initial={{ opacity: 0, y: 10 }} 
+                                                animate={{ opacity: 1, y: 0 }} 
+                                                exit={{ opacity: 0, y: 10 }}
+                                                style={{ 
+                                                    position: 'absolute', top: 'calc(100% + 10px)', left: 0, width: '280px',
+                                                    background: '#1E293B', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)',
+                                                    boxShadow: '0 20px 50px rgba(0,0,0,0.5)', padding: '10px', zIndex: 50,
+                                                    maxHeight: '300px', overflowY: 'auto'
+                                                }}
+                                            >
+                                                {heroSectors.map((s, i) => (
+                                                    <button 
+                                                        key={i}
+                                                        onClick={() => { setCurrentSectorIndex(i); setIsMoreOpen(false); }}
+                                                        style={{ 
+                                                            width: '100%', padding: '12px 15px', borderRadius: '12px', 
+                                                            background: currentSectorIndex === i ? 'rgba(255,255,255,0.05)' : 'transparent', 
+                                                            color: 'white', border: 'none', cursor: 'pointer', textAlign: 'left',
+                                                            display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 600
+                                                        }}
+                                                    >
+                                                        {s.icon} {s.label}
+                                                    </button>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
                             </div>
                         </motion.div>
 
@@ -158,7 +221,7 @@ const LandingPage = () => {
                                     transition={{ duration: 0.8, ease: "circOut" }}
                                     style={{ position: 'relative', zIndex: 1 }}
                                 >
-                                    <div style={{ position: 'relative', borderRadius: '32px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 40px 100px -20px rgba(0,0,0,0.6)' }}>
+                                    <div className="hero-image-container" style={{ position: 'relative', borderRadius: '32px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 40px 100px -20px rgba(0,0,0,0.6)' }}>
                                         <img 
                                             src={heroSectors[currentSectorIndex].image} 
                                             alt={heroSectors[currentSectorIndex].label} 
@@ -189,6 +252,76 @@ const LandingPage = () => {
                                 </motion.div>
                             </AnimatePresence>
                         </motion.div>
+                    </div>
+                </section>
+
+                {/* Features Section */}
+                <section id="features" style={{ padding: '100px 24px', background: '#0F172A' }}>
+                    <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                            <h2 style={{ fontSize: '48px', fontWeight: 950, color: 'white', marginBottom: '20px' }}>Powerful Features</h2>
+                            <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Everything you need to manage appointments and grow your business in one place.</p>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
+                            {[
+                                { title: 'Smart Scheduling', desc: 'AI-powered booking system that eliminates double bookings.', icon: <Calendar size={32} /> },
+                                { title: 'Global Payments', desc: 'Accept payments from clients worldwide with secure integrations.', icon: <CreditCard size={32} /> },
+                                { title: 'Real-time Analytics', desc: 'Deep insights into your business performance and growth.', icon: <BarChart3 size={32} /> },
+                                { title: 'Instant Notifications', desc: 'Automated SMS and Email alerts for staff and customers.', icon: <Bell size={32} /> },
+                                { title: 'Custom Branding', desc: 'Make the platform yours with your logo and brand colors.', icon: <Sparkles size={32} /> },
+                                { title: 'Multi-device Sync', desc: 'Manage your business from anywhere—mobile, tablet, or PC.', icon: <Smartphone size={32} /> }
+                            ].map((f, i) => (
+                                <motion.div 
+                                    key={i}
+                                    whileHover={{ y: -10, background: 'rgba(255,255,255,0.05)' }}
+                                    style={{ padding: '40px', borderRadius: '32px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', transition: '0.3s' }}
+                                >
+                                    <div style={{ color: '#818CF8', marginBottom: '24px' }}>{f.icon}</div>
+                                    <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '12px' }}>{f.title}</h3>
+                                    <p style={{ color: '#64748B', lineHeight: 1.6, fontSize: '15px' }}>{f.desc}</p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* FAQ Section */}
+                <section id="faq" style={{ padding: '100px 24px', background: '#F8FAFC', color: '#0F172A' }}>
+                    <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                            <h2 style={{ fontSize: '42px', fontWeight: 950, marginBottom: '16px' }}>Got Questions?</h2>
+                            <p style={{ color: '#64748B' }}>Find answers to common queries about our platform.</p>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {[
+                                { q: "How long does the setup take?", a: "You can be live and accepting bookings in less than 5 minutes. Our onboarding wizard guides you through every step." },
+                                { q: "Can I use my own domain?", a: "Yes, our Enterprise plan allows you to use your custom domain for a fully white-labeled experience." },
+                                { q: "Is my data secure?", a: "Absolutely. We use 256-bit encryption and industry-standard security protocols to keep your data safe." },
+                                { q: "Do you offer customer support?", a: "Yes, we provide 24/7 support via chat and email to all our users." }
+                            ].map((item, i) => (
+                                <div key={i} style={{ background: 'white', borderRadius: '20px', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
+                                    <button 
+                                        onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+                                        style={{ width: '100%', padding: '24px', textAlign: 'left', background: 'none', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                                    >
+                                        <span style={{ fontSize: '18px', fontWeight: 800, color: '#1E293B' }}>{item.q}</span>
+                                        <ChevronDown size={20} style={{ transform: activeFaq === i ? 'rotate(180deg)' : 'none', transition: '0.3s' }} />
+                                    </button>
+                                    <AnimatePresence>
+                                        {activeFaq === i && (
+                                            <motion.div 
+                                                initial={{ height: 0, opacity: 0 }} 
+                                                animate={{ height: 'auto', opacity: 1 }} 
+                                                exit={{ height: 0, opacity: 0 }}
+                                                style={{ padding: '0 24px 24px', color: '#64748B', lineHeight: 1.6 }}
+                                            >
+                                                {item.a}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
 

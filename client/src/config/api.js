@@ -1,12 +1,15 @@
 const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            return 'http://localhost:5002';
+
+        // Local development detection (localhost or local network IP)
+        if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.')) {
+            // For mobile testing, we use the hostname of the current page but port 5002 for API
+            return `http://${hostname}:5002`;
         }
-        // In production, assume backend is on the same domain or use a sub-domain
-        // You can change this to your specific production backend URL
-        return `https://${hostname.replace('vercel.app', 'onrender.com')}`; // Example pattern
+        
+        // In production
+        return `https://${hostname.replace('vercel.app', 'onrender.com')}`; 
     }
     return 'http://localhost:5002';
 };

@@ -7,7 +7,8 @@ import {
     CheckCircle2, Clock, ShieldCheck, HeartPulse, Sparkles, PhoneCall,
     Bookmark, ChevronRight, ChevronDown, Edit3, Camera, Building2,
     GraduationCap, Hospital, Briefcase, Car, Dumbbell, Scale, ArrowLeft,
-    AlertCircle, Phone, HelpCircle, MapPin, MessageSquare, Star, CreditCard
+    AlertCircle, Phone, HelpCircle, MapPin, MessageSquare, Star, CreditCard,
+    Scissors, Home, Wrench, Laptop, Cpu, Music
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Booking from './Booking';
@@ -58,6 +59,11 @@ const UserDashboard = () => {
     const [activeChatApp, setActiveChatApp] = useState(null);
     const [activeRateApp, setActiveRateApp] = useState(null);
     const [activePayApp, setActivePayApp] = useState(null);
+
+    const [onboardingSector, setOnboardingSector] = useState(null);
+    const [onboardingSubSector, setOnboardingSubSector] = useState('');
+    const [onboardingStep, setOnboardingStep] = useState(1);
+    const [onboardingLoading, setOnboardingLoading] = useState(false);
 
     const config = getSectorConfig(user?.sector || 'general');
 
@@ -123,6 +129,27 @@ const UserDashboard = () => {
         } catch (err) { alert('Cancel failed'); }
     };
 
+    const handleCompleteOnboarding = async () => {
+        setOnboardingLoading(true);
+        const token = localStorage.getItem('token');
+        try {
+            await axios.patch(`${API_BASE_URL}/users/${user._id || user.id}`, {
+                sector: onboardingSector,
+                subCategory: onboardingSubSector
+            }, { 
+                headers: { 'x-auth-token': token } 
+            });
+            setOnboardingStep(3);
+            setTimeout(() => {
+                window.location.reload(); 
+            }, 2000);
+        } catch (err) {
+            alert('Selection failed');
+        } finally {
+            setOnboardingLoading(false);
+        }
+    };
+
     const QuickAction = ({ icon: Icon, label, color, onClick }) => (
         <button onClick={onClick} className="quick-action-card">
             <div className="icon-box" style={{ background: color + '15', color }}>
@@ -146,6 +173,123 @@ const UserDashboard = () => {
 
     return (
         <div style={{ background: '#F8FAFC', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+            {(!user.sector || user.sector === 'general' || user.sector === 'User') && (
+                <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.95)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)', padding: '24px' }}>
+                    <div className="onboarding-modal" style={{ background: 'white', width: '100%', maxWidth: onboardingStep === 1 ? '900px' : '500px', borderRadius: '32px', padding: '48px', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', maxHeight: '90vh', overflowY: 'auto' }}>
+                        
+                        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+                                <div style={{ background: '#EEF2FF', padding: '16px', borderRadius: '24px', color: '#4F46E5' }}>
+                                    <User size={32} />
+                                </div>
+                            </div>
+                            {onboardingStep === 1 && <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Welcome!</h2>}
+                            {onboardingStep === 2 && <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Refine your interests</h2>}
+                            {onboardingStep === 3 && <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#10B981', marginBottom: '8px' }}>Setup Complete!</h2>}
+                            
+                            <p style={{ color: '#64748B', fontWeight: 600, fontSize: '16px' }}>
+                                {onboardingStep === 1 && "What type of services are you looking for?"}
+                                {onboardingStep === 2 && `Which specific type of ${onboardingSector} services?`}
+                                {onboardingStep === 3 && "We are tailoring your dashboard experience."}
+                            </p>
+                        </div>
+
+                        {onboardingStep === 1 && (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
+                                {Array.from(new Set(allSectors.map(s => s.category))).map(cat => {
+                                    const iconName = allSectors.find(s => s.category === cat)?.icon;
+                                    
+                                    const getIconColor = (name) => {
+                                        switch(name) {
+                                            case 'Hospital': return '#EF4444';
+                                            case 'Heart': return '#F43F5E';
+                                            case 'Scissors': return '#EC4899';
+                                            case 'Home': return '#F59E0B';
+                                            case 'Car': return '#3B82F6';
+                                            case 'Dumbbell': return '#10B981';
+                                            case 'GraduationCap': return '#8B5CF6';
+                                            case 'Laptop': return '#6366F1';
+                                            case 'Cpu': return '#06B6D4';
+                                            case 'Wrench': return '#64748B';
+                                            case 'Scale': return '#1E293B';
+                                            case 'Camera': return '#F43F5E';
+                                            case 'Calendar': return '#4F46E5';
+                                            case 'Gavel': return '#78350F';
+                                            case 'Music': return '#D946EF';
+                                            case 'Sparkles': return '#F59E0B';
+                                            default: return '#4F46E5';
+                                        }
+                                    };
+                                    const iconColor = getIconColor(iconName);
+
+                                    let iconComponent = <Building2 size={32} color={iconColor} />;
+                                    if (iconName === 'Heart') iconComponent = <HeartPulse size={32} color={iconColor} />;
+                                    else if (iconName === 'Sparkles') iconComponent = <Sparkles size={32} color={iconColor} />;
+                                    else if (iconName === 'Home') iconComponent = <Home size={32} color={iconColor} />;
+                                    else if (iconName === 'Car') iconComponent = <Car size={32} color={iconColor} />;
+                                    else if (iconName === 'Dumbbell') iconComponent = <Dumbbell size={32} color={iconColor} />;
+                                    else if (iconName === 'GraduationCap') iconComponent = <GraduationCap size={32} color={iconColor} />;
+                                    else if (iconName === 'Laptop') iconComponent = <Laptop size={32} color={iconColor} />;
+                                    else if (iconName === 'Cpu') iconComponent = <Cpu size={32} color={iconColor} />;
+                                    else if (iconName === 'Wrench') iconComponent = <Wrench size={32} color={iconColor} />;
+                                    else if (iconName === 'Scale') iconComponent = <Scale size={32} color={iconColor} />;
+                                    else if (iconName === 'Camera') iconComponent = <Camera size={32} color={iconColor} />;
+                                    else if (iconName === 'Calendar') iconComponent = <Calendar size={32} color={iconColor} />;
+                                    else if (iconName === 'Briefcase') iconComponent = <Briefcase size={32} color={iconColor} />;
+                                    else if (iconName === 'Music') iconComponent = <Music size={32} color={iconColor} />;
+                                    else if (iconName === 'Hospital') iconComponent = <Hospital size={32} color={iconColor} />;
+                                    else if (iconName === 'Scissors') iconComponent = <Scissors size={32} color={iconColor} />;
+
+                                    return (
+                                        <div 
+                                            key={cat}
+                                            onClick={() => { setOnboardingSector(cat); setOnboardingStep(2); }}
+                                            style={{ 
+                                                background: 'white', padding: '24px', borderRadius: '20px', border: '2px solid #E2E8F0', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s',
+                                                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px'
+                                            }}
+                                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#4F46E5'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
+                                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                        >
+                                            <div style={{ fontSize: '32px' }}>{iconComponent}</div>
+                                            <div style={{ fontWeight: 900, color: '#0F172A' }}>{cat}</div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {onboardingStep === 2 && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <select 
+                                    style={{ height: '60px', fontSize: '16px', fontWeight: 700, padding: '0 20px', borderRadius: '16px', border: '2px solid #E2E8F0', outline: 'none' }}
+                                    value={onboardingSubSector}
+                                    onChange={e => setOnboardingSubSector(e.target.value)}
+                                >
+                                    <option value="">Select specific type...</option>
+                                    {allSectors.filter(s => s.category === onboardingSector).map(s => (
+                                        <option key={s._id} value={s.name}>{s.name}</option>
+                                    ))}
+                                </select>
+                                <button 
+                                    onClick={handleCompleteOnboarding}
+                                    disabled={!onboardingSubSector || onboardingLoading}
+                                    style={{ width: '100%', padding: '16px', borderRadius: '16px', background: !onboardingSubSector ? '#CBD5E1' : '#4F46E5', color: 'white', fontWeight: 900, border: 'none', cursor: !onboardingSubSector ? 'not-allowed' : 'pointer' }}
+                                >
+                                    {onboardingLoading ? 'Saving...' : 'Complete Setup'}
+                                </button>
+                            </div>
+                        )}
+
+                        {onboardingStep === 3 && (
+                            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                                <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid #E2E8F0', borderTopColor: '#10B981', borderRadius: '50%', margin: '0 auto 20px', animation: 'spin 1s linear infinite' }}></div>
+                                <p style={{ fontWeight: 800, color: '#4F46E5' }}>Configuring sector-specific themes...</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
             <style>{`
                 .hero-banner { position: relative; height: 350px; border-radius: 30px; overflow: hidden; margin: 20px 40px; background: #0F172A; }
                 .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(15,23,42,0.9), transparent); display: flex; flex-direction: column; justify-content: center; padding: 0 60px; color: white; }

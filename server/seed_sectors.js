@@ -1,4 +1,4 @@
-require('dotenv').config({ path: './.env' });
+require('dotenv').config({ path: 'server/.env' });
 const mongoose = require('mongoose');
 const Sector = require('./models/Sector');
 
@@ -6,56 +6,62 @@ const sectors = [
     { 
         name: 'Hospital / Healthcare', 
         category: 'Healthcare', 
-        icon: '🏥',
-        subCategories: ['Doctor appointment', 'Lab tests']
+        icon: 'Hospital',
+        subCategories: ['Doctor appointment', 'Lab tests', 'Surgery Dept', 'Consultation']
     },
     { 
         name: 'Automobile Service', 
         category: 'Automotive', 
-        icon: '🚗',
-        subCategories: ['Car service', 'Bike repair']
+        icon: 'Car',
+        subCategories: ['Car service', 'Bike repair', 'Detailing', 'Oil Change']
     },
     { 
         name: 'Home Services', 
         category: 'Services', 
-        icon: '🏠',
-        subCategories: ['Electrician', 'Plumber', 'Cleaning']
+        icon: 'Home',
+        subCategories: ['Electrician', 'Plumber', 'Cleaning', 'Pest Control']
     },
     { 
         name: 'IT & Technical Support', 
         category: 'Technology', 
-        icon: '💻',
-        subCategories: ['Laptop repair', 'Software help']
+        icon: 'Laptop',
+        subCategories: ['Laptop repair', 'Software help', 'Network Setup', 'Cybersecurity']
     },
     { 
         name: 'Beauty & Salon', 
         category: 'Beauty', 
-        icon: '✂️',
-        subCategories: ['Haircut', 'Facial', 'Spa']
+        icon: 'Scissors',
+        subCategories: ['Haircut', 'Facial', 'Spa', 'Manicure']
     },
     { 
         name: 'Education & Training', 
         category: 'Education', 
-        icon: '📚',
-        subCategories: ['Tuition', 'Training classes']
+        icon: 'GraduationCap',
+        subCategories: ['Tuition', 'Training classes', 'Coaching', 'Language Lab']
     },
     { 
         name: 'Fitness & Wellness', 
         category: 'Wellness', 
-        icon: '💪',
-        subCategories: ['Gym trainer', 'Yoga sessions']
+        icon: 'Dumbbell',
+        subCategories: ['Gym trainer', 'Yoga sessions', 'Nutritionist', 'Personal Training']
     },
     { 
         name: 'Repair & Maintenance', 
         category: 'Services', 
-        icon: '🔧',
-        subCategories: ['Appliance repair', 'AC service']
+        icon: 'Wrench',
+        subCategories: ['Appliance repair', 'AC service', 'Roofing', 'Painting']
+    },
+    { 
+        name: 'Legal & Consulting', 
+        category: 'Legal', 
+        icon: 'Scale',
+        subCategories: ['Legal Advice', 'Tax Consulting', 'Business Strategy', 'Audit']
     },
     { 
         name: 'Events & Photography', 
         category: 'Events', 
-        icon: '📷',
-        subCategories: ['Wedding photography', 'Event planning']
+        icon: 'Calendar',
+        subCategories: ['Wedding photography', 'Event planning', 'Video Production', 'Studio Session']
     }
 ];
 

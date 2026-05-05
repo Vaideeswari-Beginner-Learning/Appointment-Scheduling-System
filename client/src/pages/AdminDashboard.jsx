@@ -4,7 +4,8 @@ import {
     LayoutDashboard, Users, CreditCard, BarChart3, Bell, Settings, LogOut,
     Plus, X, TrendingUp, Activity, Building, ShieldAlert, Crown, Clock,
     CheckCircle, XCircle, Edit2, ChevronDown, Search, Megaphone, ArrowRight, Briefcase, Trash2,
-    PieChart, Filter, Save, Globe, Mail, Zap, ShoppingBag, Heart, Scissors, Home, Wrench, GraduationCap, Gavel, Camera, MapPin, UserCheck, Shield, Key, Database, RefreshCw, Smartphone, Eye, MoreHorizontal, ChevronRight
+    PieChart, Filter, Save, Globe, Mail, Zap, ShoppingBag, Heart, Scissors, Home, Wrench, GraduationCap, Gavel, Camera, MapPin, UserCheck, Shield, Key, Database, RefreshCw, Smartphone, Eye, MoreHorizontal, ChevronRight,
+    Car, Sparkles, Dumbbell, Music, Hospital, Laptop, Cpu, Scale, Calendar
 } from 'lucide-react';
 import {
     Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
@@ -47,6 +48,18 @@ const AdminDashboard = () => {
             setSaasRequests(saasRes.data);
             setSectors(sectorsRes.data);
         } catch (err) { console.error(err); } finally { setLoading(false); }
+    };
+
+    const handleAddRole = async (sectorId, currentSubCategories = []) => {
+        const roleName = prompt("Enter new role name for this sector (e.g. Doctor, Teacher):");
+        if (!roleName) return;
+        try {
+            const updated = [...currentSubCategories, roleName];
+            await axios.patch(`${API_BASE_URL}/sectors/${sectorId}`, { subCategories: updated }, { headers: { 'x-auth-token': localStorage.getItem('token') } });
+            fetchAll();
+        } catch (err) {
+            alert('Failed to add role');
+        }
     };
 
     const mainTabs = [
@@ -325,6 +338,105 @@ const AdminDashboard = () => {
                                         </div>
                                     ))}
                                 </div>
+
+                                <div className="table-header" style={{ marginTop: '50px' }}>
+                                    <h2>💳 Client Subscription Overview</h2>
+                                    <div className="search-bar" style={{ width: '350px' }}>
+                                        <Search size={18}/>
+                                        <input 
+                                            placeholder="Search by organization or email..." 
+                                            value={searchQuery} 
+                                            onChange={e => setSearchQuery(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '30px' }}>
+                                    <div className="stat-card" style={{ background: '#EEF2FF', border: '1px solid #E0E7FF' }}>
+                                        <div className="stat-icon" style={{ background: '#6366F1', color: 'white' }}><Crown size={20}/></div>
+                                        <div className="stat-info">
+                                            <div className="label" style={{ color: '#4338CA' }}>Paid Subscriptions</div>
+                                            <div className="value" style={{ color: '#1E1B4B' }}>{allUsers.filter(u => u.role === 'client' && u.plan?.type === 'paid').length}</div>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card" style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                                        <div className="stat-icon" style={{ background: '#94A3B8', color: 'white' }}><Users size={20}/></div>
+                                        <div className="stat-info">
+                                            <div className="label">Free / Starter Users</div>
+                                            <div className="value">{allUsers.filter(u => u.role === 'client' && (u.plan?.type === 'free' || !u.plan?.type)).length}</div>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card" style={{ background: '#ECFDF5', border: '1px solid #D1FAE5' }}>
+                                        <div className="stat-icon" style={{ background: '#10B981', color: 'white' }}><TrendingUp size={20}/></div>
+                                        <div className="stat-info">
+                                            <div className="label" style={{ color: '#047857' }}>Active Ratio</div>
+                                            <div className="value" style={{ color: '#064E3B' }}>
+                                                {allUsers.filter(u => u.role === 'client').length > 0 
+                                                    ? Math.round((allUsers.filter(u => u.role === 'client' && u.plan?.type === 'paid').length / allUsers.filter(u => u.role === 'client').length) * 100)
+                                                    : 0}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="data-table-container">
+                                    <table className="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Organization</th>
+                                                <th>Plan Type</th>
+                                                <th>Status</th>
+                                                <th>Expiry Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {allUsers
+                                                .filter(u => u.role === 'client' && (
+                                                    (u.organizationName || u.name).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                    u.email.toLowerCase().includes(searchQuery.toLowerCase())
+                                                ))
+                                                .map((client, i) => {
+                                                    const isExpired = client.plan?.expiryDate && new Date(client.plan.expiryDate) < new Date();
+                                                    const isPaid = client.plan?.type === 'paid';
+                                                    
+                                                    return (
+                                                        <motion.tr key={client._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}>
+                                                            <td>
+                                                                <div style={{ fontWeight: 900 }}>{client.organizationName || client.name}</div>
+                                                                <div style={{ fontSize: '11px', color: '#64748B' }}>{client.email}</div>
+                                                            </td>
+                                                            <td>
+                                                                <span style={{ 
+                                                                    background: isPaid ? '#EEF2FF' : '#F1F5F9', 
+                                                                    color: isPaid ? '#4F46E5' : '#64748B',
+                                                                    padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 900
+                                                                }}>
+                                                                    {isPaid ? 'PREMIUM PRO' : 'FREE STARTER'}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span className={`status-badge ${isExpired ? 'status-failed' : 'status-paid'}`}>
+                                                                    {isExpired ? 'EXPIRED' : 'ACTIVE'}
+                                                                </span>
+                                                            </td>
+                                                            <td style={{ fontSize: '13px', fontWeight: 700 }}>
+                                                                {client.plan?.expiryDate ? new Date(client.plan.expiryDate).toLocaleDateString() : 'LIFETIME'}
+                                                            </td>
+                                                            <td>
+                                                                <button className="action-btn" onClick={() => alert("Opening subscription manager...")} title="Manage Subscription">
+                                                                    <Settings size={16}/>
+                                                                </button>
+                                                            </td>
+                                                        </motion.tr>
+                                                    );
+                                                })}
+                                            {allUsers.filter(u => u.role === 'client').length === 0 && (
+                                                <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>No client subscriptions found.</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         )}
 
@@ -400,23 +512,62 @@ const AdminDashboard = () => {
                                             className="data-table-container shadow-hover"
                                             style={{ padding: '25px', display: 'flex', alignItems: 'center', gap: '20px' }}
                                         >
-                                            <div style={{ background: '#EEF2FF', color: '#6366F1', padding: '15px', borderRadius: '16px' }}>
-                                                {s.icon === 'Heart' && <Heart size={24}/>}
-                                                {s.icon === 'Sparkles' && <Sparkles size={24}/>}
-                                                {s.icon === 'Home' && <Home size={24}/>}
-                                                {s.icon === 'Car' && <Car size={24}/>}
-                                                {s.icon === 'Dumbbell' && <Dumbbell size={24}/>}
-                                                {s.icon === 'GraduationCap' && <GraduationCap size={24}/>}
-                                                {s.icon === 'Wrench' && <Wrench size={24}/>}
-                                                {s.icon === 'Gavel' && <Gavel size={24}/>}
-                                                {s.icon === 'Music' && <Music size={24}/>}
-                                                {!['Heart', 'Sparkles', 'Home', 'Car', 'Dumbbell', 'GraduationCap', 'Wrench', 'Gavel', 'Music'].includes(s.icon) && <Briefcase size={24}/>}
-                                            </div>
+                                            {(() => {
+                                                const getIconColor = (name) => {
+                                                    switch(name) {
+                                                        case 'Hospital': return '#EF4444';
+                                                        case 'Heart': return '#F43F5E';
+                                                        case 'Scissors': return '#EC4899';
+                                                        case 'Home': return '#F59E0B';
+                                                        case 'Car': return '#3B82F6';
+                                                        case 'Dumbbell': return '#10B981';
+                                                        case 'GraduationCap': return '#8B5CF6';
+                                                        case 'Laptop': return '#6366F1';
+                                                        case 'Cpu': return '#06B6D4';
+                                                        case 'Wrench': return '#64748B';
+                                                        case 'Scale': return '#1E293B';
+                                                        case 'Camera': return '#F43F5E';
+                                                        case 'Calendar': return '#4F46E5';
+                                                        case 'Gavel': return '#78350F';
+                                                        case 'Music': return '#D946EF';
+                                                        case 'Sparkles': return '#F59E0B';
+                                                        default: return '#6366F1';
+                                                    }
+                                                };
+                                                const iconColor = getIconColor(s.icon);
+                                                return (
+                                                    <div style={{ background: iconColor + '15', color: iconColor, padding: '15px', borderRadius: '16px' }}>
+                                                        {s.icon === 'Hospital' && <Hospital size={24}/>}
+                                                        {s.icon === 'Heart' && <Heart size={24}/>}
+                                                        {s.icon === 'Scissors' && <Scissors size={24}/>}
+                                                        {s.icon === 'Home' && <Home size={24}/>}
+                                                        {s.icon === 'Car' && <Car size={24}/>}
+                                                        {s.icon === 'Dumbbell' && <Dumbbell size={24}/>}
+                                                        {s.icon === 'GraduationCap' && <GraduationCap size={24}/>}
+                                                        {s.icon === 'Laptop' && <Laptop size={24}/>}
+                                                        {s.icon === 'Cpu' && <Cpu size={24}/>}
+                                                        {s.icon === 'Wrench' && <Wrench size={24}/>}
+                                                        {s.icon === 'Scale' && <Scale size={24}/>}
+                                                        {s.icon === 'Camera' && <Camera size={24}/>}
+                                                        {s.icon === 'Calendar' && <Calendar size={24}/>}
+                                                        {s.icon === 'Gavel' && <Gavel size={24}/>}
+                                                        {s.icon === 'Music' && <Music size={24}/>}
+                                                        {s.icon === 'Sparkles' && <Sparkles size={24}/>}
+                                                        {!['Hospital', 'Heart', 'Scissors', 'Home', 'Car', 'Dumbbell', 'GraduationCap', 'Laptop', 'Cpu', 'Wrench', 'Scale', 'Camera', 'Calendar', 'Gavel', 'Music', 'Sparkles'].includes(s.icon) && <Briefcase size={24}/>}
+                                                    </div>
+                                                );
+                                            })()}
                                             <div>
                                                 <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A' }}>{s.name}</div>
                                                 <div style={{ fontSize: '12px', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>{s.category}</div>
+                                                {s.subCategories && s.subCategories.length > 0 && (
+                                                    <div style={{ fontSize: '11px', color: '#6366F1', marginTop: '6px', fontWeight: 700, background: '#EEF2FF', padding: '4px 8px', borderRadius: '8px', display: 'inline-block' }}>
+                                                        Roles: {s.subCategories.join(', ')}
+                                                    </div>
+                                                )}
                                             </div>
                                             <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
+                                                <button className="action-btn" title="Add Role" onClick={() => handleAddRole(s._id, s.subCategories || [])} style={{ color: '#10B981', background: '#ECFDF5' }}><Plus size={16}/></button>
                                                 <button className="action-btn" title="Edit"><Edit2 size={16}/></button>
                                                 <button className="action-btn" title="Delete" style={{ color: '#EF4444' }}><Trash2 size={16}/></button>
                                             </div>
