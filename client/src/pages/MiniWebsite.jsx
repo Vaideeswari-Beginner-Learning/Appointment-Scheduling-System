@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { 
     Building2, CheckCircle2, Clock, Activity, User, 
     X, MapPin, Phone, HelpCircle, ArrowLeft, Heart, Share2, Star,
-    ShieldCheck, MessageSquare
+    ShieldCheck, MessageSquare, ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config/api';
