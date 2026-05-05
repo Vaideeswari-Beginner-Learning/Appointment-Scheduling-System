@@ -441,13 +441,17 @@ const AdminDashboard = () => {
                                     </div>
                                 </div>
                                 <table className="data-table">
-                                    <thead><tr><th>Organization</th><th>Expiry</th><th>Plan</th><th>Action</th></tr></thead>
+                                    <thead><tr><th>Organization</th><th>Industry</th><th>Expiry</th><th>Plan</th><th>Action</th></tr></thead>
                                     <tbody>
-                                        {allUsers.filter(u => u.role === 'client' && u.name.toLowerCase().includes(searchQuery.toLowerCase())).map((c, i) => (
+                                        {allUsers.filter(u => u.role === 'client' && (u.organizationName?.toLowerCase().includes(searchQuery.toLowerCase()) || u.name.toLowerCase().includes(searchQuery.toLowerCase()))).map((c, i) => (
                                             <motion.tr key={c._id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
-                                                <td><b>{c.name}</b></td>
-                                                <td><span style={{ color: '#EF4444', fontWeight: 700 }}>12 May 2026</span></td>
-                                                <td><span style={{ background: '#EEF2FF', color: '#4F46E5', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800 }}>PREMIUM</span></td>
+                                                <td>
+                                                    <div style={{ fontWeight: 900, color: '#0F172A' }}>{c.organizationName || c.name}</div>
+                                                    <div style={{ fontSize: '11px', color: '#64748B' }}>{c.email}</div>
+                                                </td>
+                                                <td><span style={{ background: '#F1F5F9', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 700 }}>{c.sectorName || 'General'}</span></td>
+                                                <td><span style={{ color: c.plan?.expiryDate ? '#EF4444' : '#64748B', fontWeight: 700 }}>{c.plan?.expiryDate ? new Date(c.plan.expiryDate).toLocaleDateString() : 'Lifetime'}</span></td>
+                                                <td><span style={{ background: c.plan?.type === 'paid' ? '#EEF2FF' : '#F1F5F9', color: c.plan?.type === 'paid' ? '#6366F1' : '#64748B', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800 }}>{c.plan?.type?.toUpperCase() || 'FREE'}</span></td>
                                                 <td>
                                                     <div style={{ display: 'flex', gap: '10px' }}>
                                                         <button className="action-btn" title="Edit"><Edit2 size={16}/></button>
@@ -456,8 +460,119 @@ const AdminDashboard = () => {
                                                 </td>
                                             </motion.tr>
                                         ))}
+                                        {allUsers.filter(u => u.role === 'client').length === 0 && (
+                                            <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>No organizations found.</td></tr>
+                                        )}
                                     </tbody>
                                 </table>
+                            </div>
+                        )}
+
+                        {activeTab === 'users' && (
+                            <div className="fade-in">
+                                <div className="table-header">
+                                    <h2>👥 System User Directory</h2>
+                                    <div className="search-bar" style={{ width: '400px' }}>
+                                        <Search size={18}/>
+                                        <input placeholder="Search users by name, email or role..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}/>
+                                    </div>
+                                </div>
+                                <div className="data-table-container">
+                                    <table className="data-table">
+                                        <thead><tr><th>User Detail</th><th>Access Level</th><th>Status</th><th>Joined</th><th>Action</th></tr></thead>
+                                        <tbody>
+                                            {allUsers.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase()) || u.email.toLowerCase().includes(searchQuery.toLowerCase()) || u.role.toLowerCase().includes(searchQuery.toLowerCase())).map((u, i) => (
+                                                <motion.tr key={u._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}>
+                                                    <td>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                            <div style={{ width: '32px', height: '32px', background: '#F1F5F9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px' }}>{u.name[0]}</div>
+                                                            <div>
+                                                                <div style={{ fontWeight: 800 }}>{u.name}</div>
+                                                                <div style={{ fontSize: '11px', color: '#64748B' }}>{u.email}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span style={{ 
+                                                            padding: '4px 12px', borderRadius: '20px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase',
+                                                            background: u.role === 'super-admin' ? '#FEF3C7' : u.role === 'client' ? '#E0E7FF' : '#F1F5F9',
+                                                            color: u.role === 'super-admin' ? '#D97706' : u.role === 'client' ? '#4F46E5' : '#64748B'
+                                                        }}>
+                                                            {u.role}
+                                                        </span>
+                                                    </td>
+                                                    <td><span style={{ color: '#10B981', fontWeight: 700, fontSize: '12px' }}>● ACTIVE</span></td>
+                                                    <td style={{ fontSize: '12px' }}>{new Date(u.createdAt).toLocaleDateString()}</td>
+                                                    <td>
+                                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                                            <button className="action-btn" title="Edit Permissions"><Shield size={16}/></button>
+                                                            <button className="action-btn" title="Ban User" style={{ color: '#EF4444' }}><XCircle size={16}/></button>
+                                                        </div>
+                                                    </td>
+                                                </motion.tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'sys_requests' && (
+                            <div className="fade-in">
+                                <div className="table-header">
+                                    <h2>💬 Help & Support Requests</h2>
+                                    <button className="action-btn" style={{ background: '#6366F1', color: 'white' }}>Support Tickets (2)</button>
+                                </div>
+                                <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+                                    {[
+                                        { user: 'Rahul V.', issue: 'Payment Gateway Integration', time: '2 hours ago', priority: 'High' },
+                                        { user: 'Sita M.', issue: 'Custom Domain Setup', time: '5 hours ago', priority: 'Medium' }
+                                    ].map((t, i) => (
+                                        <div key={i} className="data-table-container shadow-hover" style={{ padding: '25px', borderRadius: '24px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+                                                <span style={{ fontSize: '11px', fontWeight: 900, color: t.priority === 'High' ? '#EF4444' : '#F59E0B' }}>● {t.priority.toUpperCase()} PRIORITY</span>
+                                                <span style={{ fontSize: '11px', color: '#64748B' }}>{t.time}</span>
+                                            </div>
+                                            <h4 style={{ margin: '0 0 5px', fontSize: '16px', fontWeight: 800 }}>{t.issue}</h4>
+                                            <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '20px' }}>Requested by {t.user}</p>
+                                            <button className="action-btn" style={{ width: '100%', background: '#F8FAFC' }}>Open Ticket</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'reports' && (
+                            <div className="fade-in">
+                                <div className="table-header">
+                                    <h2>📊 Platform Performance Reports</h2>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <button className="action-btn"><RefreshCw size={16}/> Refresh</button>
+                                        <button className="action-btn" style={{ background: '#0F172A', color: 'white' }}><Database size={16}/> Export Full Data</button>
+                                    </div>
+                                </div>
+                                <div className="stats-grid" style={{ gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
+                                    <div className="data-table-container" style={{ padding: '30px', height: '400px' }}>
+                                        <h4 style={{ marginBottom: '20px' }}>Revenue Growth (Projected)</h4>
+                                        <Bar 
+                                            data={{ 
+                                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], 
+                                                datasets: [{ label: 'Revenue', data: [12000, 19000, 15000, 25000, 22000, 30000], backgroundColor: '#6366F1', borderRadius: 8 }] 
+                                            }} 
+                                            options={{ maintainAspectRatio: false, plugins: { legend: { display: false } } }}
+                                        />
+                                    </div>
+                                    <div className="data-table-container" style={{ padding: '30px', height: '400px' }}>
+                                        <h4 style={{ marginBottom: '20px' }}>User Distribution</h4>
+                                        <Doughnut 
+                                            data={{ 
+                                                labels: ['Admin', 'Clients', 'Users'], 
+                                                datasets: [{ data: [5, 45, 150], backgroundColor: ['#0F172A', '#6366F1', '#E0E7FF'], borderWidth: 0 }] 
+                                            }} 
+                                            options={{ maintainAspectRatio: false }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         )}
 
