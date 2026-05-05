@@ -275,30 +275,26 @@ const MiniWebsite = () => {
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '32px' }}>
-                        {staff.length > 0 ? staff.map(member => (
+                        {(staff.length > 0 ? staff : [
+                            { _id: 'dummy1', name: `Sarah Jenkins`, specialty: `Senior ${config.dashboard.employeeRole}`, avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80', dummy: true },
+                            { _id: 'dummy2', name: `Michael Chen`, specialty: `Lead ${config.dashboard.employeeRole}`, avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=400&q=80', dummy: true },
+                            { _id: 'dummy3', name: `Emma Thompson`, specialty: `Expert ${config.dashboard.employeeRole}`, avatar: 'https://images.unsplash.com/photo-1594824432258-2eb7163c46b5?auto=format&fit=crop&w=400&q=80', dummy: true }
+                        ]).map(member => (
                             <motion.div 
                                 whileHover={{ y: -15 }}
                                 key={member._id}
-                                style={{ background: 'white', padding: '40px', borderRadius: '40px', border: '1px solid #E2E8F0', textAlign: 'center', transition: '0.3s' }}
+                                style={{ background: 'white', padding: '40px', borderRadius: '40px', border: '1px solid #E2E8F0', textAlign: 'center', transition: '0.3s', position: 'relative' }}
                             >
+                                {member.dummy && <div style={{ position: 'absolute', top: '16px', right: '16px', background: '#F1F5F9', color: '#64748B', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '12px' }}>Demo Profile</div>}
                                 <div style={{ width: '160px', height: '160px', margin: '0 auto 32px', borderRadius: '50px', overflow: 'hidden', border: `4px solid ${primaryColor}10`, padding: '8px' }}>
                                     <img src={member.avatar || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80'} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '40px' }} alt="" />
                                 </div>
                                 <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '8px' }}>{member.name}</h3>
                                 <div style={{ fontSize: '13px', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', marginBottom: '24px' }}>{member.specialty || config.dashboard.employeeRole}</div>
-                                <p style={{ fontSize: '14px', color: '#64748B', lineHeight: 1.6, marginBottom: '32px' }}>Certified expert with extensive training and a commitment to delivering exceptional patient results.</p>
-                                <button onClick={() => navigate(`/book?clientId=${id}`)} style={{ width: '100%', height: '56px', borderRadius: '18px', border: `2px solid ${primaryColor}20`, background: 'transparent', color: primaryColor, fontWeight: 900, cursor: 'pointer', transition: '0.3s' }} onMouseOver={e => { e.currentTarget.style.background = primaryColor; e.currentTarget.style.color = 'white'; }}>View Schedule</button>
+                                <p style={{ fontSize: '14px', color: '#64748B', lineHeight: 1.6, marginBottom: '32px' }}>Certified expert with extensive training and a commitment to delivering exceptional results.</p>
+                                <button onClick={() => navigate(`/book?clientId=${id}`)} style={{ width: '100%', height: '56px', borderRadius: '18px', border: `2px solid ${primaryColor}20`, background: 'transparent', color: primaryColor, fontWeight: 900, cursor: 'pointer', transition: '0.3s' }} onMouseOver={e => { e.currentTarget.style.background = primaryColor; e.currentTarget.style.color = 'white'; }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = primaryColor; }}>View Schedule</button>
                             </motion.div>
-                        )) : (
-                            [1,2,3].map(i => (
-                                <div key={i} style={{ background: 'white', padding: '40px', borderRadius: '40px', border: '1px solid #E2E8F0', textAlign: 'center', opacity: 0.6 }}>
-                                    <div style={{ width: '160px', height: '160px', margin: '0 auto 32px', borderRadius: '50px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User size={64} color="#CBD5E1" /></div>
-                                    <div style={{ height: '24px', width: '60%', background: '#F1F5F9', margin: '0 auto 12px', borderRadius: '8px' }} />
-                                    <div style={{ height: '14px', width: '40%', background: '#F8FAFC', margin: '0 auto 32px', borderRadius: '6px' }} />
-                                    <div style={{ height: '56px', width: '100%', background: '#F8FAFC', borderRadius: '18px' }} />
-                                </div>
-                            ))
-                        )}
+                        ))}
                     </div>
                 </section>
 
@@ -311,15 +307,20 @@ const MiniWebsite = () => {
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '32px' }}>
-                            {services.map(srv => (
+                            {(services.length > 0 ? services : [
+                                { _id: 'dserv1', name: `Premium ${config.label} Consultation`, duration: 45, price: 1500, description: `Comprehensive evaluation and tailored strategy.`, dummy: true },
+                                { _id: 'dserv2', name: `Standard Session`, duration: 30, price: 800, description: `Routine service with our expert ${config.dashboard.employeeRole}s.`, dummy: true },
+                                { _id: 'dserv3', name: `Advanced Treatment`, duration: 60, price: 2500, description: `Specialized approach using our state-of-the-art facilities.`, dummy: true }
+                            ]).map(srv => (
                                 <div key={srv._id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', borderRadius: '40px', position: 'relative', overflow: 'hidden' }}>
+                                    {srv.dummy && <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(255,255,255,0.1)', color: '#94A3B8', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '12px' }}>Demo Service</div>}
                                     <div style={{ position: 'absolute', top: 0, right: 0, background: primaryColor, color: 'white', padding: '8px 24px', fontSize: '12px', fontWeight: 900, borderBottomLeftRadius: '20px' }}>Rs. {srv.price}</div>
                                     <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '12px' }}>{srv.name}</h3>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94A3B8', fontSize: '13px', fontWeight: 700, marginBottom: '24px' }}>
                                         <Clock size={16} /> {srv.duration} Minutes Session
                                     </div>
                                     <p style={{ color: '#94A3B8', lineHeight: 1.6, marginBottom: '32px', fontSize: '15px' }}>{srv.description || 'Our signature high-performance service tailored to deliver maximum value and professional results.'}</p>
-                                    <button onClick={() => navigate(`/book?clientId=${id}`)} style={{ width: '100%', height: '60px', borderRadius: '20px', background: 'white', color: '#0F172A', border: 'none', fontWeight: 900, fontSize: '16px', cursor: 'pointer' }}>Book This Service</button>
+                                    <button onClick={() => navigate(`/book?clientId=${id}`)} style={{ width: '100%', height: '60px', borderRadius: '20px', background: 'white', color: '#0F172A', border: 'none', fontWeight: 900, fontSize: '16px', cursor: 'pointer', transition: '0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>Book This Service</button>
                                 </div>
                             ))}
                         </div>
