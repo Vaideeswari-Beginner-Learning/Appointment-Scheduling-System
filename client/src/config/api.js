@@ -16,3 +16,5 @@ const getBaseUrl = () => {
 
 export const SERVER_URL = getBaseUrl();
 export const API_BASE_URL = `${SERVER_URL}/api`;
+export const UPI_ID = 'forgeindia@upi';
+export const UPI_NAME = 'Forge India';

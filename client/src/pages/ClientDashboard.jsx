@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import TopNavbar from '../components/TopNavbar';
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL, UPI_ID, UPI_NAME } from '../config/api';
 import { getSectorConfig } from '../config/sectorConfig';
 import FloatingSupport from '../components/FloatingSupport';
 import ChatWidget from '../components/ChatWidget';
@@ -2382,18 +2382,34 @@ const ClientDashboard = () => {
                         </div>
 
                         <div style={{ padding: '32px' }}>
-                            {/* Hero Section with QR Code */}
-                            <div style={{ background: '#F8FAFC', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '24px' }}>
-                                <div style={{ background: 'white', padding: '16px', borderRadius: '20px', display: 'inline-block', boxShadow: '0 15px 35px -5px rgba(0,0,0,0.1)', marginBottom: '16px' }}>
-                                    <img 
-                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=forgeindia@upi&pn=Forge%20India&am=${paymentData.amount.replace(/[^0-9.]/g, '')}&cu=INR`} 
-                                        alt="UPI Dynamic QR Code" 
-                                        style={{ width: '200px', height: '200px', borderRadius: '12px', display: 'block', objectFit: 'contain' }} 
-                                    />
-                                </div>
-                                <div style={{ fontSize: '15px', fontWeight: 900, color: '#0F172A' }}>Scan QR to Pay Instantly</div>
-                                <div style={{ fontSize: '11px', color: '#64748B', marginTop: '6px', fontWeight: 700 }}>{paymentData.amount} Total • All UPI Apps Supported</div>
-                            </div>
+                            {/* Hero Section with PhonePe QR Code */}
+                             <div style={{ background: '#FFFFFF', padding: '32px 24px', borderRadius: '32px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+                                 <div style={{ background: '#5E239D', color: 'white', padding: '10px 24px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '28px', fontSize: '13px', fontWeight: 900, boxShadow: '0 4px 12px rgba(94, 35, 157, 0.2)' }}>
+                                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" alt="PhonePe" style={{ height: '18px', filter: 'brightness(0) invert(1)' }} />
+                                     Scan to Pay with PhonePe
+                                 </div>
+                                 <div style={{ background: 'white', padding: '15px', borderRadius: '24px', display: 'inline-block', border: '1px solid #F1F5F9', position: 'relative', marginBottom: '20px' }}>
+                                     <img 
+                                         src="/qr-payment-new.png" 
+                                         alt="PhonePe QR Code" 
+                                         style={{ width: '220px', height: '220px', borderRadius: '8px', display: 'block', objectFit: 'contain' }} 
+                                         onError={(e) => {
+                                             if (e.target.src.includes('qr-payment-new.png')) {
+                                                 e.target.src = '/qr-payment.jpg';
+                                             } else if (e.target.src.includes('qr-payment.jpg')) {
+                                                 e.target.src = '/images/phonepe_qr.png';
+                                             } else {
+                                                 e.target.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${paymentData.amount.replace(/[^0-9.]/g, '')}&cu=INR`;
+                                             }
+                                         }}
+                                     />
+                                 </div>
+                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px' }}>
+                                     <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981', animation: 'pulse 1.5s infinite' }}></div>
+                                     <div style={{ fontSize: '18px', fontWeight: 950, color: '#0F172A' }}>Amount: <span style={{ color: '#4F46E5' }}>{paymentData.amount}</span></div>
+                                 </div>
+                                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 800, letterSpacing: '0.5px' }}>UPI ID: <span style={{ color: '#0F172A' }}>{UPI_ID}</span></div>
+                             </div>
 
                             <div style={{ fontSize: '12px', fontWeight: 900, color: '#64748B', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>Or Pay via Card</div>
                             

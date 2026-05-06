@@ -21,19 +21,19 @@ const LandingPage = () => {
     const [isMoreOpen, setIsMoreOpen] = useState(false);
 
     const heroSectors = [
-        { label: 'Healthcare', icon: <Heart size={16} />, image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80' },
+        { label: 'Healthcare', icon: <Heart size={16} />, image: '/healthcare.png' },
         { label: 'Education', icon: <GraduationCap size={16} />, image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Salon & Beauty', icon: <Sparkles size={16} />, image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Hospitality', icon: <HotelIcon size={16} />, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80' },
-        { label: 'Corporate', icon: <Briefcase size={16} />, image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80' },
+        { label: 'Corporate', icon: <Briefcase size={16} />, image: '/corporate.png' },
         { label: 'Automobile', icon: <Car size={16} />, image: 'https://images.unsplash.com/photo-1562426509-5044a121aa49?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Fitness', icon: <Dumbbell size={16} />, image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Legal', icon: <Gavel size={16} />, image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Property', icon: <Home size={16} />, image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Repair Services', icon: <Wrench size={16} />, image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200&q=80' },
-        { label: 'Events', icon: <Music size={16} />, image: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=1200&q=80' },
+        { label: 'Events', icon: <Music size={16} />, image: '/sector_venues_real.png' },
         { label: 'Retail', icon: <ShoppingCart size={16} />, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80' },
-        { label: 'Consultancy', icon: <Briefcase size={16} />, image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80' }
+        { label: 'Consultancy', icon: <Briefcase size={16} />, image: '/sector_freelancer_real.png' }
     ];
 
     useEffect(() => {
@@ -43,12 +43,14 @@ const LandingPage = () => {
         return () => clearInterval(interval);
     }, [heroSectors.length]);
 
-    // Auto-redirect to dashboard if user is already logged in
+    // Removed auto-redirect to allow logged-in users to view landing page
+    /*
     useEffect(() => {
         if (user) {
             navigate('/dashboard');
         }
     }, [user, navigate]);
+    */
 
     const fadeIn = {
         initial: { opacity: 0, y: 30 },
@@ -104,13 +106,28 @@ const LandingPage = () => {
                         <a href="#faq" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }}>FAQ</a>
                     </nav>
 
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                        <Link className="nav-links-desktop" to="/login" style={{ color: 'white', fontWeight: 700, textDecoration: 'none', padding: '12px 24px', fontSize: '15px' }}>Sign In</Link>
-                        <Link to="/register" style={{ 
-                            background: 'white', color: '#0F172A', 
-                            borderRadius: '14px', padding: '12px 28px', fontWeight: 800, textDecoration: 'none',
-                            fontSize: '15px', transition: 'transform 0.2s, box-shadow 0.2s'
-                        }}>Get Started</Link>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        {user ? (
+                            <Link to="/dashboard" style={{ 
+                                background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', color: 'white', 
+                                borderRadius: '14px', padding: '10px 20px', fontWeight: 800, textDecoration: 'none',
+                                fontSize: '14px', boxShadow: '0 10px 20px rgba(79,70,229,0.3)'
+                            }}>Dashboard</Link>
+                        ) : (
+                            <>
+                                <Link to="/login" style={{ 
+                                    color: 'white', fontWeight: 700, textDecoration: 'none', 
+                                    padding: '10px 16px', fontSize: '14px',
+                                    border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
+                                    background: 'rgba(255,255,255,0.05)'
+                                }}>Sign In</Link>
+                                <Link to="/register" style={{ 
+                                    background: 'white', color: '#0F172A', 
+                                    borderRadius: '12px', padding: '10px 20px', fontWeight: 800, textDecoration: 'none',
+                                    fontSize: '14px', transition: 'transform 0.2s'
+                                }}>Join Now</Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </header>
@@ -328,17 +345,39 @@ const LandingPage = () => {
                 {/* Industries Section */}
                 <section id="industries" style={{ padding: '100px 24px', background: 'white', color: '#0F172A' }}>
                     <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-                        <h2 style={{ fontSize: '42px', fontWeight: 950, color: '#3B82F6', marginBottom: '64px' }}>Tailored for Your Sector</h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+                        <h2 style={{ fontSize: '48px', fontWeight: 950, color: '#3B82F6', marginBottom: '16px' }}>Tailored for Your Sector</h2>
+                        <p style={{ color: '#64748B', fontSize: '18px', marginBottom: '64px', maxWidth: '600px', margin: '0 auto 64px' }}>Specialized features and interfaces optimized for different business industries.</p>
+                        
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
                             {heroSectors.map((sector, i) => (
                                 <motion.div 
                                     key={i} 
-                                    whileHover={{ y: -10 }}
-                                    style={{ padding: '40px', borderRadius: '24px', background: '#F8FAFC', border: '1px solid #E2E8F0', textAlign: 'center', cursor: 'pointer' }}
+                                    whileHover={{ y: -15, boxShadow: '0 30px 60px -12px rgba(0,0,0,0.15)' }}
+                                    style={{ 
+                                        position: 'relative', height: '400px', borderRadius: '32px', overflow: 'hidden', 
+                                        cursor: 'pointer', transition: '0.4s cubic-bezier(0.4, 0, 0.2, 1)', border: '1px solid #E2E8F0' 
+                                    }}
                                     onClick={() => navigate(`/register?sector=${sector.label.toLowerCase()}`)}
                                 >
-                                    <div style={{ color: '#4F46E5', marginBottom: '20px' }}>{sector.icon}</div>
-                                    <h3 style={{ fontWeight: 900, fontSize: '20px' }}>{sector.label}</h3>
+                                    <img 
+                                        src={sector.image} 
+                                        alt={sector.label} 
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: '0.6s' }} 
+                                        className="sector-card-img"
+                                    />
+                                    <div style={{ 
+                                        position: 'absolute', inset: 0, 
+                                        background: 'linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.6) 40%, transparent 100%)',
+                                        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '40px', textAlign: 'left'
+                                    }}>
+                                        <div style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', color: 'white', width: 'fit-content', padding: '10px', borderRadius: '14px', marginBottom: '16px' }}>
+                                            {sector.icon}
+                                        </div>
+                                        <h3 style={{ fontWeight: 950, fontSize: '24px', color: 'white', marginBottom: '8px' }}>{sector.label}</h3>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94A3B8', fontSize: '14px', fontWeight: 700 }}>
+                                            <span>Explore Solutions</span> <ArrowRight size={14} />
+                                        </div>
+                                    </div>
                                 </motion.div>
                             ))}
                         </div>
@@ -374,8 +413,59 @@ const LandingPage = () => {
 
             </main>
 
-            <footer style={{ padding: '80px 24px', background: '#020617', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-                <p style={{ color: '#64748B' }}>&copy; 2026 SmartScheduler. All rights reserved.</p>
+            <footer style={{ background: '#020617', padding: '100px 24px 40px', color: 'white', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '60px', marginBottom: '80px' }}>
+                        <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+                                <div style={{ background: 'white', padding: '6px', borderRadius: '10px', display: 'flex' }}>
+                                    <img src="/logo.png" alt="Logo" style={{ height: '24px' }} />
+                                </div>
+                                <span style={{ fontSize: '20px', fontWeight: 900 }}>SmartScheduler</span>
+                            </div>
+                            <p style={{ color: '#64748B', lineHeight: 1.8, fontSize: '15px' }}>
+                                The world's most advanced scheduling platform for the modern service economy. Automate your booking lifecycle and scale your business effortlessly.
+                            </p>
+                        </div>
+                        <div>
+                            <h4 style={{ fontWeight: 900, marginBottom: '32px', fontSize: '14px', letterSpacing: '1px', color: '#818CF8' }}>PRODUCT</h4>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '16px', color: '#94A3B8', fontSize: '15px', fontWeight: 600 }}>
+                                <li style={{ cursor: 'pointer' }}>Features & Tools</li>
+                                <li style={{ cursor: 'pointer' }}>Pricing Tiers</li>
+                                <li style={{ cursor: 'pointer' }}>Release Notes</li>
+                                <li style={{ cursor: 'pointer' }}>Mobile App</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style={{ fontWeight: 900, marginBottom: '32px', fontSize: '14px', letterSpacing: '1px', color: '#818CF8' }}>INDUSTRIES</h4>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '16px', color: '#94A3B8', fontSize: '15px', fontWeight: 600 }}>
+                                <li style={{ cursor: 'pointer' }}>Healthcare Providers</li>
+                                <li style={{ cursor: 'pointer' }}>Education & Tutoring</li>
+                                <li style={{ cursor: 'pointer' }}>Salon & Wellness</li>
+                                <li style={{ cursor: 'pointer' }}>Corporate Systems</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style={{ fontWeight: 900, marginBottom: '32px', fontSize: '14px', letterSpacing: '1px', color: '#818CF8' }}>RESOURCES</h4>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '16px', color: '#94A3B8', fontSize: '15px', fontWeight: 600 }}>
+                                <li style={{ cursor: 'pointer' }}>Documentation</li>
+                                <li style={{ cursor: 'pointer' }}>API Reference</li>
+                                <li style={{ cursor: 'pointer' }}>Community Forum</li>
+                                <li style={{ cursor: 'pointer' }}>Privacy Policy</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div style={{ paddingTop: '40px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+                        <div style={{ color: '#475569', fontSize: '14px', fontWeight: 600 }}>
+                            &copy; {new Date().getFullYear()} SmartScheduler. Powered by Forge-SAAS. All Rights Reserved.
+                        </div>
+                        <div style={{ display: 'flex', gap: '24px', color: '#64748B', fontWeight: 700, fontSize: '14px' }}>
+                            <span style={{ cursor: 'pointer' }}>Twitter</span>
+                            <span style={{ cursor: 'pointer' }}>LinkedIn</span>
+                            <span style={{ cursor: 'pointer' }}>GitHub</span>
+                        </div>
+                    </div>
+                </div>
             </footer>
         </div>
     );

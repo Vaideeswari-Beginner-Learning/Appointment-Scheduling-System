@@ -108,7 +108,14 @@ const MiniWebsite = () => {
                                 <div style={{ background: primaryColor + '10', color: primaryColor, padding: '10px', borderRadius: '12px' }}><Building2 size={24} /></div>
                             }
                             <div>
-                                <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{org.organizationName || org.name}</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{org.organizationName || org.name}</div>
+                                    {org.plan?.type === 'paid' && (
+                                        <div title="Verified Premium Partner" style={{ background: '#6366F1', color: 'white', padding: '2px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <ShieldCheck size={12} />
+                                        </div>
+                                    )}
+                                </div>
                                 <div style={{ fontSize: '11px', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', marginTop: '4px' }}>{config.label} Partner</div>
                             </div>
                         </div>
@@ -129,20 +136,46 @@ const MiniWebsite = () => {
                     </div>
 
                     <div style={{ display: 'flex', gap: '12px' }}>
+                        <button 
+                            onClick={() => {
+                                const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+                                if (!bookmarks.includes(id)) {
+                                    localStorage.setItem('bookmarks', JSON.stringify([...bookmarks, id]));
+                                    alert('Added to your bookmarks!');
+                                } else {
+                                    alert('Already in your bookmarks.');
+                                }
+                            }}
+                            style={{ background: 'white', border: '1px solid #E2E8F0', padding: '12px 24px', borderRadius: '16px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: '0.3s' }}
+                        >
+                            <Bookmark size={18} /> <span style={{ fontSize: '14px' }}>Bookmark</span>
+                        </button>
                         <button style={{ background: 'white', border: '1px solid #E2E8F0', padding: '12px 24px', borderRadius: '16px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: '0.3s' }}>
                             <Share2 size={18} /> <span style={{ fontSize: '14px' }}>Share</span>
                         </button>
                         {!isOwner && (
-                            <button 
-                                onClick={() => navigate(`/book?clientId=${id}`)} 
-                                style={{ 
-                                    background: primaryColor, color: 'white', border: 'none', padding: '12px 32px', 
-                                    borderRadius: '16px', fontWeight: 900, fontSize: '14px', cursor: 'pointer',
-                                    boxShadow: `0 10px 25px -5px ${primaryColor}40`
-                                }}
-                            >
-                                Book Now
-                            </button>
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <button 
+                                    onClick={() => alert('Opening consultation chat...')}
+                                    style={{ 
+                                        background: '#F1F5F9', color: '#475569', border: 'none', padding: '12px 20px', 
+                                        borderRadius: '16px', fontWeight: 800, fontSize: '14px', cursor: 'pointer',
+                                        display: 'flex', alignItems: 'center', gap: '8px'
+                                    }}
+                                >
+                                    <MessageSquare size={18} /> Chat
+                                </button>
+                                <button 
+                                    onClick={() => navigate(`/book?clientId=${id}`)} 
+                                    style={{ 
+                                        background: primaryColor, color: 'white', border: 'none', padding: '12px 32px', 
+                                        borderRadius: '16px', fontWeight: 900, fontSize: '14px', cursor: 'pointer',
+                                        boxShadow: `0 10px 25px -5px ${primaryColor}40`
+                                    }}
+                                >
+                                    Book Now
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -276,16 +309,16 @@ const MiniWebsite = () => {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '32px' }}>
                         {(staff.length > 0 ? staff : [
-                            { _id: 'dummy1', name: `Sarah Jenkins`, specialty: `Senior ${config.dashboard.employeeRole}`, avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80', dummy: true },
-                            { _id: 'dummy2', name: `Michael Chen`, specialty: `Lead ${config.dashboard.employeeRole}`, avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=400&q=80', dummy: true },
-                            { _id: 'dummy3', name: `Emma Thompson`, specialty: `Expert ${config.dashboard.employeeRole}`, avatar: 'https://images.unsplash.com/photo-1594824432258-2eb7163c46b5?auto=format&fit=crop&w=400&q=80', dummy: true }
+                            { _id: 'dummy1', name: `Sarah Jenkins`, specialty: `Senior ${config.dashboard.employeeRole}`, avatar: config.dummyStaff?.[0] || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80', dummy: true },
+                            { _id: 'dummy2', name: `Michael Chen`, specialty: `Lead ${config.dashboard.employeeRole}`, avatar: config.dummyStaff?.[1] || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80', dummy: true },
+                            { _id: 'dummy3', name: `Emma Thompson`, specialty: `Expert ${config.dashboard.employeeRole}`, avatar: config.dummyStaff?.[2] || 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=400&q=80', dummy: true }
                         ]).map(member => (
                             <motion.div 
                                 whileHover={{ y: -15 }}
                                 key={member._id}
                                 style={{ background: 'white', padding: '40px', borderRadius: '40px', border: '1px solid #E2E8F0', textAlign: 'center', transition: '0.3s', position: 'relative' }}
                             >
-                                {member.dummy && <div style={{ position: 'absolute', top: '16px', right: '16px', background: '#F1F5F9', color: '#64748B', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '12px' }}>Demo Profile</div>}
+                                {member.dummy && org.plan?.type !== 'paid' && <div style={{ position: 'absolute', top: '16px', right: '16px', background: '#F1F5F9', color: '#64748B', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '12px' }}>Demo Profile</div>}
                                 <div style={{ width: '160px', height: '160px', margin: '0 auto 32px', borderRadius: '50px', overflow: 'hidden', border: `4px solid ${primaryColor}10`, padding: '8px' }}>
                                     <img src={member.avatar || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80'} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '40px' }} alt="" />
                                 </div>
@@ -313,7 +346,7 @@ const MiniWebsite = () => {
                                 { _id: 'dserv3', name: `Advanced Treatment`, duration: 60, price: 2500, description: `Specialized approach using our state-of-the-art facilities.`, dummy: true }
                             ]).map(srv => (
                                 <div key={srv._id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', borderRadius: '40px', position: 'relative', overflow: 'hidden' }}>
-                                    {srv.dummy && <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(255,255,255,0.1)', color: '#94A3B8', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '12px' }}>Demo Service</div>}
+                                    {srv.dummy && org.plan?.type !== 'paid' && <div style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(255,255,255,0.1)', color: '#94A3B8', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '12px' }}>Demo Service</div>}
                                     <div style={{ position: 'absolute', top: 0, right: 0, background: primaryColor, color: 'white', padding: '8px 24px', fontSize: '12px', fontWeight: 900, borderBottomLeftRadius: '20px' }}>Rs. {srv.price}</div>
                                     <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '12px' }}>{srv.name}</h3>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94A3B8', fontSize: '13px', fontWeight: 700, marginBottom: '24px' }}>

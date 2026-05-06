@@ -32,6 +32,16 @@ const AdminDashboard = () => {
     const [statusFilter, setStatusFilter] = useState('pending');
     const [isMoreOpen, setIsMoreOpen] = useState(false);
     
+    // Edit Organization State
+    const [editingOrg, setEditingOrg] = useState(null);
+    const [editFormData, setEditFormData] = useState({
+        name: '',
+        organizationName: '',
+        email: '',
+        sector: '',
+        expiryDate: ''
+    });
+    
     useEffect(() => { fetchAll(); }, []);
 
     const fetchAll = async () => {
@@ -59,6 +69,54 @@ const AdminDashboard = () => {
             fetchAll();
         } catch (err) {
             alert('Failed to add role');
+        }
+    };
+
+    const handleToggleStatus = async (userId) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`${API_BASE_URL}/users/${userId}/block`, {}, { headers: { 'x-auth-token': token } });
+            fetchAll();
+        } catch (err) {
+            console.error(err);
+            alert('Failed to toggle status');
+        }
+    };
+
+    const handleEditClick = (org) => {
+        setEditingOrg(org);
+        setEditFormData({
+            name: org.name || '',
+            organizationName: org.organizationName || '',
+            email: org.email || '',
+            sector: org.sector || '',
+            expiryDate: org.plan?.expiryDate ? new Date(org.plan.expiryDate).toISOString().split('T')[0] : ''
+        });
+    };
+
+    const handleUpdateOrg = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`${API_BASE_URL}/users/${editingOrg._id}`, {
+                name: editFormData.name,
+                organizationName: editFormData.organizationName,
+                email: editFormData.email,
+                sector: editFormData.sector
+            }, { headers: { 'x-auth-token': token } });
+
+            if (editFormData.expiryDate) {
+                await axios.patch(`${API_BASE_URL}/users/${editingOrg._id}/plan`, {
+                    plan: { expiryDate: editFormData.expiryDate }
+                }, { headers: { 'x-auth-token': token } });
+            }
+
+            setEditingOrg(null);
+            fetchAll();
+            alert('Organization updated successfully');
+        } catch (err) {
+            console.error(err);
+            alert('Update failed');
         }
     };
 
@@ -502,77 +560,90 @@ const AdminDashboard = () => {
                                         <Plus size={18} /> New Sector
                                     </button>
                                 </div>
-                                <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                                    {sectors.map((s, i) => (
-                                        <motion.div 
-                                            key={s._id} 
-                                            initial={{ opacity: 0, scale: 0.9 }} 
-                                            animate={{ opacity: 1, scale: 1 }} 
-                                            transition={{ delay: i * 0.05 }}
-                                            className="data-table-container shadow-hover"
-                                            style={{ padding: '25px', display: 'flex', alignItems: 'center', gap: '20px' }}
-                                        >
-                                            {(() => {
-                                                const getIconColor = (name) => {
-                                                    switch(name) {
-                                                        case 'Hospital': return '#EF4444';
-                                                        case 'Heart': return '#F43F5E';
-                                                        case 'Scissors': return '#EC4899';
-                                                        case 'Home': return '#F59E0B';
-                                                        case 'Car': return '#3B82F6';
-                                                        case 'Dumbbell': return '#10B981';
-                                                        case 'GraduationCap': return '#8B5CF6';
-                                                        case 'Laptop': return '#6366F1';
-                                                        case 'Cpu': return '#06B6D4';
-                                                        case 'Wrench': return '#64748B';
-                                                        case 'Scale': return '#1E293B';
-                                                        case 'Camera': return '#F43F5E';
-                                                        case 'Calendar': return '#4F46E5';
-                                                        case 'Gavel': return '#78350F';
-                                                        case 'Music': return '#D946EF';
-                                                        case 'Sparkles': return '#F59E0B';
-                                                        default: return '#6366F1';
-                                                    }
-                                                };
-                                                const iconColor = getIconColor(s.icon);
-                                                return (
-                                                    <div style={{ background: iconColor + '15', color: iconColor, padding: '15px', borderRadius: '16px' }}>
-                                                        {s.icon === 'Hospital' && <Hospital size={24}/>}
-                                                        {s.icon === 'Heart' && <Heart size={24}/>}
-                                                        {s.icon === 'Scissors' && <Scissors size={24}/>}
-                                                        {s.icon === 'Home' && <Home size={24}/>}
-                                                        {s.icon === 'Car' && <Car size={24}/>}
-                                                        {s.icon === 'Dumbbell' && <Dumbbell size={24}/>}
-                                                        {s.icon === 'GraduationCap' && <GraduationCap size={24}/>}
-                                                        {s.icon === 'Laptop' && <Laptop size={24}/>}
-                                                        {s.icon === 'Cpu' && <Cpu size={24}/>}
-                                                        {s.icon === 'Wrench' && <Wrench size={24}/>}
-                                                        {s.icon === 'Scale' && <Scale size={24}/>}
-                                                        {s.icon === 'Camera' && <Camera size={24}/>}
-                                                        {s.icon === 'Calendar' && <Calendar size={24}/>}
-                                                        {s.icon === 'Gavel' && <Gavel size={24}/>}
-                                                        {s.icon === 'Music' && <Music size={24}/>}
-                                                        {s.icon === 'Sparkles' && <Sparkles size={24}/>}
-                                                        {!['Hospital', 'Heart', 'Scissors', 'Home', 'Car', 'Dumbbell', 'GraduationCap', 'Laptop', 'Cpu', 'Wrench', 'Scale', 'Camera', 'Calendar', 'Gavel', 'Music', 'Sparkles'].includes(s.icon) && <Briefcase size={24}/>}
+                                <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
+                                    {sectors.map((s, i) => {
+                                        const config = getSectorConfig(s.name);
+                                        const sectorImage = s.image || config.userSide?.image || 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80';
+                                        
+                                        return (
+                                            <motion.div 
+                                                key={s._id} 
+                                                initial={{ opacity: 0, scale: 0.9 }} 
+                                                animate={{ opacity: 1, scale: 1 }} 
+                                                transition={{ delay: i * 0.05 }}
+                                                className="data-table-container shadow-hover"
+                                                style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                                            >
+                                                <div style={{ height: '120px', position: 'relative' }}>
+                                                    <img src={sectorImage} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' }}></div>
+                                                    <div style={{ position: 'absolute', bottom: '15px', left: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                        {(() => {
+                                                            const getIconColor = (name) => {
+                                                                switch(name) {
+                                                                    case 'Hospital': return '#EF4444';
+                                                                    case 'Heart': return '#F43F5E';
+                                                                    case 'Scissors': return '#EC4899';
+                                                                    case 'Home': return '#F59E0B';
+                                                                    case 'Car': return '#3B82F6';
+                                                                    case 'Dumbbell': return '#10B981';
+                                                                    case 'GraduationCap': return '#8B5CF6';
+                                                                    case 'Laptop': return '#6366F1';
+                                                                    case 'Cpu': return '#06B6D4';
+                                                                    case 'Wrench': return '#64748B';
+                                                                    case 'Scale': return '#1E293B';
+                                                                    case 'Camera': return '#F43F5E';
+                                                                    case 'Calendar': return '#4F46E5';
+                                                                    case 'Gavel': return '#78350F';
+                                                                    case 'Music': return '#D946EF';
+                                                                    case 'Sparkles': return '#F59E0B';
+                                                                    default: return '#white';
+                                                                }
+                                                            };
+                                                            const iconColor = getIconColor(s.icon);
+                                                            return (
+                                                                <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', color: 'white', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.3)' }}>
+                                                                    {s.icon === 'Hospital' && <Hospital size={20}/>}
+                                                                    {s.icon === 'Heart' && <Heart size={20}/>}
+                                                                    {s.icon === 'Scissors' && <Scissors size={20}/>}
+                                                                    {s.icon === 'Home' && <Home size={20}/>}
+                                                                    {s.icon === 'Car' && <Car size={20}/>}
+                                                                    {s.icon === 'Dumbbell' && <Dumbbell size={20}/>}
+                                                                    {s.icon === 'GraduationCap' && <GraduationCap size={20}/>}
+                                                                    {s.icon === 'Laptop' && <Laptop size={20}/>}
+                                                                    {s.icon === 'Cpu' && <Cpu size={20}/>}
+                                                                    {s.icon === 'Wrench' && <Wrench size={20}/>}
+                                                                    {s.icon === 'Scale' && <Scale size={20}/>}
+                                                                    {s.icon === 'Camera' && <Camera size={20}/>}
+                                                                    {s.icon === 'Calendar' && <Calendar size={20}/>}
+                                                                    {s.icon === 'Gavel' && <Gavel size={20}/>}
+                                                                    {s.icon === 'Music' && <Music size={20}/>}
+                                                                    {s.icon === 'Sparkles' && <Sparkles size={20}/>}
+                                                                    {!['Hospital', 'Heart', 'Scissors', 'Home', 'Car', 'Dumbbell', 'GraduationCap', 'Laptop', 'Cpu', 'Wrench', 'Scale', 'Camera', 'Calendar', 'Gavel', 'Music', 'Sparkles'].includes(s.icon) && <Briefcase size={20}/>}
+                                                                </div>
+                                                            );
+                                                        })()}
+                                                        <div style={{ color: 'white' }}>
+                                                            <div style={{ fontSize: '18px', fontWeight: 900 }}>{s.name}</div>
+                                                            <div style={{ fontSize: '11px', opacity: 0.8, fontWeight: 700, textTransform: 'uppercase' }}>{s.category}</div>
+                                                        </div>
                                                     </div>
-                                                );
-                                            })()}
-                                            <div>
-                                                <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A' }}>{s.name}</div>
-                                                <div style={{ fontSize: '12px', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>{s.category}</div>
-                                                {s.subCategories && s.subCategories.length > 0 && (
-                                                    <div style={{ fontSize: '11px', color: '#6366F1', marginTop: '6px', fontWeight: 700, background: '#EEF2FF', padding: '4px 8px', borderRadius: '8px', display: 'inline-block' }}>
-                                                        Roles: {s.subCategories.join(', ')}
+                                                </div>
+                                                <div style={{ padding: '20px' }}>
+                                                    {s.subCategories && s.subCategories.length > 0 && (
+                                                        <div style={{ fontSize: '11px', color: '#6366F1', fontWeight: 700, background: '#EEF2FF', padding: '6px 12px', borderRadius: '8px', display: 'block', marginBottom: '15px' }}>
+                                                            Roles: {s.subCategories.join(', ')}
+                                                        </div>
+                                                    )}
+                                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                                        <button className="action-btn" style={{ flex: 1, justifyContent: 'center' }} title="Add Role" onClick={() => handleAddRole(s._id, s.subCategories || [])}><Plus size={16}/> Add Role</button>
+                                                        <button className="action-btn" title="Edit"><Edit2 size={16}/></button>
+                                                        <button className="action-btn" title="Delete" style={{ color: '#EF4444' }}><Trash2 size={16}/></button>
                                                     </div>
-                                                )}
-                                            </div>
-                                            <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
-                                                <button className="action-btn" title="Add Role" onClick={() => handleAddRole(s._id, s.subCategories || [])} style={{ color: '#10B981', background: '#ECFDF5' }}><Plus size={16}/></button>
-                                                <button className="action-btn" title="Edit"><Edit2 size={16}/></button>
-                                                <button className="action-btn" title="Delete" style={{ color: '#EF4444' }}><Trash2 size={16}/></button>
-                                            </div>
-                                        </motion.div>
-                                    ))}
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -605,8 +676,15 @@ const AdminDashboard = () => {
                                                 <td><span style={{ background: c.plan?.type === 'paid' ? '#EEF2FF' : '#F1F5F9', color: c.plan?.type === 'paid' ? '#6366F1' : '#64748B', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800 }}>{c.plan?.type?.toUpperCase() || 'FREE'}</span></td>
                                                 <td>
                                                     <div style={{ display: 'flex', gap: '10px' }}>
-                                                        <button className="action-btn" title="Edit"><Edit2 size={16}/></button>
-                                                        <button className="action-btn" title="Send Reminder" style={{ color: '#6366F1' }}><Bell size={16}/></button>
+                                                        <button className="action-btn" title="Edit" onClick={() => handleEditClick(c)} style={{ color: '#6366F1' }}><Edit2 size={16}/></button>
+                                                        <button 
+                                                           className="action-btn" 
+                                                           title={c.isBlocked ? "Activate" : "Deactivate"} 
+                                                           onClick={() => handleToggleStatus(c._id)}
+                                                           style={{ color: c.isBlocked ? '#10B981' : '#EF4444' }}
+                                                        >
+                                                            {c.isBlocked ? <CheckCircle size={16}/> : <XCircle size={16}/>}
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </motion.tr>
@@ -769,6 +847,80 @@ const AdminDashboard = () => {
                             </div>
                         )}
                     </motion.div>
+                </AnimatePresence>
+
+                {/* Edit Organization Modal */}
+                <AnimatePresence>
+                    {editingOrg && (
+                        <div className="modal-overlay" onClick={() => setEditingOrg(null)}>
+                            <motion.div 
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                className="modal-content" 
+                                style={{ maxWidth: '500px', width: '90%' }}
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                                    <h2 style={{ fontSize: '20px', fontWeight: 900 }}>Edit Organization</h2>
+                                    <button onClick={() => setEditingOrg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}><X size={24}/></button>
+                                </div>
+                                <form onSubmit={handleUpdateOrg}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Organization Name</label>
+                                            <input 
+                                                className="form-input" 
+                                                value={editFormData.organizationName} 
+                                                onChange={e => setEditFormData({...editFormData, organizationName: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Admin Name</label>
+                                            <input 
+                                                className="form-input" 
+                                                value={editFormData.name} 
+                                                onChange={e => setEditFormData({...editFormData, name: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Email Address</label>
+                                            <input 
+                                                className="form-input" 
+                                                value={editFormData.email} 
+                                                onChange={e => setEditFormData({...editFormData, email: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Sector</label>
+                                            <select 
+                                                className="form-input" 
+                                                value={editFormData.sector} 
+                                                onChange={e => setEditFormData({...editFormData, sector: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                            >
+                                                {sectors.map(s => <option key={s._id} value={s.name.toLowerCase()}>{s.name}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Plan Expiry Date</label>
+                                            <input 
+                                                type="date"
+                                                className="form-input" 
+                                                value={editFormData.expiryDate} 
+                                                onChange={e => setEditFormData({...editFormData, expiryDate: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                            />
+                                        </div>
+                                        <button type="submit" className="action-btn" style={{ background: '#6366F1', color: 'white', padding: '12px', borderRadius: '12px', fontWeight: 900, marginTop: '10px' }}>Save Changes</button>
+                                    </div>
+                                </form>
+                            </motion.div>
+                        </div>
+                    )}
                 </AnimatePresence>
             </main>
         </div>

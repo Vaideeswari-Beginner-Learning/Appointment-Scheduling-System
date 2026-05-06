@@ -317,10 +317,14 @@ const UserDashboard = () => {
             <main style={{ maxWidth: '1400px', margin: '0 auto' }}>
                 {activeTab === 'home' && (
                     <>
-                        <div className="hero-banner">
+                        <div className="hero-banner" style={{ 
+                            backgroundImage: `url(${config.userSide?.image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80'})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}>
                             <div className="hero-overlay">
-                                <h1 style={{ fontSize: '40px', fontWeight: 900 }}>Welcome, {user.name}</h1>
-                                <p style={{ fontSize: '18px', opacity: 0.8 }}>Manage your {config.label} appointments easily.</p>
+                                <h1 style={{ fontSize: '42px', fontWeight: 950 }}>Welcome back, {user.name}</h1>
+                                <p style={{ fontSize: '20px', opacity: 0.9, fontWeight: 700 }}>Manage your {config.label} appointments effortlessly.</p>
                             </div>
                         </div>
                         <div className="quick-actions-grid">
@@ -329,6 +333,38 @@ const UserDashboard = () => {
                             <QuickAction icon={Building2} label="Directory" color="#10B981" onClick={() => setActiveTab('explore')} />
                             <QuickAction icon={PhoneCall} label="Support" color="#F59E0B" onClick={() => alert('Contacting support...')} />
                         </div>
+
+                        {/* 🔖 BOOKMARKED ORGANIZATIONS */}
+                        {JSON.parse(localStorage.getItem('bookmarks') || '[]').length > 0 && (
+                            <div style={{ padding: '0 40px', marginBottom: '40px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                                    <h2 style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <Bookmark size={24} fill="#4F46E5" color="#4F46E5" /> Your Bookmarks
+                                    </h2>
+                                    <button onClick={() => setActiveTab('explore')} style={{ background: 'transparent', border: 'none', color: '#4F46E5', fontWeight: 800, cursor: 'pointer' }}>View All</button>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                                    {directoryData.filter(org => JSON.parse(localStorage.getItem('bookmarks') || '[]').includes(org._id)).map(org => (
+                                        <motion.div 
+                                            key={org._id} 
+                                            whileHover={{ y: -5 }}
+                                            style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                        >
+                                            <div>
+                                                <div style={{ fontWeight: 900, color: '#0F172A' }}>{org.organizationName || org.name}</div>
+                                                <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>{org.sector}</div>
+                                            </div>
+                                            <button 
+                                                onClick={() => navigate(`/org/${org._id}`)}
+                                                style={{ background: '#F1F5F9', border: 'none', padding: '10px 16px', borderRadius: '12px', color: '#4F46E5', fontWeight: 800, cursor: 'pointer' }}
+                                            >
+                                                Visit
+                                            </button>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </>
                 )}
 

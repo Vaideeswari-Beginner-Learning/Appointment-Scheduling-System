@@ -10,6 +10,11 @@ export const sectorConfig = {
             slotLabel: 'Availability Slots',
             bookingLabel: 'Appointments'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1594824432258-2eb7163c46b5?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Book Appointment',
             fields: [
@@ -17,9 +22,9 @@ export const sectorConfig = {
                 { label: 'Age', fieldKey: 'age', type: 'number', placeholder: 'Patient age', required: true },
                 { label: 'Symptoms', fieldKey: 'symptoms', type: 'textarea', placeholder: 'Describe symptoms...', required: true }
             ],
-            image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            image: '/healthcare.png',
             secondaryImage: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-            logo: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
+            logo: '/logo.png'
         },
         websiteContent: {
             heroTitle: 'World-Class Healthcare & Patient Care',
@@ -42,6 +47,11 @@ export const sectorConfig = {
             slotLabel: 'Timetables',
             bookingLabel: 'Admissions'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1544717302-de2939b7ef71?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Apply Now',
             fields: [
@@ -74,6 +84,11 @@ export const sectorConfig = {
             slotLabel: 'Availability Slots',
             bookingLabel: 'Bookings'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1521590832167-7bfc17484d20?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Book Service',
             fields: [
@@ -104,6 +119,11 @@ export const sectorConfig = {
             slotLabel: 'Availability',
             bookingLabel: 'Reservations'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1566552881560-0be862a7c445?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1542385012-68c4ee29d4d5?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1580392359526-724bc44951ce?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Reserve Room',
             fields: [
@@ -134,13 +154,18 @@ export const sectorConfig = {
             slotLabel: 'Interview Slots',
             bookingLabel: 'Interviews'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Apply / Schedule Interview',
             fields: [
                 { label: 'Candidate Name', fieldKey: 'name', type: 'text', placeholder: 'Full Name', required: true },
                 { label: 'Role Applied', fieldKey: 'role', type: 'text', placeholder: 'e.g. Developer', required: true }
             ],
-            image: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            image: '/corporate.png',
             secondaryImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -163,6 +188,11 @@ export const sectorConfig = {
             slotLabel: 'Garage Slots',
             bookingLabel: 'Bookings'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1504222490345-c075b6008014?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1620864387802-959c8fa7270e?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Book Service',
             fields: [
@@ -193,6 +223,11 @@ export const sectorConfig = {
             slotLabel: 'Timings',
             bookingLabel: 'Memberships'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1594381898411-846e7d193883?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Join Now',
             fields: [
@@ -223,6 +258,11 @@ export const sectorConfig = {
             slotLabel: 'Availability',
             bookingLabel: 'Appointments'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Book Consultation',
             fields: [
@@ -252,6 +292,11 @@ export const sectorConfig = {
             slotLabel: 'Visit Slots',
             bookingLabel: 'Visits'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Book Visit',
             fields: [
@@ -281,6 +326,11 @@ export const sectorConfig = {
             slotLabel: 'Availability',
             bookingLabel: 'Requests'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1590483736622-39854bcbc8c3?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Request Service',
             fields: [
@@ -312,13 +362,18 @@ export const sectorConfig = {
             slotLabel: 'Dates',
             bookingLabel: 'Bookings'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Book Event',
             fields: [
                 { label: 'Attendee Name', fieldKey: 'name', type: 'text', placeholder: 'Your Name', required: true },
                 { label: 'Event Type', fieldKey: 'event_type', type: 'text', placeholder: 'Wedding, Seminar...', required: true }
             ],
-            image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            image: '/sector_venues_real.png',
             secondaryImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -342,6 +397,11 @@ export const sectorConfig = {
             slotLabel: 'Pickup Slots',
             bookingLabel: 'Orders'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Order / Pickup',
             fields: [
@@ -372,13 +432,18 @@ export const sectorConfig = {
             slotLabel: 'Availability',
             bookingLabel: 'Sessions'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Book Session',
             fields: [
                 { label: 'Client Name', fieldKey: 'name', type: 'text', placeholder: 'Your Name', required: true },
                 { label: 'Topic', fieldKey: 'topic', type: 'text', placeholder: 'Consultancy topic', required: true }
             ],
-            image: 'https://images.unsplash.com/photo-1552581234-26160f608093?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            image: '/sector_freelancer_real.png',
             secondaryImage: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -401,6 +466,11 @@ export const sectorConfig = {
             slotLabel: 'Availability Slots',
             bookingLabel: 'Bookings'
         },
+        dummyStaff: [
+            'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
+            'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80'
+        ],
         userSide: {
             button: 'Book Service',
             fields: [

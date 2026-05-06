@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { X, CreditCard, Smartphone, CheckCircle2, Building, Banknote, Landmark } from 'lucide-react';
-import { API_BASE_URL } from '../config/api';
+import { X, CreditCard, Smartphone, CheckCircle2, Building, Banknote, Landmark, QrCode } from 'lucide-react';
+import { API_BASE_URL, UPI_ID, UPI_NAME } from '../config/api';
 
 const PaymentModal = ({ appointment, onClose, onSuccess }) => {
     const [step, setStep] = useState(1); // 1=choose method, 2=processing, 3=success
@@ -87,11 +87,46 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
                             </div>
 
                             {method === 'upi' && (
-                                <input
-                                    value={upiId} onChange={e => setUpiId(e.target.value)}
-                                    placeholder="Enter UPI ID (e.g. name@upi)"
-                                    style={{ width: '100%', padding: '12px 16px', border: '1px solid #E2E8F0', borderRadius: '12px', fontSize: '14px', outline: 'none', boxSizing: 'border-box', marginBottom: '16px', fontFamily: 'inherit' }}
-                                />
+                                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                    <div style={{ background: '#FFFFFF', padding: '32px 24px', borderRadius: '32px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: 'white', padding: '10px 24px', borderRadius: '100px', width: '100%', justifyContent: 'center', fontWeight: 900, fontSize: '14px', marginBottom: '28px', boxShadow: '0 4px 12px rgba(94, 35, 157, 0.2)' }}>
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" alt="PhonePe" style={{ height: '20px', filter: 'brightness(0) invert(1)' }} />
+                                            <span>Secure PhonePe Checkout</span>
+                                        </div>
+                                        
+                                        <div style={{ background: 'white', padding: '15px', borderRadius: '24px', display: 'inline-block', border: '1px solid #F1F5F9', position: 'relative', marginBottom: '20px' }}>
+                                            <img 
+                                                src="/qr-payment-new.png" 
+                                                alt="PhonePe QR Code" 
+                                                style={{ width: '200px', height: '200px', borderRadius: '8px', display: 'block', objectFit: 'contain' }} 
+                                                onError={(e) => {
+                                                    if (e.target.src.includes('qr-payment-new.png')) {
+                                                        e.target.src = '/qr-payment.jpg';
+                                                    } else if (e.target.src.includes('qr-payment.jpg')) {
+                                                        e.target.src = '/images/phonepe_qr.png';
+                                                    } else {
+                                                        e.target.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 800, marginBottom: '4px', letterSpacing: '0.5px' }}>SCAN WITH ANY UPI APP</div>
+                                            <div style={{ fontSize: '18px', fontWeight: 950, color: '#0F172A' }}>{UPI_ID}</div>
+                                        </div>
+
+                                        <div style={{ background: '#F0FDF4', padding: '12px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#16A34A', fontWeight: 800, marginTop: '20px', border: '1px solid #DCFCE7' }}>
+                                            <div style={{ width: '8px', height: '8px', background: '#16A34A', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                                            Awaiting Payment Confirmation
+                                        </div>
+                                    </div>
+                                    <input
+                                        value={upiId} onChange={e => setUpiId(e.target.value)}
+                                        placeholder="Or enter UPI ID (e.g. name@upi)"
+                                        style={{ width: '100%', padding: '12px 16px', border: '1px solid #E2E8F0', borderRadius: '12px', fontSize: '14px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                                    />
+                                </div>
                             )}
 
                             {error && <div style={{ background: '#FEF2F2', color: '#DC2626', padding: '10px 14px', borderRadius: '8px', fontSize: '13px', marginBottom: '16px' }}>{error}</div>}
