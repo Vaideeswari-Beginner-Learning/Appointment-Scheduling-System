@@ -61,8 +61,10 @@ app.use(cors(corsOptions));
 // Diagnostic Routes
 app.get('/', (req, res) => res.send('✅ Appointment System API - Online'));
 app.get('/api/health', (req, res) => {
+    const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
     res.json({ 
         status: 'OK', 
+        database: dbStatus,
         origin: req.headers.origin,
         timestamp: new Date().toISOString() 
     });
