@@ -18,10 +18,11 @@ const app = express();
 app.set('trust proxy', 1);
 
 // 1. PERMISSIVE CORS (For Debugging)
-app.use(cors({
+const corsOptions = {
     origin: true,
     credentials: true
-}));
+};
+app.use(cors(corsOptions));
 
 // Diagnostic Routes
 app.get('/', (req, res) => res.send('✅ Appointment System API - Online'));
