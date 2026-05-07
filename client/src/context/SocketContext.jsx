@@ -12,6 +12,7 @@ export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
+        const socketUrl = 'https://appointmentscheduling-system.onrender.com';
         const newSocket = io(socketUrl, { withCredentials: true });
         setSocket(newSocket);
 
