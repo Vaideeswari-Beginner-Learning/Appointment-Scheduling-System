@@ -5,7 +5,6 @@ const dotenv = require('dotenv');
 const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
-const morgan = require('morgan');
 const connectDB = require('./config/db');
 const { initCron } = require('./services/cronService');
 
@@ -42,7 +41,6 @@ app.use((req, res, next) => {
 
 // Middleware
 app.use(express.json());
-app.use(morgan('dev'));
 
 const server = http.createServer(app);
 
