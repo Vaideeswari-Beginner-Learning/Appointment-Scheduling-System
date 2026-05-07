@@ -6,7 +6,7 @@ import {
     Video, ExternalLink, X, Bell, Activity, LogOut,
     CheckCircle2, Clock, ShieldCheck, HeartPulse, Sparkles, PhoneCall,
     Bookmark, ChevronRight, ChevronDown, Edit3, Camera, Building2,
-    GraduationCap, Hospital, Briefcase, Car, Dumbbell, Scale, ArrowLeft,
+    GraduationCap, Briefcase, Car, Dumbbell, Scale, ArrowLeft,
     AlertCircle, Phone, HelpCircle, MapPin, MessageSquare, Star, CreditCard,
     Scissors, Home, Wrench, Laptop, Cpu, Music
 } from 'lucide-react';
@@ -237,7 +237,7 @@ const UserDashboard = () => {
                                     else if (iconName === 'Calendar') iconComponent = <Calendar size={32} color={iconColor} />;
                                     else if (iconName === 'Briefcase') iconComponent = <Briefcase size={32} color={iconColor} />;
                                     else if (iconName === 'Music') iconComponent = <Music size={32} color={iconColor} />;
-                                    else if (iconName === 'Hospital') iconComponent = <Hospital size={32} color={iconColor} />;
+                                    else if (iconName === 'Hospital') iconComponent = <Building2 size={32} color={iconColor} />;
                                     else if (iconName === 'Scissors') iconComponent = <Scissors size={32} color={iconColor} />;
 
                                     return (

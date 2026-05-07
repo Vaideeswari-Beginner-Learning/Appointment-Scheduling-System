@@ -4,12 +4,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
     Building2, CheckCircle2, Clock, Activity, User, 
-    X, MapPin, Phone, HelpCircle, ArrowLeft, Heart, Share2, Star,
+    X, MapPin, Phone, HelpCircle, ArrowLeft, Heart, Share2, Star, Bookmark,
     ShieldCheck, MessageSquare, ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config/api';
 import { getSectorConfig } from '../config/sectorConfig';
+import RegisterModal from '../components/RegisterModal';
 
 const MiniWebsite = () => {
     const { id } = useParams();
@@ -22,6 +23,7 @@ const MiniWebsite = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeSection, setActiveSection] = useState('home');
+    const [showRegisterModal, setShowRegisterModal] = useState(false);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -69,7 +71,16 @@ const MiniWebsite = () => {
                     </div>
                     <h2 style={{ fontSize: '28px', fontWeight: 900, marginBottom: '12px' }}>Profile Unavailable</h2>
                     <p style={{ color: '#64748B', lineHeight: 1.6, marginBottom: '32px' }}>{error || 'This organization does not have a public profile yet.'}</p>
-                    <button onClick={() => window.location.href = '/dashboard'} className="btn btn-primary" style={{ width: '100%', height: '56px', borderRadius: '16px' }}>Go to Dashboard</button>
+                    <button 
+                        onClick={() => {
+                            if (user) navigate('/dashboard');
+                            else setShowRegisterModal(true);
+                        }} 
+                        className="btn btn-primary" 
+                        style={{ width: '100%', height: '56px', borderRadius: '16px', background: '#4F46E5', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}
+                    >
+                        {user ? 'Go to Dashboard' : 'Sign Up to Explore'}
+                    </button>
                 </div>
             </div>
         );
@@ -99,7 +110,13 @@ const MiniWebsite = () => {
             <nav style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #E2E8F0', padding: '12px 40px' }}>
                 <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <button onClick={() => window.location.href = '/dashboard'} style={{ background: '#F1F5F9', border: 'none', padding: '10px', borderRadius: '14px', cursor: 'pointer', color: '#475569', transition: '0.3s' }}>
+                        <button 
+                            onClick={() => {
+                                if (user) navigate('/dashboard');
+                                else setShowRegisterModal(true);
+                            }} 
+                            style={{ background: '#F1F5F9', border: 'none', padding: '10px', borderRadius: '14px', cursor: 'pointer', color: '#475569', transition: '0.3s' }}
+                        >
                             <ArrowLeft size={20} />
                         </button>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -480,7 +497,8 @@ const MiniWebsite = () => {
                     </div>
                 </div>
             </footer>
-
+            
+            <RegisterModal isOpen={showRegisterModal} onClose={() => setShowRegisterModal(false)} />
             <FloatingSupport color={primaryColor} />
             <style>{`
                 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

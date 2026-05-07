@@ -2,7 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
+import { ToastProvider } from './context/ToastContext';
 import LandingPage from './pages/LandingPage';
+import LandingPageV2 from './pages/LandingPageV2';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ClientRegister from './pages/ClientRegister';
@@ -107,29 +110,34 @@ const DashboardRedirect = () => {
 function App() {
     return (
         <AuthProvider>
-            <Router>
-                <div style={{ minHeight: '100vh', background: '#F8FAFC', fontFamily: "'Inter', sans-serif" }}>
-                    <Routes>
-                        <Route path="/" element={<LandingPage />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/client-register" element={<ClientRegister />} />
-                        <Route path="/dashboard" element={<DashboardRedirect />} />
-                        <Route path="/book" element={<Booking />} />
-                        <Route path="/select-organization" element={<ProtectedRoute><ClientPicker /></ProtectedRoute>} />
-                        <Route path="/staff/:id" element={<StaffProfile />} />
-                        <Route path="/admin" element={<ProtectedRoute roles={['super-admin']}><AdminDashboard /></ProtectedRoute>} />
-                        <Route path="/onboarding" element={<ProtectedRoute roles={['client']}><OnboardingWizard /></ProtectedRoute>} />
-                        <Route path="/track" element={<UserDashboard />} />
-                        <Route path="/my-appointments" element={<MyAppointments />} />
-                        <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
-                        <Route path="/professional-dashboard" element={<ProtectedRoute roles={['doctor', 'interviewer', 'service', 'admin']}><ProfessionalDashboard /></ProtectedRoute>} />
-                        <Route path="/org/:id" element={<MiniWebsite />} />
-                        <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                    </Routes>
-                </div>
-            </Router>
+            <ToastProvider>
+                <SocketProvider>
+                    <Router>
+                        <div style={{ minHeight: '100vh', background: '#F8FAFC', fontFamily: "'Inter', sans-serif" }}>
+                            <Routes>
+                                <Route path="/" element={<LandingPageV2 />} />
+                                <Route path="/old-home" element={<LandingPage />} />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
+                                <Route path="/client-register" element={<ClientRegister />} />
+                                <Route path="/dashboard" element={<DashboardRedirect />} />
+                                <Route path="/book" element={<Booking />} />
+                                <Route path="/select-organization" element={<ProtectedRoute><ClientPicker /></ProtectedRoute>} />
+                                <Route path="/staff/:id" element={<StaffProfile />} />
+                                <Route path="/admin" element={<ProtectedRoute roles={['super-admin']}><AdminDashboard /></ProtectedRoute>} />
+                                <Route path="/onboarding" element={<ProtectedRoute roles={['client']}><OnboardingWizard /></ProtectedRoute>} />
+                                <Route path="/track" element={<UserDashboard />} />
+                                <Route path="/my-appointments" element={<MyAppointments />} />
+                                <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+                                <Route path="/professional-dashboard" element={<ProtectedRoute roles={['doctor', 'interviewer', 'service', 'admin']}><ProfessionalDashboard /></ProtectedRoute>} />
+                                <Route path="/org/:id" element={<MiniWebsite />} />
+                                <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                            </Routes>
+                        </div>
+                    </Router>
+                </SocketProvider>
+            </ToastProvider>
         </AuthProvider>
     );
 }

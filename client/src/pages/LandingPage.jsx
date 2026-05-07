@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
     Calendar, Users, Shield, BarChart3, Clock, 
-    Bell, CreditCard, ArrowRight, Play, Hospital,
+    Bell, CreditCard, ArrowRight, Play, Activity,
     Building2, Briefcase, Scissors, ShoppingBag, Star, Settings,
     ChevronDown, CheckCircle, Zap, Globe, Sparkles, Rocket,
     Heart, GraduationCap, Hotel as HotelIcon, 

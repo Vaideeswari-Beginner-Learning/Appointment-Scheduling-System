@@ -3,10 +3,10 @@ import axios from 'axios';
 import { 
     Users, Plus, LayoutDashboard, Briefcase, Calendar, ClipboardList, ShieldAlert, 
     Settings, PieChart, Activity, Bell, User as UserIcon, Trash2, StopCircle, 
-    Video, CheckCircle, Clock, Building, Scissors, Hospital, GripVertical, ChevronDown, X, XCircle, 
+    Video, CheckCircle, Clock, Building, Scissors, GripVertical, ChevronDown, X, XCircle, 
     ArrowRight, CreditCard, QrCode, Sparkles, ShieldCheck, Building2, ExternalLink, Play, MapPin,
     Wrench, BookOpen, Zap, ShoppingBag, Car, GraduationCap, Music, Dumbbell, Gavel, Heart, Home,
-    Laptop, Cpu, Scale, Camera
+    Laptop, Cpu, Scale, Camera, Smartphone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -91,7 +91,12 @@ const ClientDashboard = () => {
     const [bookings, setBookings] = useState([]);
     const [customers, setCustomers] = useState([]);
     const [metrics, setMetrics] = useState({
-        totalBookings: 0, todayBookings: 0, availableSlots: 0, totalEmployees: 0
+        totalBookings: 0, 
+        todayBookings: 0, 
+        availableSlots: 0, 
+        totalEmployees: 0,
+        pendingRequests: 0,
+        employeeAvailability: 0
     });
     
     // UI States
@@ -144,7 +149,7 @@ const ClientDashboard = () => {
     const [selectedServiceId, setSelectedServiceId] = useState(null);
 
     const staticSectors = [
-        { id: 'healthcare', label: 'Healthcare', icon: <Hospital />, color: '#EF4444' },
+        { id: 'healthcare', label: 'Healthcare', icon: <Building2 />, color: '#EF4444' },
         { id: 'education', label: 'Education', icon: <Building2 />, color: '#3B82F6' },
         { id: 'salon', label: 'Salon & Beauty', icon: <Scissors />, color: '#EC4899' },
         { id: 'hospitality', label: 'Hospitality', icon: <Building2 />, color: '#F59E0B' },
@@ -255,7 +260,7 @@ const ClientDashboard = () => {
     // 🤖 AI INDUSTRY TEMPLATES — auto-suggest fields based on category
     const industryTemplates = {
         'Hospital': {
-            icon: <Hospital />,
+            icon: <Building2 />,
             suggestedFields: [
                 { label: 'Patient Name', fieldKey: 'patient_name', fieldType: 'text', required: true, options: [], placeholder: 'Full name of the patient' },
                 { label: 'Age', fieldKey: 'age', fieldType: 'number', required: true, options: [], placeholder: 'Patient age' },
@@ -381,7 +386,7 @@ const ClientDashboard = () => {
 
     // 🗺️ Map User Sector to allowed Industry Templates
     const sectorToTemplateMap = {
-        'healthcare': [{ id: 'healthcare', label: 'Healthcare', icon: <Hospital />, color: '#EF4444' },],
+        'healthcare': [{ id: 'healthcare', label: 'Healthcare', icon: <Building2 />, color: '#EF4444' },],
         'education': [{ id: 'education', label: 'Education', icon: <Building2 />, color: '#3B82F6' },],
         'salon': [{ id: 'salon', label: 'Salon & Beauty', icon: <Scissors />, color: '#EC4899' },],
         'hospitality': [{ id: 'hospitality', label: 'Hospitality', icon: <Building2 />, color: '#F59E0B' },],
@@ -500,9 +505,13 @@ const ClientDashboard = () => {
             const today = new Date().toISOString().split('T')[0];
             setMetrics({
                 totalBookings: bookRes.data.length,
-                todayBookings: bookRes.data.filter(b => b.date === today).length,
+                todayBookings: bookRes.data.filter(b => b.date === today || b.manualDate === today).length,
                 availableSlots: slotRes.data.filter(s => !s.isBooked).length,
-                totalEmployees: staffData.length
+                totalEmployees: staffData.length,
+                pendingRequests: bookRes.data.filter(b => b.status === 'pending').length,
+                employeeAvailability: staffData.length > 0 
+                    ? Math.round(((staffData.length - new Set(bookRes.data.filter(b => (b.date === today || b.manualDate === today)).map(b => b.hrId?._id || b.hrId)).size) / staffData.length) * 100) 
+                    : 0
             });
 
             setOrganizationForm({
@@ -1016,6 +1025,16 @@ const ClientDashboard = () => {
                                 <Users size={24} color="#DC2626" style={{ marginBottom: '12px' }} />
                                 <h3 style={{ fontSize: '13px', color: '#7F1D1D', margin: '0 0 4px', fontWeight: 800 }}>TOTAL {config.dashboard.employeeRole.toUpperCase()}S</h3>
                                 <div style={{ fontSize: '32px', fontWeight: 900, color: '#7F1D1D' }}>{metrics.totalEmployees}</div>
+                            </div>
+                            <div className="stat-card" style={{ background: '#FEF3C7', border: '1px solid #FDE68A', padding: '24px', borderRadius: '16px' }}>
+                                <Bell size={24} color="#D97706" style={{ marginBottom: '12px' }} />
+                                <h3 style={{ fontSize: '13px', color: '#92400E', margin: '0 0 4px', fontWeight: 800 }}>PENDING REQUESTS</h3>
+                                <div style={{ fontSize: '32px', fontWeight: 900, color: '#92400E' }}>{metrics.pendingRequests}</div>
+                            </div>
+                            <div className="stat-card" style={{ background: '#F0FDFA', border: '1px solid #CCFBF1', padding: '24px', borderRadius: '16px' }}>
+                                <Sparkles size={24} color="#0D9488" style={{ marginBottom: '12px' }} />
+                                <h3 style={{ fontSize: '13px', color: '#115E59', margin: '0 0 4px', fontWeight: 800 }}>STAFF AVAILABILITY</h3>
+                                <div style={{ fontSize: '32px', fontWeight: 900, color: '#115E59' }}>{metrics.employeeAvailability}%</div>
                             </div>
                         </div>
 
@@ -2118,7 +2137,7 @@ const ClientDashboard = () => {
                                     else if (iconName === 'Calendar') iconComponent = <Calendar size={32} color={iconColor} />;
                                     else if (iconName === 'Gavel') iconComponent = <Gavel size={32} color={iconColor} />;
                                     else if (iconName === 'Music') iconComponent = <Music size={32} color={iconColor} />;
-                                    else if (iconName === 'Hospital') iconComponent = <Hospital size={32} color={iconColor} />;
+                                    else if (iconName === 'Hospital') iconComponent = <Building2 size={32} color={iconColor} />;
                                     else if (iconName === 'Scissors') iconComponent = <Scissors size={32} color={iconColor} />;
                                     
                                     return (
@@ -2324,17 +2343,53 @@ const ClientDashboard = () => {
                                 </div>
 
                                 {selectedPlan ? (
-                                    <div style={{ padding: '24px', background: '#F8FAFC', borderRadius: '20px', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
-                                        <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 900, color: '#0F172A' }}>Confirm Selected Plan</h4>
-                                        <div style={{ padding: '12px', background: 'white', borderRadius: '12px', marginBottom: '16px', border: '1px solid #F1F5F9' }}>
-                                            <div style={{ fontSize: '12px', color: '#64748B' }}>Total Amount:</div>
-                                            <div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--primary)' }}>{selectedPlan.price}</div>
+                                    <div style={{ padding: '24px', background: '#F8FAFC', borderRadius: '24px', marginBottom: '24px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
+                                        <h4 style={{ margin: '0 0 16px', fontSize: '15px', fontWeight: 900, color: '#0F172A', textAlign: 'left' }}>Confirm & Pay for {selectedPlan.name}</h4>
+                                        
+                                        <div style={{ padding: '16px', background: 'white', borderRadius: '16px', marginBottom: '24px', border: '1px solid #F1F5F9', textAlign: 'left' }}>
+                                            <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Amount:</div>
+                                            <div style={{ fontSize: '24px', fontWeight: 950, color: '#4F46E5' }}>{selectedPlan.price}</div>
                                         </div>
-                                        <button className="btn btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '14px', fontSize: '14px', fontWeight: 900 }} onClick={() => {
+
+                                        {/* ═══ DIRECT UPI PAYMENT OPTION ═══ */}
+                                        <div style={{ background: '#1A1A2E', borderRadius: '24px', padding: '24px', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 30px rgba(0,0,0,0.15)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#5E239D', color: 'white', padding: '6px 14px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 16px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                <Zap size={12} fill="currentColor" /> Direct Upgrade Payment
+                                            </div>
+
+                                            <div style={{ marginBottom: '20px' }}>
+                                                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '2px' }}>Amount to Pay</div>
+                                                <div style={{ fontSize: '28px', fontWeight: 950, color: '#10B981' }}>{selectedPlan.price}</div>
+                                            </div>
+                                            
+                                            <div style={{ position: 'relative', display: 'inline-block', padding: '12px', background: '#FFFFFF', borderRadius: '16px', marginBottom: '16px' }}>
+                                                <img 
+                                                    src="/phonepe-qr.jpeg" 
+                                                    alt="UPI QR Code" 
+                                                    style={{ width: '150px', height: '150px', display: 'block', objectFit: 'contain' }}
+                                                    onError={(e) => {
+                                                        const cleanAmount = selectedPlan.price.replace(/[^0-9]/g, '');
+                                                        e.target.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${cleanAmount}&cu=INR`;
+                                                    }}
+                                                />
+                                                <div style={{ position: 'absolute', top: '6px', left: '6px', width: '12px', height: '12px', borderTop: '2px solid rgba(0,0,0,0.1)', borderLeft: '2px solid rgba(0,0,0,0.1)', borderRadius: '4px 0 0 0' }}></div>
+                                                <div style={{ position: 'absolute', bottom: '6px', right: '6px', width: '12px', height: '12px', borderBottom: '2px solid rgba(0,0,0,0.1)', borderRight: '2px solid rgba(0,0,0,0.1)', borderRadius: '0 0 4px 0' }}></div>
+                                            </div>
+                                            
+                                            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>Scan with any UPI App</div>
+                                            <div style={{ color: 'white', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
+
+                                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                                                <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                                                Secure System Verification Active
+                                            </div>
+                                        </div>
+
+                                        <button className="btn btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '14px', fontSize: '14px', fontWeight: 900, background: '#4F46E5' }} onClick={() => {
                                             setPaymentData({ amount: selectedPlan.price, title: selectedPlan.name });
                                             setShowPaymentModal(true);
                                         }}>
-                                            Pay Online Now
+                                            Continue to Portal Checkout
                                         </button>
                                     </div>
                                 ) : (
@@ -2382,33 +2437,45 @@ const ClientDashboard = () => {
                         </div>
 
                         <div style={{ padding: '32px' }}>
-                            {/* Hero Section with PhonePe QR Code */}
-                             <div style={{ background: '#FFFFFF', padding: '32px 24px', borderRadius: '32px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-                                 <div style={{ background: '#5E239D', color: 'white', padding: '10px 24px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '28px', fontSize: '13px', fontWeight: 900, boxShadow: '0 4px 12px rgba(94, 35, 157, 0.2)' }}>
-                                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" alt="PhonePe" style={{ height: '18px', filter: 'brightness(0) invert(1)' }} />
-                                     Scan to Pay with PhonePe
+                                      <div style={{ background: '#1A1A2E', padding: '32px 24px', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }}>
+                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: 'white', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 28px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                     <Smartphone size={16} /> Pay via PhonePe
                                  </div>
-                                 <div style={{ background: 'white', padding: '15px', borderRadius: '24px', display: 'inline-block', border: '1px solid #F1F5F9', position: 'relative', marginBottom: '20px' }}>
+
+                                 <div style={{ marginBottom: '24px' }}>
+                                     <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>Amount Due</div>
+                                     <div style={{ fontSize: '38px', fontWeight: 950, color: '#10B981' }}>{paymentData.amount}</div>
+                                 </div>
+
+                                 <div style={{ position: 'relative', display: 'inline-block', padding: '20px', background: '#FFFFFF', borderRadius: '24px', marginBottom: '20px' }}>
                                      <img 
-                                         src="/qr-payment-new.png" 
+                                         src="/phonepe-qr.jpeg" 
                                          alt="PhonePe QR Code" 
-                                         style={{ width: '220px', height: '220px', borderRadius: '8px', display: 'block', objectFit: 'contain' }} 
+                                         style={{ width: '220px', height: '220px', borderRadius: '12px', display: 'block', objectFit: 'contain' }} 
                                          onError={(e) => {
-                                             if (e.target.src.includes('qr-payment-new.png')) {
+                                             if (e.target.src.includes('phonepe-qr.jpeg')) {
+                                                 e.target.src = '/qr-payment-v2.png';
+                                             } else if (e.target.src.includes('qr-payment-v2.png')) {
+                                                 e.target.src = '/qr-payment-new.png';
+                                             } else if (e.target.src.includes('qr-payment-new.png')) {
                                                  e.target.src = '/qr-payment.jpg';
-                                             } else if (e.target.src.includes('qr-payment.jpg')) {
-                                                 e.target.src = '/images/phonepe_qr.png';
                                              } else {
                                                  e.target.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${paymentData.amount.replace(/[^0-9.]/g, '')}&cu=INR`;
                                              }
                                          }}
                                      />
+                                     {/* Decorative Corner Accents */}
+                                     <div style={{ position: 'absolute', top: '15px', left: '15px', width: '25px', height: '25px', borderTop: '2px solid rgba(255,255,255,0.2)', borderLeft: '2px solid rgba(255,255,255,0.2)', borderRadius: '6px 0 0 0' }}></div>
+                                     <div style={{ position: 'absolute', bottom: '15px', right: '15px', width: '25px', height: '25px', borderBottom: '2px solid rgba(255,255,255,0.2)', borderRight: '2px solid rgba(255,255,255,0.2)', borderRadius: '0 0 6px 0' }}></div>
                                  </div>
-                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px' }}>
-                                     <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981', animation: 'pulse 1.5s infinite' }}></div>
-                                     <div style={{ fontSize: '18px', fontWeight: 950, color: '#0F172A' }}>Amount: <span style={{ color: '#4F46E5' }}>{paymentData.amount}</span></div>
+
+                                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>Scan with any UPI App</div>
+                                 <div style={{ color: 'white', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
+
+                                 <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                                     <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                                     Automated Transaction Syncing...
                                  </div>
-                                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 800, letterSpacing: '0.5px' }}>UPI ID: <span style={{ color: '#0F172A' }}>{UPI_ID}</span></div>
                              </div>
 
                             <div style={{ fontSize: '12px', fontWeight: 900, color: '#64748B', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>Or Pay via Card</div>

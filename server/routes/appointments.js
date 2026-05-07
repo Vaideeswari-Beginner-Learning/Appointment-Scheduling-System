@@ -272,15 +272,31 @@ router.post('/book', upload.single('resume'), async (req, res) => {
         if (slot) {
             slot.isBooked = true;
             await slot.save();
+            
+            // Real-time: Notify all clients in this tenant about the booked slot
+            const io = req.app.get('io');
+            if (io && clientId) {
+                io.to(clientId.toString()).emit('slot_booked', { slotId: slot._id });
+            }
         }
 
         // Notify HR
         if (assignedHR) {
-            const newNotification = new Notification({
+            await Notification.create({
                 userId: assignedHR,
                 message: `New booking from ${patientName || 'Guest'} received for ${manualDate || 'TBD'} at ${manualTime || 'TBD'}.`
             });
-            await newNotification.save();
+        }
+
+        // Also Notify Organization Owner (Client)
+        if (clientId) {
+            const owner = await User.findOne({ clientId, role: 'client' });
+            if (owner && owner._id.toString() !== assignedHR?.toString()) {
+                await Notification.create({
+                    userId: owner._id,
+                    message: `New platform booking: ${patientName || 'Guest'} scheduled for ${manualDate || 'TBD'}. Service: ${appointment.purposeType}`
+                });
+            }
         }
 
         res.status(201).json(appointment);

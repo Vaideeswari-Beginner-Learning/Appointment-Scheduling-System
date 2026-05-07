@@ -5,7 +5,7 @@ import {
     Plus, X, TrendingUp, Activity, Building, ShieldAlert, Crown, Clock,
     CheckCircle, XCircle, Edit2, ChevronDown, Search, Megaphone, ArrowRight, Briefcase, Trash2,
     PieChart, Filter, Save, Globe, Mail, Zap, ShoppingBag, Heart, Scissors, Home, Wrench, GraduationCap, Gavel, Camera, MapPin, UserCheck, Shield, Key, Database, RefreshCw, Smartphone, Eye, MoreHorizontal, ChevronRight,
-    Car, Sparkles, Dumbbell, Music, Hospital, Laptop, Cpu, Scale, Calendar
+    Car, Sparkles, Dumbbell, Music, Building2, Laptop, Cpu, Scale, Calendar
 } from 'lucide-react';
 import {
     Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api';
+import { getSectorConfig } from '../config/sectorConfig';
 import './AdminDashboard.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
@@ -603,7 +604,7 @@ const AdminDashboard = () => {
                                                             const iconColor = getIconColor(s.icon);
                                                             return (
                                                                 <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', color: 'white', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.3)' }}>
-                                                                    {s.icon === 'Hospital' && <Hospital size={20}/>}
+                                                                    {s.icon === 'Hospital' && <Building2 size={20}/>}
                                                                     {s.icon === 'Heart' && <Heart size={20}/>}
                                                                     {s.icon === 'Scissors' && <Scissors size={20}/>}
                                                                     {s.icon === 'Home' && <Home size={20}/>}

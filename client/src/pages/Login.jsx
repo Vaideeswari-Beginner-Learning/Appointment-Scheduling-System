@@ -1,29 +1,35 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { Mail, Lock, LogIn, Calendar } from 'lucide-react';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const { login, user } = useAuth();
+    const showToast = useToast();
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSubmit = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
         setError('');
         try {
-            const normalizedEmail = email.trim().toLowerCase();
-            await login(normalizedEmail, password);
+            await login(formData.email.trim().toLowerCase(), formData.password);
+            showToast('Welcome back! Logging you in...', 'success');
             navigate('/dashboard');
         } catch (err) {
             const msg = err.response?.data?.message || 'Invalid email or password';
+            showToast(msg, 'error');
             if (msg.includes('expired') || msg.includes('Training Period')) {
                 setError('Oops... Something went wrong! [!] Your 1-Day Training Period has finished. Please login to upgrade your account.');
             } else {
                 setError(msg);
             }
+        } finally {
+            setLoading(false);
         }
     };
 

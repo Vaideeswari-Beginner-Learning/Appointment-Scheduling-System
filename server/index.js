@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const http = require('http');
+const { Server } = require('socket.io');
 const connectDB = require('./config/db');
 const { initCron } = require('./services/cronService');
 
@@ -10,6 +12,17 @@ const { initCron } = require('./services/cronService');
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "PATCH", "DELETE"]
+    }
+});
+
+// Make io accessible in routes
+app.set('io', io);
+
 app.use(cors());
 app.use(express.json());
 
@@ -19,7 +32,21 @@ app.use((req, res, next) => {
     next();
 });
 
-// Setup modular routes (Registered immediately so they are available for Vercel)
+// Socket.io Connection
+io.on('connection', (socket) => {
+    console.log(`🔌 New Socket Connection: ${socket.id}`);
+    
+    socket.on('join_tenant', (clientId) => {
+        socket.join(clientId);
+        console.log(`🏠 Socket ${socket.id} joined tenant: ${clientId}`);
+    });
+
+    socket.on('disconnect', () => {
+        console.log(`❌ Socket Disconnected: ${socket.id}`);
+    });
+});
+
+// Setup modular routes
 app.get('/api/ping', (req, res) => res.json({ status: 'API ALIVE', time: new Date().toLocaleTimeString() }));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/slots', require('./routes/slots'));
@@ -49,14 +76,12 @@ const initDB = async () => {
 if (require.main === module) {
     initDB().then(() => {
         const PORT = process.env.PORT || 5002;
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`🚀 SERVER ACTIVE ON PORT ${PORT}`);
             initCron();
         });
     });
 } else {
-    // For Vercel/Serverless: Connect DB on first request if needed
-    // Note: Better to handle this inside the handler or middleware
     initDB();
 }
 
@@ -67,3 +92,4 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
+

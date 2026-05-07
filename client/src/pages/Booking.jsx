@@ -6,10 +6,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Calendar as CalendarIcon, Clock, CheckCircle2, ChevronRight, 
     Briefcase, Search, FileText, Upload, User, ArrowLeft,
-    Monitor, ShieldCheck, MapPin, Zap, ExternalLink, Building2, X
+    Monitor, ShieldCheck, MapPin, Zap, ExternalLink, Building2, X, Smartphone
 } from 'lucide-react';
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL, UPI_ID, UPI_NAME } from '../config/api';
 import { getSectorConfig } from '../config/sectorConfig';
+import { useSocket } from '../context/SocketContext';
+import { useToast } from '../context/ToastContext';
 
 /**
  * REFINED UNIVERSAL BOOKING ENGINE
@@ -19,12 +21,14 @@ import { getSectorConfig } from '../config/sectorConfig';
 const Booking = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const socket = useSocket();
+    const showToast = useToast();
 
     // Step management: 1=select service, 2=fill form, 3=pick slot & confirm
     const [step, setStep] = useState(1);
     const [config, setConfig] = useState(getSectorConfig(user?.sector || 'general'));
-
-    // Data
+    
+    // ... rest of state ...
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
     const [formData, setFormData] = useState({});
@@ -51,6 +55,25 @@ const Booking = () => {
     const [showStaffModal, setShowStaffModal] = useState(false);
     const [staffLoading, setStaffLoading] = useState(false);
     const [staffModalServiceId, setStaffModalServiceId] = useState(null);
+
+    // Real-time slot listener
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('slot_booked', ({ slotId }) => {
+            console.log(`📡 Slot booked in real-time: ${slotId}`);
+            // Remove the booked slot from the available list if it matches
+            setAvailableSlots(prev => {
+                const updated = prev.filter(s => s._id !== slotId);
+                if (updated.length < prev.length) {
+                    showToast('Someone else just booked a slot! Updating availability...', 'info');
+                }
+                return updated;
+            });
+        });
+
+        return () => socket.off('slot_booked');
+    }, [socket, showToast]);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -139,6 +162,7 @@ const Booking = () => {
         } catch (err) { console.error('Slots fetch error:', err); }
     };
 
+
     const handleSelectService = (service) => {
         setSelectedService(service);
         setFormData({});
@@ -202,9 +226,15 @@ const Booking = () => {
             const headers = { 'Content-Type': 'multipart/form-data' };
             if (token) headers['x-auth-token'] = token;
 
-            await axios.post(`${API_BASE_URL}/appointments/book`, data, { headers });
+            const res = await axios.post(`${API_BASE_URL}/appointments/book`, data, { headers });
             setBookingComplete(true);
             setShowConfirmModal(false);
+            
+            // SHOW THANK YOU POPUP AND REDIRECT
+            // The success screen itself acts as the 'Thank You' popup now
+            setTimeout(() => {
+                navigate('/dashboard');
+            }, 2500);
         } catch (error) {
             alert('Booking failed: ' + (error.response?.data?.message || error.message));
         } finally { setLoading(false); }
@@ -229,18 +259,85 @@ const Booking = () => {
             {bookingComplete ? (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '90vh', padding: '20px' }}>
                     <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        style={{ background: 'white', padding: '60px', borderRadius: '40px', textAlign: 'center', maxWidth: '500px', width: '100%', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.1)' }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        style={{ 
+                            background: 'white', 
+                            padding: '60px 40px', 
+                            borderRadius: '40px', 
+                            textAlign: 'center', 
+                            maxWidth: '600px', 
+                            width: '100%', 
+                            boxShadow: '0 40px 100px rgba(0,0,0,0.1)',
+                            border: '1px solid #F1F5F9'
+                        }}
                     >
-                        <div style={{ width: '80px', height: '80px', background: '#DCFCE7', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#166534', margin: '0 auto 24px' }}>
-                            <CheckCircle2 size={40} />
+                        <div style={{ width: '100px', height: '100px', background: 'linear-gradient(135deg, #DCFCE7, #BBF7D0)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#166534', margin: '0 auto 32px', boxShadow: '0 10px 20px rgba(22, 101, 52, 0.1)' }}>
+                            <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: [0, 1.2, 1] }}
+                                transition={{ duration: 0.6 }}
+                            >
+                                <CheckCircle2 size={60} />
+                            </motion.div>
                         </div>
-                        <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', marginBottom: '12px' }}>Booking Confirmed!</h2>
-                        <p style={{ color: '#64748B', fontWeight: 600, lineHeight: 1.6, marginBottom: '40px' }}>
-                            {appointment.patientName || 'Your appointment'} — {appointment.manualDate} successfully scheduled. We've sent a confirmation to your email.
+                        <h2 style={{ fontSize: '42px', fontWeight: 950, color: '#0F172A', marginBottom: '16px', background: 'linear-gradient(to right, #0F172A, #334155)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Thank You!</h2>
+                        <p style={{ color: '#64748B', fontWeight: 700, fontSize: '18px', lineHeight: 1.6, marginBottom: '32px' }}>
+                            Your appointment has been successfully scheduled.
                         </p>
+
+                        <div style={{ background: '#F8FAFC', padding: '12px 20px', borderRadius: '12px', border: '1px solid #E2E8F0', color: '#64748B', fontSize: '13px', fontWeight: 700, marginBottom: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            <div style={{ width: '8px', height: '8px', background: '#4F46E5', borderRadius: '50%', animation: 'pulse 1s infinite' }}></div>
+                            Redirecting to dashboard automatically...
+                        </div>
+
+                        {/* ═══ PREMIUM UPI PAYMENT SECTION ═══ */}
+                        {selectedService?.price > 0 && (
+                                <div style={{ background: '#1A1A2E', borderRadius: '32px', padding: '32px', marginBottom: '32px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: 'white', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 24px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        <Smartphone size={16} /> Pay Securely via PhonePe
+                                    </div>
+                                    
+                                    <div style={{ marginBottom: '24px' }}>
+                                        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>Amount to Pay</div>
+                                        <div style={{ fontSize: '42px', fontWeight: 950, color: '#10B981', textShadow: '0 0 20px rgba(16,185,129,0.3)' }}>Rs. {selectedService.price}</div>
+                                    </div>
+
+                                    <div style={{ position: 'relative', display: 'inline-block', padding: '20px', background: '#FFFFFF', borderRadius: '24px', marginBottom: '20px' }}>
+                                    <img 
+                                        src="/phonepe-qr.jpeg" 
+                                        alt="UPI QR Code" 
+                                        style={{ width: '180px', height: '180px', display: 'block', objectFit: 'contain' }}
+                                        onError={(e) => {
+                                            if (e.target.src.includes('phonepe-qr.jpeg')) {
+                                                e.target.src = '/qr-payment-v2.png';
+                                            } else {
+                                                e.target.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${selectedService.price}&cu=INR`;
+                                            }
+                                        }}
+                                    />
+                                    {/* Decorative corner accents */}
+                                    <div style={{ position: 'absolute', top: '10px', left: '10px', width: '20px', height: '20px', borderTop: '2px solid rgba(0,0,0,0.1)', borderLeft: '2px solid rgba(0,0,0,0.1)', borderRadius: '6px 0 0 0' }}></div>
+                                    <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '20px', height: '20px', borderBottom: '2px solid rgba(0,0,0,0.1)', borderRight: '2px solid rgba(0,0,0,0.1)', borderRadius: '0 0 6px 0' }}></div>
+                                </div>
+                                
+                                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>Scan with any UPI App</div>
+                                <div style={{ color: 'white', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
+                                
+                                <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                                    <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                                    Secure Verification Active
+                                </div>
+                            </div>
+                        )}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <button 
+                                onClick={() => navigate('/dashboard')} 
+                                className="btn btn-primary" 
+                                style={{ height: '60px', fontSize: '18px', borderRadius: '16px', background: '#10B981', border: 'none', fontWeight: 900 }}
+                            >
+                                I Have Paid - Go to Dashboard
+                            </button>
                             <button 
                                 onClick={() => {
                                     setBookingComplete(false);
@@ -248,13 +345,9 @@ const Booking = () => {
                                     setSelectedService(null);
                                     setManualTime('');
                                 }} 
-                                className="btn btn-primary" 
-                                style={{ height: '60px', fontSize: '16px', borderRadius: '16px' }}
+                                style={{ background: '#F1F5F9', border: 'none', color: '#64748B', fontWeight: 700, cursor: 'pointer', fontSize: '14px', height: '50px', borderRadius: '12px' }}
                             >
                                 Book Another Appointment
-                            </button>
-                            <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', color: '#64748B', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>
-                                Back to Dashboard
                             </button>
                         </div>
                     </motion.div>
@@ -728,6 +821,40 @@ const Booking = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* ═══ PREMIUM UPI PAYMENT SECTION ═══ */}
+                            {selectedService?.price > 0 && (
+                                <div style={{ background: '#1A1A2E', borderRadius: '24px', padding: '24px', marginBottom: '32px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 30px rgba(0,0,0,0.2)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#5E239D', color: 'white', padding: '8px 16px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 20px', fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        <Smartphone size={14} /> Pay via PhonePe
+                                    </div>
+                                    
+                                    <div style={{ marginBottom: '20px' }}>
+                                        <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '2px' }}>Amount Due</div>
+                                        <div style={{ fontSize: '32px', fontWeight: 950, color: '#10B981' }}>Rs. {selectedService.price}</div>
+                                    </div>
+
+                                    <div style={{ position: 'relative', display: 'inline-block', padding: '15px', background: '#FFFFFF', borderRadius: '20px', marginBottom: '16px' }}>
+                                        <img 
+                                            src="/phonepe-qr.jpeg" 
+                                            alt="UPI QR Code" 
+                                            style={{ width: '160px', height: '160px', display: 'block', objectFit: 'contain' }}
+                                            onError={(e) => {
+                                                if (e.target.src.includes('phonepe-qr.jpeg')) {
+                                                    e.target.src = '/qr-payment-v2.png';
+                                                } else {
+                                                    e.target.src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${selectedService.price}&cu=INR`;
+                                                }
+                                            }}
+                                        />
+                                        <div style={{ position: 'absolute', top: '8px', left: '8px', width: '16px', height: '16px', borderTop: '2px solid rgba(0,0,0,0.1)', borderLeft: '2px solid rgba(0,0,0,0.1)', borderRadius: '4px 0 0 0' }}></div>
+                                        <div style={{ position: 'absolute', bottom: '8px', right: '8px', width: '16px', height: '16px', borderBottom: '2px solid rgba(0,0,0,0.1)', borderRight: '2px solid rgba(0,0,0,0.1)', borderRadius: '0 0 4px 0' }}></div>
+                                    </div>
+                                    
+                                    <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>SCAN TO PAY SECURELY</div>
+                                    <div style={{ color: 'white', fontSize: '14px', fontWeight: 800 }}>{UPI_ID}</div>
+                                </div>
+                            )}
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 <button 

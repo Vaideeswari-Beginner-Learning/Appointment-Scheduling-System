@@ -30,7 +30,7 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
                 { headers: { 'x-auth-token': token } }
             );
             setStep(3);
-            setTimeout(() => { onSuccess?.(); onClose(); }, 2000);
+            setTimeout(() => { onSuccess?.(); onClose(); }, 800);
         } catch (err) {
             setError(err.response?.data?.message || 'Payment failed. Please try again.');
             setStep(1);
@@ -88,37 +88,44 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
 
                             {method === 'upi' && (
                                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                                    <div style={{ background: '#FFFFFF', padding: '32px 24px', borderRadius: '32px', border: '1px solid #E2E8F0', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: 'white', padding: '10px 24px', borderRadius: '100px', width: '100%', justifyContent: 'center', fontWeight: 900, fontSize: '14px', marginBottom: '28px', boxShadow: '0 4px 12px rgba(94, 35, 157, 0.2)' }}>
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" alt="PhonePe" style={{ height: '20px', filter: 'brightness(0) invert(1)' }} />
-                                            <span>Secure PhonePe Checkout</span>
+                                    <div style={{ background: '#1A1A2E', padding: '32px 24px', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: 'white', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 28px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                            <Smartphone size={16} /> Secure PhonePe Payment
+                                        </div>
+
+                                        <div style={{ marginBottom: '24px' }}>
+                                            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>Amount to Pay</div>
+                                            <div style={{ fontSize: '42px', fontWeight: 950, color: '#10B981' }}>Rs. {amount}</div>
                                         </div>
                                         
-                                        <div style={{ background: 'white', padding: '15px', borderRadius: '24px', display: 'inline-block', border: '1px solid #F1F5F9', position: 'relative', marginBottom: '20px' }}>
+                                        <div style={{ background: '#1A1A2E', padding: '20px', borderRadius: '28px', display: 'inline-block', border: '1px solid rgba(255,255,255,0.1)', position: 'relative', marginBottom: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
                                             <img 
-                                                src="/qr-payment-new.png" 
+                                                src="/phonepe-qr.jpeg" 
                                                 alt="PhonePe QR Code" 
-                                                style={{ width: '200px', height: '200px', borderRadius: '8px', display: 'block', objectFit: 'contain' }} 
+                                                style={{ width: '200px', height: '200px', borderRadius: '12px', display: 'block', objectFit: 'contain' }} 
                                                 onError={(e) => {
-                                                    if (e.target.src.includes('qr-payment-new.png')) {
+                                                    if (e.target.src.includes('phonepe-qr.jpeg')) {
+                                                        e.target.src = '/qr-payment-v2.png';
+                                                    } else if (e.target.src.includes('qr-payment-v2.png')) {
+                                                        e.target.src = '/qr-payment-new.png';
+                                                    } else if (e.target.src.includes('qr-payment-new.png')) {
                                                         e.target.src = '/qr-payment.jpg';
-                                                    } else if (e.target.src.includes('qr-payment.jpg')) {
-                                                        e.target.src = '/images/phonepe_qr.png';
                                                     } else {
                                                         e.target.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
                                                     }
                                                 }}
                                             />
+                                            {/* Decorative Corner Accents */}
+                                            <div style={{ position: 'absolute', top: '10px', left: '10px', width: '20px', height: '20px', borderTop: '2px solid rgba(255,255,255,0.2)', borderLeft: '2px solid rgba(255,255,255,0.2)', borderRadius: '4px 0 0 0' }}></div>
+                                            <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '20px', height: '20px', borderBottom: '2px solid rgba(255,255,255,0.2)', borderRight: '2px solid rgba(255,255,255,0.2)', borderRadius: '0 0 4px 0' }}></div>
                                         </div>
 
-                                        <div style={{ textAlign: 'center' }}>
-                                            <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 800, marginBottom: '4px', letterSpacing: '0.5px' }}>SCAN WITH ANY UPI APP</div>
-                                            <div style={{ fontSize: '18px', fontWeight: 950, color: '#0F172A' }}>{UPI_ID}</div>
-                                        </div>
+                                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>Scan with any UPI App</div>
+                                        <div style={{ color: 'white', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
 
-                                        <div style={{ background: '#F0FDF4', padding: '12px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#16A34A', fontWeight: 800, marginTop: '20px', border: '1px solid #DCFCE7' }}>
-                                            <div style={{ width: '8px', height: '8px', background: '#16A34A', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
-                                            Awaiting Payment Confirmation
+                                        <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                                            <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                                            Secure System Verification Active
                                         </div>
                                     </div>
                                     <input
@@ -150,10 +157,22 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
                     )}
 
                     {step === 3 && (
-                        <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                            <CheckCircle2 size={64} color="#16A34A" style={{ margin: '0 auto 16px', display: 'block' }} />
-                            <div style={{ fontSize: '22px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Payment Successful!</div>
-                            <div style={{ color: '#64748B', fontSize: '14px' }}>Your appointment is confirmed.</div>
+                        <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                            <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: [0, 1.2, 1] }}
+                                transition={{ duration: 0.5 }}
+                                style={{ width: '80px', height: '80px', background: '#DCFCE7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#166534', margin: '0 auto 24px' }}
+                            >
+                                <CheckCircle2 size={48} />
+                            </motion.div>
+                            <div style={{ fontSize: '28px', fontWeight: 950, color: '#0F172A', marginBottom: '12px' }}>Thank You!</div>
+                            <div style={{ color: '#64748B', fontSize: '16px', fontWeight: 700, marginBottom: '24px' }}>Your payment was processed successfully.</div>
+                            
+                            <div style={{ background: '#F8FAFC', padding: '12px 20px', borderRadius: '14px', color: '#4F46E5', fontSize: '13px', fontWeight: 900, display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid #EEF2FF' }}>
+                                <div style={{ width: '8px', height: '8px', background: '#4F46E5', borderRadius: '50%', animation: 'pulse 1s infinite' }}></div>
+                                Syncing with Dashboard...
+                            </div>
                         </div>
                     )}
                 </div>
