@@ -107,7 +107,7 @@ const Register = () => {
             setStep(4);
             setTimeout(() => navigate('/dashboard'), 2500);
         } catch (err) {
-            setError(err.response?.data?.msg || 'Registration failed. Please check your network.');
+            setError(err.response?.data?.message || err.response?.data?.msg || 'Registration failed. Please check your network.');
             // Don't change step, stay on the form
         } finally {
             setIsLoading(false);
