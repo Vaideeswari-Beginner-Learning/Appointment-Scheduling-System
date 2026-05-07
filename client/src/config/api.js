@@ -8,9 +8,8 @@ const getBaseUrl = () => {
             return `http://${hostname}:5002`;
         }
         
-        // In production: Use Vercel itself for REST API (No CORS issues)
-        // while Sockets will stay on Render.
-        return 'https://appointmentscheduling-system.vercel.app';
+        // In production: Use Render as requested
+        return 'https://appointmentscheduling-system.onrender.com';
     }
     return 'http://localhost:5002';
 };

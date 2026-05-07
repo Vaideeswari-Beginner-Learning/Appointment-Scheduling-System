@@ -16,33 +16,32 @@ console.log('🚀 [BOOT] Server script initialization...');
 const app = express();
 app.set('trust proxy', 1);
 
-// 1. FORCED CORS HEADERS (Applies to EVERY response)
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (origin) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    } else {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-auth-token, Accept, Origin, X-Requested-With');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-    next();
-});
+// 1. EXPLICIT CORS CONFIGURATION
+const allowedOrigins = [
+    'https://appointmentscheduling-system.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:5002',
+    'http://127.0.0.1:5173'
+];
 
-// Root Route to prevent 404s
-app.get('/', (req, res) => res.send('API ONLINE'));
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log('CORS Blocked for origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'Accept', 'Origin', 'X-Requested-With']
+};
 
-app.use(cors({
-    origin: true, 
-    credentials: true
-}));
+app.use(cors(corsOptions));
 
 // Diagnostic Routes
+app.get('/', (req, res) => res.send('✅ Appointment System API - Online'));
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
@@ -53,18 +52,14 @@ app.get('/api/health', (req, res) => {
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 
 const server = http.createServer(app);
 
-// 2. GREEDY SOCKET.IO CORS
+// 2. SOCKET.IO CONFIGURATION
 const io = new Server(server, {
-    cors: {
-        origin: true, // Mirrors the requesting origin automatically
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-        credentials: true,
-        allowedHeaders: ["x-auth-token", "Authorization", "Content-Type", "Accept", "Origin"]
-    },
-    allowEIO3: true // Support older clients just in case
+    cors: corsOptions,
+    path: '/socket.io/'
 });
 
 // Make io accessible in routes
