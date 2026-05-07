@@ -16,16 +16,33 @@ console.log('🚀 [BOOT] Server script initialization...');
 const app = express();
 app.set('trust proxy', 1);
 
-// 1. DYNAMIC CORS (Mirrors Requesting Origin)
+// 1. FORCED CORS HEADERS (Applies to EVERY response)
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-auth-token, Accept, Origin, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+    next();
+});
+
+// Root Route to prevent 404s
+app.get('/', (req, res) => res.send('API ONLINE'));
+
 app.use(cors({
     origin: true, 
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'Accept', 'Origin', 'X-Requested-With']
+    credentials: true
 }));
 
 // Diagnostic Routes
-app.get('/', (req, res) => res.send('✅ Appointment System API - Online'));
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
