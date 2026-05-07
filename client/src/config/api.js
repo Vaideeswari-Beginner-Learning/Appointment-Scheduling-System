@@ -9,7 +9,7 @@ const getBaseUrl = () => {
         }
         
         // In production
-        return `https://${hostname.replace('vercel.app', 'onrender.com')}`; 
+        return 'https://appointmentscheduling-system.onrender.com';
     }
     return 'http://localhost:5002';
 };
