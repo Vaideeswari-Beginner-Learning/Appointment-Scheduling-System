@@ -86,17 +86,22 @@ const Register = () => {
         setIsLoading(true);
         setError('');
         try {
-            const res = await register(formData.name, formData.email.trim().toLowerCase(), formData.password, formData.role);
-            if (res && formData.role === 'client') {
-                setIsCompleting(true);
-                await updateUser({
-                    sectorCategory: formData.sectorCategory,
-                    sectorName: formData.sectorName,
+            const res = await register(
+                formData.name, 
+                formData.email.trim().toLowerCase(), 
+                formData.password, 
+                formData.role,
+                formData.role === 'client' ? 'client' : 'user',
+                {
+                    sector: formData.sectorName,
                     organizationName: formData.organizationName,
                     organizationLogo: formData.organizationLogo,
                     organizationWebsite: formData.organizationWebsite,
                     organizationDescription: formData.organizationDescription
-                });
+                }
+            );
+            if (res && formData.role === 'client') {
+                setIsCompleting(true);
             }
             // Move to success step
             setStep(4);

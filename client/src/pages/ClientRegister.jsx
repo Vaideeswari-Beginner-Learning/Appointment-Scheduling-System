@@ -14,13 +14,29 @@ const ClientRegister = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        password: ''
+        password: '',
+        sector: ''
     });
+    const [allSectors, setAllSectors] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        const fetchSectors = async () => {
+            try {
+                const res = await axios.get(`${API_BASE_URL}/sectors`);
+                setAllSectors(res.data);
+            } catch (err) { console.error('Failed to fetch sectors'); }
+        };
+        fetchSectors();
+    }, []);
+
     const handleRegister = async (e) => {
         e.preventDefault();
+        if (!formData.sector) {
+            setError('Please select an industry sector');
+            return;
+        }
         setError('');
         setLoading(true);
         try {
@@ -30,11 +46,9 @@ const ClientRegister = () => {
                 formData.email,
                 formData.password,
                 'client',
-                'client'
+                'client',
+                { sector: formData.sector }
             );
-            
-            // Move to Step 2 (Plan Selection)
-            setStep(2);
             
             // Move to Step 2 (Plan Selection)
             setStep(2);
@@ -84,6 +98,22 @@ const ClientRegister = () => {
                             <div style={{ position: 'relative' }}>
                                 <Mail size={18} color="#94A3B8" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
                                 <input style={{ width: '100%', padding: '14px 16px 14px 44px', boxSizing: 'border-box', borderRadius: '12px', border: '1px solid #E2E8F0', outline: 'none', background: '#F8FAFC' }} type="email" placeholder="admin@acme.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 800, color: '#1E293B', marginBottom: '8px' }}>Industry Sector</label>
+                            <div style={{ position: 'relative' }}>
+                                <Shield size={18} color="#94A3B8" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
+                                <select 
+                                    style={{ width: '100%', padding: '14px 16px 14px 44px', boxSizing: 'border-box', borderRadius: '12px', border: '1px solid #E2E8F0', outline: 'none', background: '#F8FAFC', appearance: 'none' }} 
+                                    value={formData.sector} 
+                                    onChange={e => setFormData({...formData, sector: e.target.value})} 
+                                    required
+                                >
+                                    <option value="">Select Industry...</option>
+                                    {allSectors.map(s => <option key={s._id} value={s.name}>{s.name}</option>)}
+                                </select>
                             </div>
                         </div>
 

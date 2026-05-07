@@ -73,6 +73,30 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleApproveRequest = async (requestId) => {
+        if (!window.confirm('Approve this request and update client plan?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`${API_BASE_URL}/saas/requests/${requestId}`, { status: 'approved' }, { headers: { 'x-auth-token': token } });
+            alert('Request approved and client account updated!');
+            fetchAll();
+        } catch (err) {
+            alert('Approval failed: ' + (err.response?.data?.message || err.message));
+        }
+    };
+
+    const handleRejectRequest = async (requestId) => {
+        if (!window.confirm('Reject this request?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`${API_BASE_URL}/saas/requests/${requestId}`, { status: 'rejected' }, { headers: { 'x-auth-token': token } });
+            alert('Request rejected.');
+            fetchAll();
+        } catch (err) {
+            alert('Rejection failed');
+        }
+    };
+
     const handleToggleStatus = async (userId) => {
         try {
             const token = localStorage.getItem('token');
@@ -353,8 +377,8 @@ const AdminDashboard = () => {
                                                     <td>
                                                         {req.status === 'pending' && (
                                                             <div style={{ display: 'flex', gap: '8px' }}>
-                                                                <button onClick={() => alert("Approving...")} className="action-btn" title="Approve" style={{ color: '#10B981' }}><CheckCircle size={16}/></button>
-                                                                <button onClick={() => alert("Rejecting...")} className="action-btn" title="Reject" style={{ color: '#EF4444' }}><XCircle size={16}/></button>
+                                                                <button onClick={() => handleApproveRequest(req._id)} className="action-btn" title="Approve" style={{ color: '#10B981' }}><CheckCircle size={16}/></button>
+                                                                <button onClick={() => handleRejectRequest(req._id)} className="action-btn" title="Reject" style={{ color: '#EF4444' }}><XCircle size={16}/></button>
                                                             </div>
                                                         )}
                                                     </td>

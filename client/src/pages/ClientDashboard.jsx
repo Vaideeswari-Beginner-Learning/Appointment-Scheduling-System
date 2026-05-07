@@ -761,19 +761,22 @@ const ClientDashboard = () => {
         }
     };
 
-    const handleCompleteOnboarding = async () => {
+    const handleCompleteOnboarding = async (selectedSector, selectedSubCategory) => {
         setOnboardingLoading(true);
         const token = localStorage.getItem('token');
+        const finalSector = selectedSector || onboardingSector;
+        const finalSubCategory = selectedSubCategory || onboardingSubSector;
+
         try {
             await axios.patch(`${API_BASE_URL}/users/${user._id || user.id}`, {
-                sector: onboardingSector,
-                subCategory: onboardingSubSector
+                sector: finalSector,
+                subCategory: finalSubCategory
             }, { 
                 headers: { 'x-auth-token': token } 
             });
             setOnboardingStep(3);
             setTimeout(() => {
-                window.location.reload(); // Refresh to apply sector config everywhere
+                window.location.reload(); 
             }, 2000);
         } catch (err) {
             alert('Selection failed');
@@ -2083,21 +2086,18 @@ const ClientDashboard = () => {
                                     <Building size={32} />
                                 </div>
                             </div>
-                            {onboardingStep === 1 && <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Welcome to your workspace!</h2>}
-                            {onboardingStep === 2 && <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Refine your establishment</h2>}
-                            {onboardingStep === 3 && <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#10B981', marginBottom: '8px' }}>Setup Complete!</h2>}
-                            
+                            <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>
+                                {onboardingStep === 3 ? 'Setup Complete!' : 'Welcome to your workspace!'}
+                            </h2>
                             <p style={{ color: '#64748B', fontWeight: 600, fontSize: '16px' }}>
-                                {onboardingStep === 1 && "What industry does your organization belong to?"}
-                                {onboardingStep === 2 && `Which specific type of ${onboardingSector} are you?`}
-                                {onboardingStep === 3 && "We are tailoring your dashboard experience."}
+                                {onboardingStep === 3 ? "We are tailoring your dashboard experience." : "Select your industry type to customize your experience."}
                             </p>
                         </div>
 
-                        {onboardingStep === 1 && (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-                                {Array.from(new Set(allSectors.map(s => s.category))).map(cat => {
-                                    const iconName = allSectors.find(s => s.category === cat)?.icon;
+                        {onboardingStep < 3 && (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
+                                {allSectors.map(sector => {
+                                    const iconName = sector.icon;
                                     
                                     const getIconColor = (name) => {
                                         switch(name) {
@@ -2142,8 +2142,8 @@ const ClientDashboard = () => {
                                     
                                     return (
                                         <div 
-                                            key={cat}
-                                            onClick={() => { setOnboardingSector(cat); setOnboardingStep(2); }}
+                                            key={sector._id}
+                                            onClick={() => handleCompleteOnboarding(sector.category, sector.name)}
                                             style={{ 
                                                 background: 'white', padding: '24px', borderRadius: '20px', border: '2px solid #E2E8F0', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s',
                                                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px'
@@ -2152,37 +2152,11 @@ const ClientDashboard = () => {
                                             onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.transform = 'translateY(0)'; }}
                                         >
                                             <div style={{ fontSize: '32px' }}>{iconComponent}</div>
-                                            <div style={{ fontWeight: 900, color: '#0F172A' }}>{cat}</div>
+                                            <div style={{ fontWeight: 900, color: '#0F172A' }}>{sector.name}</div>
+                                            <div style={{ fontSize: '11px', color: '#64748B', textTransform: 'uppercase', fontWeight: 800 }}>{sector.category}</div>
                                         </div>
                                     );
                                 })}
-                            </div>
-                        )}
-
-                        {onboardingStep === 2 && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                <select 
-                                    className="input-field" 
-                                    style={{ height: '60px', fontSize: '16px', fontWeight: 700 }}
-                                    value={onboardingSubSector}
-                                    onChange={e => setOnboardingSubSector(e.target.value)}
-                                >
-                                    <option value="">Select specific type...</option>
-                                    {allSectors.filter(s => s.category === onboardingSector).map(s => (
-                                        <option key={s._id} value={s.name}>{s.name}</option>
-                                    ))}
-                                </select>
-                                <div style={{ display: 'flex', gap: '16px' }}>
-                                    <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setOnboardingStep(1)}>Back</button>
-                                    <button 
-                                        className="btn btn-primary" 
-                                        style={{ flex: 2, height: '60px' }}
-                                        disabled={!onboardingSubSector || onboardingLoading}
-                                        onClick={handleCompleteOnboarding}
-                                    >
-                                        {onboardingLoading ? 'Saving...' : 'Enter Dashboard'}
-                                    </button>
-                                </div>
                             </div>
                         )}
 

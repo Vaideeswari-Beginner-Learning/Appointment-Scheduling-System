@@ -11,19 +11,54 @@ const { initCron } = require('./services/cronService');
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '.env') });
 
+const allowedOrigins = [
+    "https://appointmentscheduling-system.vercel.app",
+    "https://appointmentscheduling-system-git-main-vaideeswari-beginner-learnings-projects.vercel.app", // Common Vercel preview pattern
+    "http://localhost:5173",
+    "http://localhost:5002",
+    "http://localhost:3000"
+];
+
 const app = express();
+
+// 1. Manually Handle Preflight & Headers (Before CORS middleware for safety)
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin) || !origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, x-auth-token');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*",
-        methods: ["GET", "POST", "PATCH", "DELETE"]
+        origin: allowedOrigins,
+        methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
+        credentials: true
     }
 });
 
 // Make io accessible in routes
 app.set('io', io);
 
-app.use(cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
 app.use(express.json());
 
 // Request logger
