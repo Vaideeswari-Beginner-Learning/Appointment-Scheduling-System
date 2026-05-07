@@ -14,37 +14,27 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const app = express();
 app.set('trust proxy', 1);
 
-// 1. DEFINITIVE CORS FIX
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    
-    // Explicitly allow the primary production domain and localhosts
-    const allowed = [
-        "https://appointmentscheduling-system.vercel.app",
-        "https://appointmentscheduling-system-vaideeswari-beginner-learnings-projects.vercel.app",
-        "http://localhost:5173",
-        "http://localhost:3000"
-    ];
+// 1. STANDARD CORS PACKAGE (Mirrors Origin for Vercel/Localhost)
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || origin.includes('vercel.app') || origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            callback(null, true);
+        } else {
+            callback(null, true); // Allow all during debug
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'Accept', 'Origin', 'X-Requested-With']
+}));
 
-    if (allowed.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    } else if (!origin) {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-    } else if (origin.includes('vercel.app')) {
-        // Dynamic allowance for Vercel previews
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, x-auth-token, Accept, Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Max-Age', '86400');
-    
-    if (req.method === 'OPTIONS') {
-        console.log(`✅ [OPTIONS_OK] ${origin}`);
-        return res.status(200).end();
-    }
-    next();
+// Health Check for CORS & Deployment
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        origin: req.headers.origin,
+        timestamp: new Date().toISOString() 
+    });
 });
 
 // Middleware
