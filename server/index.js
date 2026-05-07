@@ -5,44 +5,61 @@ const dotenv = require('dotenv');
 const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
+const morgan = require('morgan');
 const connectDB = require('./config/db');
 const { initCron } = require('./services/cronService');
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-const allowedOrigins = [
-    "https://appointmentscheduling-system.vercel.app",
-    "https://appointmentscheduling-system-git-main-vaideeswari-beginner-learnings-projects.vercel.app", // Common Vercel preview pattern
-    "http://localhost:5173",
-    "http://localhost:5002",
-    "http://localhost:3000"
-];
-
 const app = express();
+app.set('trust proxy', 1);
 
-// 1. Manually Handle Preflight & Headers (Before CORS middleware for safety)
+// 1. DYNAMIC CORS HANDLER (Greedy for Vercel/Localhost)
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin) || !origin) {
-        res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    
+    // Allow any Vercel or Localhost origin dynamically
+    if (origin && (origin.includes('vercel.app') || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        console.log(`✅ [CORS_ALLOW] ${origin}`);
+    } else if (!origin) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    } else {
+        console.warn(`⚠️ [CORS_BLOCK] ${origin}`);
     }
+    
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, x-auth-token');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, x-auth-token, Accept, Origin');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Max-Age', '86400'); // Cache preflight for 24h
     
     if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
+        return res.status(200).end();
     }
     next();
 });
 
+// Middleware
+app.use(express.json());
+app.use(morgan('dev'));
+
 const server = http.createServer(app);
+
+// 2. GREEDY SOCKET.IO CORS
 const io = new Server(server, {
     cors: {
-        origin: allowedOrigins,
-        methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
-        credentials: true
+        origin: (origin, callback) => {
+            // Always allow Vercel and Localhost
+            if (!origin || origin.includes('vercel.app') || origin.includes('localhost')) {
+                callback(null, true);
+            } else {
+                callback(null, true); // Still allow for now to debug
+            }
+        },
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        credentials: true,
+        allowedHeaders: ["x-auth-token", "Authorization", "Content-Type"]
     }
 });
 
