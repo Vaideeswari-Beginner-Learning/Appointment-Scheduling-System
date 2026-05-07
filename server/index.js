@@ -17,10 +17,14 @@ app.set('trust proxy', 1);
 // 1. STANDARD CORS PACKAGE (Mirrors Origin for Vercel/Localhost)
 app.use(cors({
     origin: (origin, callback) => {
+        // Log the origin for every request to debug Render logs
+        if (origin) console.log(`📡 [CORS_REQUEST] Origin: ${origin}`);
+        
         if (!origin || origin.includes('vercel.app') || origin.includes('localhost') || origin.includes('127.0.0.1')) {
             callback(null, true);
         } else {
-            callback(null, true); // Allow all during debug
+            console.warn(`⚠️ [CORS_REJECTED] Origin: ${origin}`);
+            callback(null, true); // Allow anyway for debug
         }
     },
     credentials: true,
@@ -33,6 +37,7 @@ app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         origin: req.headers.origin,
+        headers: req.headers,
         timestamp: new Date().toISOString() 
     });
 });
@@ -45,18 +50,12 @@ const server = http.createServer(app);
 // 2. GREEDY SOCKET.IO CORS
 const io = new Server(server, {
     cors: {
-        origin: (origin, callback) => {
-            // Always allow Vercel and Localhost
-            if (!origin || origin.includes('vercel.app') || origin.includes('localhost')) {
-                callback(null, true);
-            } else {
-                callback(null, true); // Still allow for now to debug
-            }
-        },
+        origin: true, // Mirrors the requesting origin automatically
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
         credentials: true,
-        allowedHeaders: ["x-auth-token", "Authorization", "Content-Type"]
-    }
+        allowedHeaders: ["x-auth-token", "Authorization", "Content-Type", "Accept", "Origin"]
+    },
+    allowEIO3: true // Support older clients just in case
 });
 
 // Make io accessible in routes
