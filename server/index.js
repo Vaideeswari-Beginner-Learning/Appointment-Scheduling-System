@@ -14,26 +14,34 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const app = express();
 app.set('trust proxy', 1);
 
-// 1. DYNAMIC CORS HANDLER (Greedy for Vercel/Localhost)
+// 1. DEFINITIVE CORS FIX
 app.use((req, res, next) => {
     const origin = req.headers.origin;
     
-    // Allow any Vercel or Localhost origin dynamically
-    if (origin && (origin.includes('vercel.app') || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+    // Explicitly allow the primary production domain and localhosts
+    const allowed = [
+        "https://appointmentscheduling-system.vercel.app",
+        "https://appointmentscheduling-system-vaideeswari-beginner-learnings-projects.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:3000"
+    ];
+
+    if (allowed.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
-        console.log(`✅ [CORS_ALLOW] ${origin}`);
     } else if (!origin) {
         res.setHeader('Access-Control-Allow-Origin', '*');
-    } else {
-        console.warn(`⚠️ [CORS_BLOCK] ${origin}`);
+    } else if (origin.includes('vercel.app')) {
+        // Dynamic allowance for Vercel previews
+        res.setHeader('Access-Control-Allow-Origin', origin);
     }
-    
+
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, x-auth-token, Accept, Origin');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Max-Age', '86400'); // Cache preflight for 24h
+    res.setHeader('Access-Control-Max-Age', '86400');
     
     if (req.method === 'OPTIONS') {
+        console.log(`✅ [OPTIONS_OK] ${origin}`);
         return res.status(200).end();
     }
     next();
