@@ -7,12 +7,10 @@ const getBaseUrl = () => {
             return `http://${hostname}:5002`;
         }
         
-        // diagnostic alert v3 (Anti-Cache)
-        const url = 'https://appointment-scheduling-system-tnzt.onrender.com';
-        console.log('🔗 CURRENT API URL (v3):', url);
-        
         // In production: Use the new Render URL exclusively
-        return url;
+        const prodUrl = 'https://appointment-scheduling-system-tnzt.onrender.com';
+        console.log('🔗 PROD API URL:', prodUrl);
+        return prodUrl;
     }
     return 'http://localhost:5002';
 };

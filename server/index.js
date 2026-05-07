@@ -17,10 +17,44 @@ console.log('🚀 [BOOT] Server script initialization...');
 const app = express();
 app.set('trust proxy', 1);
 
-// 1. PERMISSIVE CORS (For Debugging)
+// Diagnostic: Check critical environment variables
+const criticalEnvVars = ['MONGODB_URI', 'JWT_SECRET'];
+criticalEnvVars.forEach(v => {
+    if (!process.env[v]) {
+        console.warn(`⚠️ [WARN] Missing critical environment variable: ${v}`);
+    } else {
+        console.log(`✅ [OK] Environment variable loaded: ${v}`);
+    }
+});
+
+// 1. ROBUST CORS CONFIGURATION
 const corsOptions = {
-    origin: true,
-    credentials: true
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            'https://appointmentscheduling-system.vercel.app',
+            'http://localhost:5173',
+            'http://localhost:5002',
+            /\.vercel\.app$/ // Allow Vercel preview branches
+        ];
+        
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+        
+        const isAllowed = allowedOrigins.some(ao => {
+            if (ao instanceof RegExp) return ao.test(origin);
+            return ao === origin;
+        });
+
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            console.warn(`🚨 [CORS BLOCKED] Origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
 };
 app.use(cors(corsOptions));
 
