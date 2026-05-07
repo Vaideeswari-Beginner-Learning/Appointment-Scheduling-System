@@ -8,8 +8,8 @@ const getBaseUrl = () => {
             return `http://${hostname}:5002`;
         }
         
-        // In production: Use Render as requested
-        return 'https://appointmentscheduling-system.onrender.com';
+        // In production: Use the new Render URL
+        return 'https://appointment-scheduling-system-tnzt.onrender.com';
     }
     return 'http://localhost:5002';
 };
