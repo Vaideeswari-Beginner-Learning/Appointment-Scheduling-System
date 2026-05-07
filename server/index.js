@@ -11,33 +11,25 @@ const { initCron } = require('./services/cronService');
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '.env') });
 
+console.log('🚀 [BOOT] Server script initialization...');
+
 const app = express();
 app.set('trust proxy', 1);
 
-// 1. STANDARD CORS PACKAGE (Mirrors Origin for Vercel/Localhost)
+// 1. DYNAMIC CORS (Mirrors Requesting Origin)
 app.use(cors({
-    origin: (origin, callback) => {
-        // Log the origin for every request to debug Render logs
-        if (origin) console.log(`📡 [CORS_REQUEST] Origin: ${origin}`);
-        
-        if (!origin || origin.includes('vercel.app') || origin.includes('localhost') || origin.includes('127.0.0.1')) {
-            callback(null, true);
-        } else {
-            console.warn(`⚠️ [CORS_REJECTED] Origin: ${origin}`);
-            callback(null, true); // Allow anyway for debug
-        }
-    },
+    origin: true, 
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'Accept', 'Origin', 'X-Requested-With']
 }));
 
-// Health Check for CORS & Deployment
+// Diagnostic Routes
+app.get('/', (req, res) => res.send('✅ Appointment System API - Online'));
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         origin: req.headers.origin,
-        headers: req.headers,
         timestamp: new Date().toISOString() 
     });
 });
