@@ -153,7 +153,7 @@ if (require.main === module) {
 }
 
 // Global 404 Handler for API
-app.use('/api/*', (req, res) => {
+app.use('/api', (req, res) => {
     console.log(`🔍 [404] No Route Found for: ${req.method} ${req.url}`);
     res.status(404).json({ message: `API Route Not Found: ${req.url}` });
 });
