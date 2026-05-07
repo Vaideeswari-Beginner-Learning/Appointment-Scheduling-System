@@ -7,7 +7,7 @@ const getBaseUrl = () => {
             return `http://${hostname}:5002`;
         }
         
-        // In production: Use the new Render URL exclusively
+        // Production Deployment Sync Trigger v5
         const prodUrl = 'https://appointment-scheduling-system-tnzt.onrender.com';
         console.log('🔗 PROD API URL:', prodUrl);
         return prodUrl;
