@@ -7,9 +7,9 @@ const getBaseUrl = () => {
             return `http://${hostname}:5002`;
         }
         
-        // diagnostic alert
+        // diagnostic alert v3 (Anti-Cache)
         const url = 'https://appointment-scheduling-system-tnzt.onrender.com';
-        console.log('🔗 CURRENT API URL:', url);
+        console.log('🔗 CURRENT API URL (v3):', url);
         
         // In production: Use the new Render URL exclusively
         return url;
