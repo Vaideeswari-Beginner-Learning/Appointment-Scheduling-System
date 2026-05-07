@@ -12,8 +12,7 @@ export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const socketUrl = API_BASE_URL.replace('/api', '');
-        const newSocket = io(socketUrl);
+        const newSocket = io(socketUrl, { withCredentials: true });
         setSocket(newSocket);
 
         if (user?.clientId) {
