@@ -22,9 +22,15 @@ export const sectorConfig = {
                 { label: 'Age', fieldKey: 'age', type: 'number', placeholder: 'Patient age', required: true },
                 { label: 'Symptoms', fieldKey: 'symptoms', type: 'textarea', placeholder: 'Describe symptoms...', required: true }
             ],
-            image: '/healthcare.png',
+            image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            images: [
+                'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=1400&q=80'
+            ],
             secondaryImage: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-            logo: '/logo.png'
+            logo: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
         },
         websiteContent: {
             heroTitle: 'World-Class Healthcare & Patient Care',
@@ -60,6 +66,12 @@ export const sectorConfig = {
                 { label: 'Marks', fieldKey: 'marks', type: 'number', placeholder: 'Previous marks (%)', required: true }
             ],
             image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            images: [
+                'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1546410531-bb4caa1b4249?auto=format&fit=crop&w=1400&q=80'
+            ],
             secondaryImage: 'https://images.unsplash.com/photo-1546410531-bb4caa1b4249?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
             logo: 'https://images.unsplash.com/photo-1546410531-bb4caa1b4249?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
         },
@@ -97,6 +109,12 @@ export const sectorConfig = {
                 { label: 'Time', fieldKey: 'time', type: 'time', placeholder: 'Select time', required: true }
             ],
             image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            images: [
+                'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1453840207275-a19d850e0bfa?auto=format&fit=crop&w=1400&q=80'
+            ],
             secondaryImage: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -132,6 +150,12 @@ export const sectorConfig = {
                 { label: 'Check-out', fieldKey: 'check_out', type: 'date', placeholder: '', required: true }
             ],
             image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            images: [
+                'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1582719478250-c89cae4df85b?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1400&q=80'
+            ],
             secondaryImage: 'https://images.unsplash.com/photo-1582719478250-c89cae4df85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -165,7 +189,13 @@ export const sectorConfig = {
                 { label: 'Candidate Name', fieldKey: 'name', type: 'text', placeholder: 'Full Name', required: true },
                 { label: 'Role Applied', fieldKey: 'role', type: 'text', placeholder: 'e.g. Developer', required: true }
             ],
-            image: '/corporate.png',
+            image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            images: [
+                'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=80'
+            ],
             secondaryImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -201,6 +231,12 @@ export const sectorConfig = {
                 { label: 'Issue', fieldKey: 'issue', type: 'textarea', placeholder: 'Describe problem', required: true }
             ],
             image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            images: [
+                'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1530046339160-ce3e5b0c7a2f?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1400&q=80'
+            ],
             secondaryImage: 'https://images.unsplash.com/photo-1530046339160-ce3e5b0c7a2f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -213,7 +249,7 @@ export const sectorConfig = {
         }
     },
     fitness: {
-        label: 'Fitness',
+        label: 'Wellness & Fitness',
         brandLabel: 'Gym / Fitness Center',
         subCategories: ['Gym Membership', 'Yoga Classes', 'Personal Training', 'Zumba'],
         dashboard: {
@@ -236,6 +272,12 @@ export const sectorConfig = {
                 { label: 'Timing', fieldKey: 'timing', type: 'text', placeholder: 'Morning/Evening', required: true }
             ],
             image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            images: [
+                'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=80'
+            ],
             secondaryImage: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -494,16 +536,16 @@ export const getSectorConfig = (sectorKey) => {
     let key = sectorKey?.toLowerCase() || 'general';
     
     // Robust normalization using keyword matching
-    if (key.includes('health') || key.includes('hospital')) key = 'health';
-    else if (key.includes('beauty') || key.includes('salon')) key = 'salon';
-    else if (key.includes('hotel') || key.includes('restaurant') || key.includes('hospitality')) key = 'hotel';
-    else if (key.includes('school') || key.includes('college') || key.includes('education')) key = 'education';
-    else if (key.includes('company') || key.includes('corporate')) key = 'corporate';
-    else if (key.includes('gym') || key.includes('fitness')) key = 'fitness';
-    else if (key.includes('legal') || key.includes('consult')) key = 'legal';
-    else if (key.includes('garage') || key.includes('auto')) key = 'automobile';
-    else if (key.includes('repair') || key.includes('service center')) key = 'repair';
-    else if (key.includes('event') || key.includes('media')) key = 'events';
+    if (key.includes('health') || key.includes('hospital') || key.includes('clinic')) key = 'health';
+    else if (key.includes('beauty') || key.includes('salon') || key.includes('spa')) key = 'salon';
+    else if (key.includes('hotel') || key.includes('restaurant') || key.includes('hospitality') || key.includes('resort')) key = 'hotel';
+    else if (key.includes('school') || key.includes('college') || key.includes('education') || key.includes('university')) key = 'education';
+    else if (key.includes('company') || key.includes('corporate') || key.includes('office')) key = 'corporate';
+    else if (key.includes('gym') || key.includes('fitness') || key.includes('workout') || key.includes('wellness')) key = 'fitness';
+    else if (key.includes('legal') || key.includes('consult') || key.includes('law')) key = 'legal';
+    else if (key.includes('garage') || key.includes('auto') || key.includes('car') || key.includes('bike')) key = 'automobile';
+    else if (key.includes('repair') || key.includes('service center') || key.includes('maintenance')) key = 'repair';
+    else if (key.includes('event') || key.includes('media') || key.includes('wedding')) key = 'events';
 
     if (!key || !sectorConfig[key]) {
         return sectorConfig['general'];

@@ -1439,3 +1439,103 @@ section {
   box-shadow: 0 0 10px white;
   animation: stars-burst 1s ease-out infinite;
 }
+
+/* ============================================
+   🌙 DARK MODE SUPPORT
+   ============================================ */
+[data-theme="dark"] {
+  --bg-main: #0F172A;
+  --bg-light: #1E293B;
+  --text-dark: #F1F5F9;
+  --text-gray: #94A3B8;
+  --text-light: #64748B;
+  --border-color: #334155;
+  --navbar-bg: rgba(15, 23, 42, 0.95);
+}
+
+[data-theme="dark"] body { background: #0F172A; color: #F1F5F9; }
+[data-theme="dark"] .auth-page { background: #0F172A; }
+[data-theme="dark"] .auth-card { background: #1E293B; border: 1px solid #334155; }
+[data-theme="dark"] .auth-card h2 { color: #F1F5F9; }
+[data-theme="dark"] .input-field { background: #0F172A; border-color: #334155; color: #F1F5F9; }
+[data-theme="dark"] .select-field { background: #0F172A; border-color: #334155; color: #F1F5F9; }
+[data-theme="dark"] .stat-card { background: #1E293B; border-color: #334155; }
+[data-theme="dark"] .stat-card .value { color: #F1F5F9; }
+[data-theme="dark"] .data-card { background: #1E293B; border-color: #334155; }
+[data-theme="dark"] .data-table th { background: #0F172A; color: #64748B; }
+[data-theme="dark"] .data-table td { border-color: #334155; color: #CBD5E1; }
+[data-theme="dark"] .data-table tr:hover { background: #1E293B; }
+[data-theme="dark"] .feature-card { background: #1E293B; border-color: #334155; }
+[data-theme="dark"] .feature-card h3 { color: #F1F5F9; }
+[data-theme="dark"] .booking-card { background: #1E293B; border-color: #334155; }
+[data-theme="dark"] .ud-card { background: #1E293B !important; border-color: #334155 !important; color: #F1F5F9; }
+[data-theme="dark"] .ud-card h3 { color: #F1F5F9; }
+[data-theme="dark"] .form-card { background: #1E293B; border-color: #334155; }
+[data-theme="dark"] .mini-calendar { background: #1E293B; border-color: #334155; }
+[data-theme="dark"] .navbar { background: #0F172A; border-color: #334155; }
+[data-theme="dark"] .top-navbar { background: rgba(15,23,42,0.9); border-color: #334155; }
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #334155;
+  background: #1E293B;
+  color: #F59E0B;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  transition: all 0.3s;
+  font-size: 20px;
+}
+.dark-mode-toggle:hover { transform: scale(1.15); }
+
+/* ============================================
+   📱 MOBILE RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  /* Landing Page */
+  .hero { flex-direction: column; text-align: center; gap: 32px; }
+  .hero-content h1 { font-size: 32px !important; }
+  .hero-content { max-width: 100%; }
+  .hero-image { display: none; }
+  .features-grid { grid-template-columns: 1fr !important; }
+  .steps-container { flex-direction: column; }
+  .advanced { flex-direction: column; }
+  .advanced-content { max-width: 100%; }
+  .footer { flex-direction: column; text-align: center; }
+  .cta-section { padding: 48px 24px; border-radius: 24px; }
+  .cta-section h2 { font-size: 28px; }
+
+  /* User Dashboard Mini Website */
+  .ud-section { padding: 32px 16px !important; }
+  .ud-card { padding: 20px !important; border-radius: 18px !important; }
+  .ud-btn { padding: 12px 20px !important; font-size: 13px !important; }
+}
+
+@media (max-width: 640px) {
+  /* Grid fallbacks */
+  .grid-4 { grid-template-columns: 1fr !important; }
+  .booking-grid { grid-template-columns: 1fr !important; }
+  .slot-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  .calendar-grid { gap: 4px; }
+  .calendar-day { padding: 6px; font-size: 11px; }
+
+  /* Auth pages */
+  .auth-card { padding: 24px; border-radius: 24px; }
+  .auth-card h2 { font-size: 24px; }
+
+  /* Dashboard */
+  .dashboard-container { padding: 12px !important; }
+  .data-card { padding: 16px; border-radius: 16px; }
+
+  /* Tables scroll */
+  .data-table { display: block; overflow-x: auto; white-space: nowrap; }
+}

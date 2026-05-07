@@ -162,9 +162,10 @@ const Register = () => {
                                         <div style={{ fontWeight: 900, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '10px' }}><User size={20} color={formData.role === 'user' ? '#6366F1' : '#64748B'}/> I'm a Customer</div>
                                         <p style={{ fontSize: '13px', color: '#64748B', margin: '8px 0 0', lineHeight: 1.5 }}>Browse services, book appointments, and track your history.</p>
                                     </div>
-                                    <div onClick={() => setFormData({...formData, role: 'client'})} style={{ padding: '24px', borderRadius: '20px', border: formData.role === 'client' ? '2px solid #6366F1' : '2px solid #F1F5F9', background: formData.role === 'client' ? '#EEF2FF' : 'white', cursor: 'pointer', transition: '0.2s' }}>
-                                        <div style={{ fontWeight: 900, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '10px' }}><Building2 size={20} color={formData.role === 'client' ? '#6366F1' : '#64748B'}/> I'm a Provider</div>
-                                        <p style={{ fontSize: '13px', color: '#64748B', margin: '8px 0 0', lineHeight: 1.5 }}>List your business, manage staff, and accept global bookings.</p>
+                                    <div onClick={() => setFormData({...formData, role: 'client'})} style={{ padding: '24px', borderRadius: '20px', border: formData.role === 'client' ? '2px solid #6366F1' : '2px solid #F1F5F9', background: formData.role === 'client' ? '#EEF2FF' : 'white', cursor: 'pointer', transition: '0.2s', position: 'relative' }}>
+                                        <div style={{ position: 'absolute', top: '-10px', right: '16px', background: '#10B981', color: 'white', padding: '4px 12px', borderRadius: '99px', fontSize: '11px', fontWeight: 900 }}>🎁 1 DAY FREE TRIAL</div>
+                                        <div style={{ fontWeight: 900, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '10px' }}><Building2 size={20} color={formData.role === 'client' ? '#6366F1' : '#64748B'}/> I'm a Business Owner</div>
+                                        <p style={{ fontSize: '13px', color: '#64748B', margin: '8px 0 0', lineHeight: 1.5 }}>Register your business, manage staff & bookings. <strong>Pay after 1 day trial.</strong></p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -189,8 +190,14 @@ const Register = () => {
                                 <div style={{ width: '80px', height: '80px', background: '#DCFCE7', color: '#16A34A', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
                                     <CheckCircle size={48} />
                                 </div>
-                                <h2 style={{ fontSize: '28px', fontWeight: 900, color: '#0F172A', marginBottom: '12px' }}>Welcome Aboard!</h2>
-                                <p style={{ color: '#64748B', lineHeight: 1.6 }}>Account created successfully. Redirecting you to your dashboard...</p>
+                                <h2 style={{ fontSize: '28px', fontWeight: 900, color: '#0F172A', marginBottom: '12px' }}>Welcome Aboard! 🎉</h2>
+                                <p style={{ color: '#64748B', lineHeight: 1.6, marginBottom: '16px' }}>Account created successfully. Redirecting to your dashboard...</p>
+                                {formData.role === 'client' && (
+                                    <div style={{ background: '#EEF2FF', padding: '16px', borderRadius: '16px', border: '1px solid #C7D2FE' }}>
+                                        <p style={{ fontSize: '14px', fontWeight: 800, color: '#4F46E5' }}>🎁 Your 1-Day Free Trial is now active!</p>
+                                        <p style={{ fontSize: '12px', color: '#64748B', marginTop: '4px' }}>Upgrade after trial to continue all features.</p>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -211,7 +218,11 @@ const Register = () => {
                 
                 <div style={{ maxWidth: '400px', position: 'relative', zIndex: 1 }}>
                     <h1 style={{ fontSize: '48px', fontWeight: 950, marginBottom: '24px', lineHeight: 1.1, letterSpacing: '-1px' }}>Join the Future of Scheduling.</h1>
-                    <p style={{ fontSize: '18px', opacity: 0.8, lineHeight: 1.6 }}>The world's most advanced platform for appointment management and business growth.</p>
+                    <p style={{ fontSize: '18px', opacity: 0.8, lineHeight: 1.6, marginBottom: '24px' }}>The world's most advanced platform for appointment management and business growth.</p>
+                    <div style={{ background: 'rgba(255,255,255,0.15)', padding: '16px 20px', borderRadius: '16px', marginBottom: '24px' }}>
+                        <p style={{ fontWeight: 900, fontSize: '15px' }}>🎁 Business Owners: 1 Day Free Trial</p>
+                        <p style={{ fontSize: '13px', opacity: 0.8, marginTop: '4px' }}>Register → Select Sector → Get your dashboard instantly. Pay only after 1 day.</p>
+                    </div>
                     <div style={{ display: 'flex', gap: '20px', marginTop: '40px' }}>
                         <div style={{ textAlign: 'center' }}><div style={{ fontSize: '24px', fontWeight: 900 }}>5K+</div><div style={{ fontSize: '12px', opacity: 0.7 }}>Businesses</div></div>
                         <div style={{ width: '1px', background: 'rgba(255,255,255,0.2)' }} />

@@ -89,17 +89,24 @@ const MiniWebsite = () => {
     const rawSector = org.organizationSector || org.sector || org.category || 'general';
     const config = getSectorConfig(rawSector);
     
+    // Sector-specific hero & about images from sectorConfig
+    const sectorHeroImage = config.userSide?.image || config.userSide?.images?.[0] || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80';
+    const sectorAboutImage = config.userSide?.secondaryImage || config.userSide?.images?.[1] || sectorHeroImage;
+
     const getSectorColor = (name) => {
         const n = name?.toLowerCase() || '';
-        if (n.includes('health') || n.includes('hospital')) return '#EF4444';
+        if (n.includes('health') || n.includes('hospital') || n.includes('clinic')) return '#EF4444';
         if (n.includes('beauty') || n.includes('salon')) return '#EC4899';
         if (n.includes('automotive') || n.includes('car')) return '#3B82F6';
-        if (n.includes('wellness') || n.includes('fitness')) return '#10B981';
-        if (n.includes('edu') || n.includes('coach')) return '#8B5CF6';
+        if (n.includes('wellness') || n.includes('fitness') || n.includes('gym')) return '#10B981';
+        if (n.includes('edu') || n.includes('coach') || n.includes('school')) return '#8B5CF6';
         if (n.includes('tech') || n.includes('it')) return '#6366F1';
-        if (n.includes('legal') || n.includes('consult')) return '#1E293B';
-        if (n.includes('event') || n.includes('photo')) return '#F43F5E';
+        if (n.includes('legal') || n.includes('law')) return '#1E293B';
+        if (n.includes('event') || n.includes('photo') || n.includes('wedding')) return '#F43F5E';
         if (n.includes('home') || n.includes('repair')) return '#F59E0B';
+        if (n.includes('hotel') || n.includes('hospitality') || n.includes('resort')) return '#0EA5E9';
+        if (n.includes('retail') || n.includes('shop')) return '#F97316';
+        if (n.includes('consult')) return '#6366F1';
         return '#4F46E5';
     };
     const primaryColor = getSectorColor(rawSector);
@@ -271,9 +278,9 @@ const MiniWebsite = () => {
                             </div>
                         </div>
                         <img 
-                            src={org.organizationImages?.split(',')[0] || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80'} 
+                            src={org.organizationImages?.split(',')[0] || sectorHeroImage} 
                             style={{ width: '100%', height: '600px', objectFit: 'cover', borderRadius: '60px', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.2)' }} 
-                            alt="Hero" 
+                            alt={`${config.label} - ${org.organizationName || org.name}`} 
                         />
                     </motion.div>
                 </div>
@@ -282,9 +289,9 @@ const MiniWebsite = () => {
                 <div id="about" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', marginBottom: '120px', alignItems: 'center' }}>
                     <div style={{ position: 'relative' }}>
                         <img 
-                            src={org.organizationImages?.split(',')[1] || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80'} 
+                            src={org.organizationImages?.split(',')[1] || sectorAboutImage} 
                             style={{ width: '100%', height: '500px', objectFit: 'cover', borderRadius: '40px' }} 
-                            alt="About" 
+                            alt={`About ${config.label}`} 
                         />
                         <div style={{ position: 'absolute', bottom: '-30px', right: '-30px', width: '250px', background: primaryColor, padding: '40px', borderRadius: '30px', color: 'white', boxShadow: `0 20px 40px ${primaryColor}40` }}>
                             <div style={{ fontSize: '48px', fontWeight: 950, lineHeight: 1 }}>10+</div>

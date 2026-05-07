@@ -102,8 +102,8 @@ const LandingPageV2 = () => {
                         <button onClick={() => navigate('/dashboard')} style={{ background: 'white', color: '#0F172A', padding: '10px 24px', borderRadius: '14px', fontWeight: 800, border: 'none', cursor: 'pointer' }}>Dashboard</button>
                     ) : (
                         <>
-                            <button onClick={() => navigate('/login')} style={{ background: 'transparent', color: 'white', fontWeight: 800, border: 'none', cursor: 'pointer', padding: '10px 20px' }}>Sign In</button>
-                            <button onClick={() => navigate('/register')} style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)', color: 'white', padding: '12px 28px', borderRadius: '14px', fontWeight: 900, border: 'none', cursor: 'pointer', boxShadow: '0 10px 20px rgba(99,102,241,0.3)' }}>Join Now</button>
+                            <button onClick={() => navigate('/login')} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontWeight: 800, border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', padding: '10px 24px', borderRadius: '14px', backdropFilter: 'blur(10px)' }}>Login</button>
+                            <button onClick={() => navigate('/register')} style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)', color: 'white', padding: '12px 28px', borderRadius: '14px', fontWeight: 900, border: 'none', cursor: 'pointer', boxShadow: '0 10px 20px rgba(99,102,241,0.3)' }}>Register Free</button>
                         </>
                     )}
                 </div>
@@ -115,8 +115,8 @@ const LandingPageV2 = () => {
                 
                 <div style={{ position: 'relative', zIndex: 1, maxWidth: '1000px', margin: '0 auto', padding: '0 20px' }}>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.05)', padding: '8px 20px', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '32px', fontSize: '14px', fontWeight: 800, color: '#A5B4FC' }}>
-                            <Zap size={16} fill="#A5B4FC" /> <span>NEW: Real-Time Appointment Disabling</span>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(16, 185, 129, 0.1)', padding: '8px 20px', borderRadius: '100px', border: '1px solid rgba(16, 185, 129, 0.3)', marginBottom: '32px', fontSize: '14px', fontWeight: 800, color: '#6EE7B7' }}>
+                            <Sparkles size={16} fill="#6EE7B7" /> <span>🎉 1 DAY FREE TRIAL — No Credit Card Required</span>
                         </div>
                         <h1 style={{ fontSize: '72px', fontWeight: 950, lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-3px' }}>
                             Smart Appointment <br/>
@@ -127,14 +127,15 @@ const LandingPageV2 = () => {
                         </p>
 
                         {/* CTA BUTTONS */}
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '60px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px', flexWrap: 'wrap' }}>
                             <button onClick={() => navigate('/register')} style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)', color: 'white', padding: '0 48px', height: '64px', borderRadius: '20px', fontWeight: 900, fontSize: '18px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 20px 40px -10px rgba(99,102,241,0.5)' }}>
-                                Get Started <ArrowRight size={20} />
+                                Get Started Free <ArrowRight size={20} />
                             </button>
-                            <button onClick={() => navigate('/book')} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0 40px', height: '64px', borderRadius: '20px', fontWeight: 800, fontSize: '18px', border: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <Calendar size={20} /> Book Appointment
+                            <button onClick={() => navigate('/login')} style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '0 40px', height: '64px', borderRadius: '20px', fontWeight: 800, fontSize: '18px', border: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                Login <ArrowRight size={20} />
                             </button>
                         </div>
+                        <p style={{ fontSize: '14px', color: '#64748B', fontWeight: 700, marginBottom: '60px' }}>✅ 1 Day Free Trial • No Credit Card • Cancel Anytime</p>
 
                         {/* SEARCH BAR */}
                         <div style={{ maxWidth: '700px', margin: '0 auto 60px', position: 'relative' }}>
@@ -170,7 +171,18 @@ const LandingPageV2 = () => {
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 40%, transparent 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '40px' }}>
                                 <div style={{ background: s.color, color: 'white', width: 'fit-content', padding: '12px', borderRadius: '16px', marginBottom: '20px', boxShadow: `0 10px 20px ${s.color}40` }}>{s.icon}</div>
                                 <h3 style={{ fontSize: '28px', fontWeight: 900, marginBottom: '10px' }}>{s.name}</h3>
-                                <p style={{ color: '#94A3B8', fontSize: '15px', lineHeight: 1.6, marginBottom: '24px' }}>Custom-built scheduling logic for {s.name.toLowerCase()} providers with real-time slot management.</p>
+                                <p style={{ color: '#94A3B8', fontSize: '15px', lineHeight: 1.6, marginBottom: '24px' }}>Custom-built scheduling logic for {s.name.toLowerCase()} providers.</p>
+                                
+                                {/* NEW: Role Labels */}
+                                <div style={{ display:'flex', gap:'10px', marginBottom:'20px' }}>
+                                    <span style={{ fontSize:'11px', fontWeight:900, background:'rgba(255,255,255,0.1)', padding:'4px 10px', borderRadius:'6px', color:'#A5B4FC' }}>
+                                        {s.id === 'health' ? 'Doctor / Nurse' : s.id === 'edu' ? 'Faculty / Admin' : s.id === 'beauty' ? 'Stylist / Therapist' : 'Manager / Staff'}
+                                    </span>
+                                    <span style={{ fontSize:'11px', fontWeight:900, background:'rgba(255,255,255,0.1)', padding:'4px 10px', borderRadius:'6px', color:'#818CF8' }}>
+                                        HR & Admin Panel
+                                    </span>
+                                </div>
+
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'white', fontWeight: 800 }}>Explore Solution <ChevronRight size={18} /></div>
                             </div>
                         </motion.div>
@@ -246,15 +258,16 @@ const LandingPageV2 = () => {
             {/* 💎 PRICING */}
             <section id="pricing" style={{ padding: '120px 40px', maxWidth: '1400px', margin: '0 auto' }}>
                 <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                    <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', padding: '8px 20px', borderRadius: '100px', color: '#6EE7B7', fontSize: '14px', fontWeight: 900, marginBottom: '24px' }}>🎁 1 DAY FREE TRIAL ON ALL PLANS</div>
                     <h2 style={{ fontSize: '48px', fontWeight: 900, marginBottom: '20px', letterSpacing: '-2px' }}>Pick Your Scaling Plan</h2>
-                    <p style={{ color: '#94A3B8', fontSize: '18px' }}>Start for free, upgrade when you're ready to dominate your industry.</p>
+                    <p style={{ color: '#94A3B8', fontSize: '18px' }}>Start with a 1-day free trial. Upgrade when you're ready to dominate your industry.</p>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '30px' }}>
                     {[
-                        { name: 'Starter', price: 'Free', features: ['50 Bookings / mo', '1 Team Member', 'Standard Support', 'Public Profile'], active: false },
-                        { name: 'Pro Business', price: '₹2,499', features: ['Unlimited Bookings', '10 Team Members', 'Real-Time Notifications', 'Advanced Analytics', 'Priority Support'], active: true },
-                        { name: 'Enterprise', price: 'Custom', features: ['Global Presence', 'Unlimited Staff', 'Dedicated Manager', 'API Access', 'Custom Branding'], active: false }
+                        { name: 'Starter', price: 'Free', trial: '1 Day Trial', features: ['50 Bookings / mo', '1 Team Member', 'Standard Support', 'Public Profile'], active: false },
+                        { name: 'Pro Business', price: '₹2,499', trial: '1 Day Free Trial', features: ['Unlimited Bookings', '10 Team Members', 'Real-Time Notifications', 'Advanced Analytics', 'Priority Support'], active: true },
+                        { name: 'Enterprise', price: 'Custom', trial: '1 Day Free Trial', features: ['Global Presence', 'Unlimited Staff', 'Dedicated Manager', 'API Access', 'Custom Branding'], active: false }
                     ].map((plan, i) => (
                         <div key={i} style={{ 
                             background: plan.active ? 'linear-gradient(135deg, #1E293B, #0F172A)' : 'rgba(255,255,255,0.03)', 
@@ -263,6 +276,7 @@ const LandingPageV2 = () => {
                             position: 'relative', transition: '0.3s'
                         }}>
                             {plan.active && <div style={{ position: 'absolute', top: '24px', right: '40px', background: '#6366F1', color: 'white', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 900 }}>MOST POPULAR</div>}
+                            <div style={{ background: 'rgba(16,185,129,0.15)', color: '#6EE7B7', padding: '6px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: 900, display: 'inline-block', marginBottom: '16px' }}>{plan.trial}</div>
                             <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '16px' }}>{plan.name}</h3>
                             <div style={{ fontSize: '48px', fontWeight: 950, marginBottom: '40px' }}>{plan.price}<span style={{ fontSize: '16px', color: '#64748B' }}>/mo</span></div>
                             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '48px' }}>
