@@ -116,10 +116,16 @@ if (require.main === module) {
     initDB();
 }
 
+// Global 404 Handler for API
+app.use('/api/*', (req, res) => {
+    console.log(`🔍 [404] No Route Found for: ${req.method} ${req.url}`);
+    res.status(404).json({ message: `API Route Not Found: ${req.url}` });
+});
+
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error(`🚨 SERVER ERROR: ${err.message}`);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
 });
 
 module.exports = app;

@@ -17,8 +17,8 @@ router.post('/register', async (req, res) => {
         }
 
         // Inherit UserType and Sector from Client if provided
-        let finalUserType = userType || 'client';
-        let finalSector = sector || 'general';
+        let finalUserType = userType || 'individual';
+        let finalSector = sector || 'General Services';
         let finalSectorId = sectorId || null;
 
         if (clientId) {
