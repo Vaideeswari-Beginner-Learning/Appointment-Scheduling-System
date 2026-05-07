@@ -101,14 +101,22 @@ const initDB = async () => {
 
 // Only run startup logic if not imported as a module (e.g. by Vercel)
 if (require.main === module) {
+    console.log(`⭐ [STARTUP] Initializing database and server...`);
     initDB().then(() => {
         const PORT = process.env.PORT || 5002;
-        server.listen(PORT, () => {
-            console.log(`🚀 SERVER ACTIVE ON PORT ${PORT}`);
+        console.log(`⭐ [STARTUP] Attempting to listen on PORT: ${PORT}`);
+        server.listen(PORT, '0.0.0.0', () => {
+            console.log(`🚀 [SUCCESS] SERVER ACTIVE ON PORT ${PORT}`);
+            console.log(`🔗 [INFO] Health check available at /api/health`);
             initCron();
+        }).on('error', (err) => {
+            console.error(`🚨 [CRITICAL] Server failed to start:`, err);
         });
+    }).catch(err => {
+        console.error(`🚨 [CRITICAL] DB/Server Init failed:`, err);
     });
 } else {
+    console.log(`⭐ [IMPORT] Server imported as module (likely Vercel/Function)`);
     initDB();
 }
 
