@@ -66,18 +66,6 @@ const io = new Server(server, {
 // Make io accessible in routes
 app.set('io', io);
 
-app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true
-}));
-app.use(express.json());
-
 // Request logger
 app.use((req, res, next) => {
     console.log(`📡 [${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
