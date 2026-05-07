@@ -17,29 +17,11 @@ console.log('🚀 [BOOT] Server script initialization...');
 const app = express();
 app.set('trust proxy', 1);
 
-// 1. EXPLICIT CORS CONFIGURATION
-const allowedOrigins = [
-    'https://appointmentscheduling-system.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:5002',
-    'http://127.0.0.1:5173'
-];
-
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
-            callback(null, true);
-        } else {
-            console.log('CORS Blocked for origin:', origin);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'Accept', 'Origin', 'X-Requested-With']
-};
-
-app.use(cors(corsOptions));
+// 1. PERMISSIVE CORS (For Debugging)
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 
 // Diagnostic Routes
 app.get('/', (req, res) => res.send('✅ Appointment System API - Online'));
