@@ -32,9 +32,12 @@ const corsOptions = {
     origin: (origin, callback) => {
         const allowedOrigins = [
             'https://appointmentscheduling-system.vercel.app',
+            'https://appointment-scheduling-system.vercel.app',
+            'https://appointment-scheduling-system-tnzt.onrender.com',
             'http://localhost:5173',
             'http://localhost:5002',
-            /\.vercel\.app$/ // Allow Vercel preview branches
+            /^https:\/\/.*\.vercel\.app$/, // Allow all Vercel subdomains
+            /^https:\/\/.*\.onrender\.com$/ // Allow all Render subdomains
         ];
         
         // Allow requests with no origin (like mobile apps or curl)
@@ -42,19 +45,24 @@ const corsOptions = {
         
         const isAllowed = allowedOrigins.some(ao => {
             if (ao instanceof RegExp) return ao.test(origin);
-            return ao === origin;
+            const normalizedAO = ao.trim().replace(/\/$/, '');
+            const normalizedOrigin = origin.trim().replace(/\/$/, '');
+            return normalizedAO === normalizedOrigin;
         });
 
         if (isAllowed) {
             callback(null, true);
         } else {
-            console.warn(`🚨 [CORS BLOCKED] Origin: ${origin}`);
-            callback(new Error('Not allowed by CORS'));
+            console.warn(`🚨 [CORS BLOCKED] Origin: "${origin}"`);
+            // Instead of blocking with error, we just don't set the header
+            // This prevents 500 errors during preflight
+            callback(null, false);
         }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'Accept'],
+    exposedHeaders: ['set-cookie']
 };
 app.use(cors(corsOptions));
 

@@ -16,7 +16,7 @@ const connectDB = async () => {
         return conn;
     } catch (error) {
         console.error(`❌ Database Connection Error: ${error.message}`);
-        process.exit(1);
+        // Removed process.exit(1) to allow the server to report health even if DB is briefly down
     }
 };
 

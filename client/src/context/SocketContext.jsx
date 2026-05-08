@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import { API_BASE_URL } from '../config/api';
+import { SERVER_URL } from '../config/api';
 import { useAuth } from './AuthContext';
 
 const SocketContext = createContext();
@@ -12,8 +12,11 @@ export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const socketUrl = 'https://appointment-scheduling-system-tnzt.onrender.com';
-        const newSocket = io(socketUrl, { withCredentials: true });
+        const socketUrl = SERVER_URL;
+        const newSocket = io(socketUrl, { 
+            withCredentials: true,
+            transports: ['polling', 'websocket'] 
+        });
         setSocket(newSocket);
 
         if (user?.clientId) {

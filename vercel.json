@@ -4,8 +4,12 @@
   "outputDirectory": "client/dist",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api"
+      "source": "/api/(.*)",
+      "destination": "https://appointment-scheduling-system-tnzt.onrender.com/api/$1"
+    },
+    {
+      "source": "/api",
+      "destination": "https://appointment-scheduling-system-tnzt.onrender.com/api"
     },
     {
       "source": "/(.*)",
