@@ -558,7 +558,7 @@ const UserDashboard = () => {
                     <div style={{ position:'absolute', top:'24px', right:'32px', background:'rgba(0,0,0,0.4)', backdropFilter:'blur(8px)', color:'white', padding:'6px 14px', borderRadius:'20px', fontSize:'12px', fontWeight:800 }}>
                         {heroSlide + 1} / {heroImages.length}
                     </div>
-                </div>iv>
+                </div>
 
                 {/* 2. QUICK BOOKING BAR */}
                 <div className="ud-section" style={{ marginTop:'-40px', position:'relative', zIndex:10 }}>
