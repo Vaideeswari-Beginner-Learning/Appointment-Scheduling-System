@@ -5,11 +5,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://appointmentscheduling-system.onrender.com/api/$1"
+      "destination": "https://appointment-scheduling-system-tnzt.onrender.com/api/$1"
     },
     {
       "source": "/api",
-      "destination": "https://appointmentscheduling-system.onrender.com/api"
+      "destination": "https://appointment-scheduling-system-tnzt.onrender.com/api"
     },
     {
       "source": "/(.*)",
