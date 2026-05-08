@@ -7,9 +7,9 @@ const getBaseUrl = () => {
             return `http://${hostname}:5002`;
         }
         
-        // Production Deployment Sync Trigger v7 (Proxy Enabled)
-        // Note: Using the -tnzt Render URL as the primary backend
-        const prodUrl = 'https://appointment-scheduling-system-tnzt.onrender.com';
+        // Production Deployment Sync Trigger v8 (URL Match Fix)
+        // Updated to match the URL in the error logs: appointmentscheduling-system.onrender.com
+        const prodUrl = 'https://appointmentscheduling-system.onrender.com';
         console.log('🔗 PROD API URL:', prodUrl);
         return prodUrl;
     }
