@@ -7,9 +7,8 @@ const getBaseUrl = () => {
             return `http://${hostname}:5002`;
         }
         
-        // Production Deployment Sync Trigger v9 (Verified Backend Fix)
-        // Verified that -tnzt is the active and correct backend
-        const prodUrl = 'https://appointment-scheduling-system-tnzt.onrender.com';
+        // Production Deployment Sync Trigger v10 (New Render Instance)
+        const prodUrl = 'https://appointment-scheduling-system-il7s.onrender.com';
         console.log('🔗 PROD API URL:', prodUrl);
         return prodUrl;
     }

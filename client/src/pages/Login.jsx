@@ -23,7 +23,8 @@ const Login = () => {
             showToast('Welcome back! Logging you in...', 'success');
             navigate('/dashboard');
         } catch (err) {
-            const msg = err.response?.data?.message || err.response?.data?.msg || 'Invalid email or password';
+            console.error('Login Error details:', err);
+            const msg = err.response?.data?.message || err.response?.data?.msg || `Connection failed (${err.response?.status || err.message}). The backend server is unreachable or returning an error.`;
             showToast(msg, 'error');
             setError(msg);
         } finally {

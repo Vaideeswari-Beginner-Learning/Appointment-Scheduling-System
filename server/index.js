@@ -31,10 +31,12 @@ criticalEnvVars.forEach(v => {
 const corsOptions = {
     origin: (origin, callback) => {
         const allowedOrigins = [
+            'https://appointment-scheduling-system-booki.vercel.app',
             'https://appointmentscheduling-system.vercel.app',
             'https://appointment-scheduling-system.vercel.app',
+            'https://appointment-scheduling-system-il7s.onrender.com',
             'https://appointment-scheduling-system-tnzt.onrender.com',
-            'https://appointmentscheduling-system.onrender.com', // Added this one
+            'https://appointmentscheduling-system.onrender.com',
             'http://localhost:5173',
             'http://localhost:5002',
             /^https:\/\/.*\.vercel\.app$/,
