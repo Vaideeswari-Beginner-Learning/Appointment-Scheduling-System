@@ -7,7 +7,7 @@ const getBaseUrl = () => {
             return `http://${hostname}:5002`;
         }
         
-        // Production Deployment Sync Trigger v10 (New Render Instance)
+        // Production Deployment v11 - Cache Bust 2026-05-09T10:48
         const prodUrl = 'https://appointment-scheduling-system-il7s.onrender.com';
         console.log('🔗 PROD API URL:', prodUrl);
         return prodUrl;
