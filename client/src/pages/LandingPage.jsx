@@ -6,19 +6,23 @@ import {
     Building2, Briefcase, Scissors, ShoppingBag, Star, Settings,
     ChevronDown, CheckCircle, Zap, Globe, Sparkles, Rocket,
     Heart, GraduationCap, Hotel as HotelIcon, 
-    Car, Dumbbell, Gavel, Home, Wrench, 
-    Music, ShoppingCart, MessageCircle, Smartphone
+    Car, Dumbbell, Gavel, Home as HomeIcon, Wrench, 
+    Music, ShoppingCart, MessageCircle, Smartphone, User, Check, Monitor, Layout
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 
 const LandingPage = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [isYearly, setIsYearly] = useState(false);
-    const [activeFaq, setActiveFaq] = useState(null);
     const [currentSectorIndex, setCurrentSectorIndex] = useState(0);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
+    const { scrollYProgress } = useScroll();
+    
+    // Smart Booking Widget State
+    const [bookingStep, setBookingStep] = useState(1);
+    const [selectedWidgetSector, setSelectedWidgetSector] = useState(null);
+    const [selectedWidgetService, setSelectedWidgetService] = useState(null);
 
     const heroSectors = [
         { label: 'Healthcare', icon: <Heart size={16} />, image: '/healthcare.png' },
@@ -29,7 +33,7 @@ const LandingPage = () => {
         { label: 'Automobile', icon: <Car size={16} />, image: 'https://images.unsplash.com/photo-1562426509-5044a121aa49?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Fitness', icon: <Dumbbell size={16} />, image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Legal', icon: <Gavel size={16} />, image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=1200&q=80' },
-        { label: 'Property', icon: <Home size={16} />, image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80' },
+        { label: 'Property', icon: <HomeIcon size={16} />, image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Repair Services', icon: <Wrench size={16} />, image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200&q=80' },
         { label: 'Events', icon: <Music size={16} />, image: '/sector_venues_real.png' },
         { label: 'Retail', icon: <ShoppingCart size={16} />, image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80' },
@@ -39,431 +43,459 @@ const LandingPage = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSectorIndex(prev => (prev + 1) % heroSectors.length);
-        }, 6000);
+        }, 5000);
         return () => clearInterval(interval);
     }, [heroSectors.length]);
 
-    // Removed auto-redirect to allow logged-in users to view landing page
-    /*
+    // Live Stats Counter Effect
+    const [stats, setStats] = useState({ appointments: 0, clients: 0, services: 0 });
     useEffect(() => {
-        if (user) {
-            navigate('/dashboard');
-        }
-    }, [user, navigate]);
-    */
+        const duration = 2000;
+        const steps = 60;
+        const interval = duration / steps;
+        let currentStep = 0;
 
-    const fadeIn = {
-        initial: { opacity: 0, y: 30 },
-        whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true },
-        transition: { duration: 0.8, ease: "easeOut" }
-    };
+        const timer = setInterval(() => {
+            currentStep++;
+            setStats({
+                appointments: Math.min(1000, Math.floor((1000 / steps) * currentStep)),
+                clients: Math.min(500, Math.floor((500 / steps) * currentStep)),
+                services: Math.min(50, Math.floor((50 / steps) * currentStep))
+            });
+            if (currentStep >= steps) clearInterval(timer);
+        }, interval);
+        return () => clearInterval(timer);
+    }, []);
 
-    const floating = {
-        animate: {
-            y: [0, -15, 0],
-            transition: {
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-            }
+    const floatingAnim = {
+        y: ["-10px", "10px"],
+        transition: {
+            duration: 2,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "easeInOut"
         }
     };
 
     return (
-        <div style={{ background: '#0F172A', minHeight: '100vh', color: 'white', overflowX: 'hidden', fontFamily: "'Inter', sans-serif" }}>
+        <div style={{ background: '#020617', minHeight: '100vh', color: 'white', overflowX: 'hidden', fontFamily: "'Inter', sans-serif" }}>
             
             <style>{`
-                @media (max-width: 968px) {
-                    .nav-links-desktop { display: none !important; }
-                    .hero-title { font-size: 36px !important; }
-                    .hero-sub { font-size: 16px !important; }
-                    .navbar-inner { padding: 0 20px !important; height: 70px !important; }
-                    .hero-section { padding-top: 60px !important; }
-                    .hero-image-container { min-height: 300px !important; height: auto !important; }
-                    .hero-image-container img { height: 350px !important; }
+                ::selection { background: rgba(99, 102, 241, 0.3); color: white; }
+                .glass-nav {
+                    background: rgba(2, 6, 23, 0.7);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                }
+                .glass-card {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+                }
+                .sector-card:hover {
+                    background: rgba(99, 102, 241, 0.1);
+                    border-color: rgba(99, 102, 241, 0.3);
+                    box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+                }
+                .sector-card:hover .explore-btn {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                .explore-btn {
+                    opacity: 0;
+                    transform: translateY(10px);
+                    transition: all 0.3s ease;
+                }
+                .gradient-text {
+                    background: linear-gradient(135deg, #818CF8 0%, #C084FC 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                .animated-bg {
+                    position: absolute;
+                    width: 100vw;
+                    height: 100vh;
+                    overflow: hidden;
+                    z-index: 0;
+                }
+                .blob {
+                    position: absolute;
+                    filter: blur(80px);
+                    border-radius: 50%;
+                    opacity: 0.5;
+                    animation: move 20s infinite alternate;
+                }
+                @keyframes move {
+                    from { transform: translate(0, 0) scale(1); }
+                    to { transform: translate(100px, -100px) scale(1.2); }
+                }
+                .scroll-hide::-webkit-scrollbar {
+                    display: none;
                 }
             `}</style>
             
-            {/* 1. NAVBAR (Ultra Modern) */}
-            <header style={{ 
-                position: 'fixed', top: 0, width: '100%', zIndex: 1000, 
-                background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(16px)',
-                borderBottom: '1px solid rgba(255,255,255,0.05)'
-            }}>
-                <div className="container navbar-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '90px', padding: '0 40px', maxWidth: '1400px', margin: '0 auto' }}>
+            {/* Animated Background Gradients */}
+            <div className="animated-bg">
+                <div className="blob" style={{ background: '#4F46E5', width: '400px', height: '400px', top: '-100px', left: '-100px' }} />
+                <div className="blob" style={{ background: '#9333EA', width: '300px', height: '300px', top: '20%', right: '-50px', animationDelay: '2s' }} />
+                <div className="blob" style={{ background: '#0EA5E9', width: '350px', height: '350px', bottom: '-100px', left: '30%', animationDelay: '4s' }} />
+            </div>
+
+            {/* 1. NAVBAR (Glassmorphism) */}
+            <header className="glass-nav" style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, transition: 'all 0.3s' }}>
+                <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '80px', padding: '0 40px', maxWidth: '1400px', margin: '0 auto' }}>
                     <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
-                        <div style={{ background: 'white', padding: '6px', borderRadius: '12px', display: 'flex' }}>
-                            <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
+                        <div style={{ background: 'linear-gradient(135deg, #4F46E5, #9333EA)', padding: '8px', borderRadius: '12px', display: 'flex', boxShadow: '0 0 15px rgba(79, 70, 229, 0.5)' }}>
+                            <img src="/logo.png" alt="Logo" style={{ height: '28px', filter: 'brightness(0) invert(1)' }} />
                         </div>
-                        <span style={{ fontSize: '24px', fontWeight: 950, color: 'white', letterSpacing: '-0.5px' }}>Smart<span style={{ color: '#818CF8' }}>Scheduler</span></span>
+                        <span style={{ fontSize: '22px', fontWeight: 900, color: 'white', letterSpacing: '-0.5px' }}>Smart<span style={{ color: '#818CF8' }}>Scheduler</span></span>
                     </Link>
 
-                    <nav className="nav-links-desktop" style={{ display: 'flex', gap: '40px', alignItems: 'center', fontWeight: 600, color: '#94A3B8' }}>
-                        <a href="#features" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }}>Features</a>
-                        <a href="#industries" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }}>Industries</a>
-                        <a href="#pricing" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }}>Pricing</a>
-                        <a href="#faq" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }}>FAQ</a>
+                    <nav className="nav-links-desktop" style={{ display: 'flex', gap: '40px', alignItems: 'center', fontWeight: 600, color: '#CBD5E1' }}>
+                        <a href="#features" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color='#fff'} onMouseLeave={(e)=>e.target.style.color='#CBD5E1'}>Features</a>
+                        <a href="#industries" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color='#fff'} onMouseLeave={(e)=>e.target.style.color='#CBD5E1'}>Industries</a>
+                        <a href="#demo" style={{ textDecoration: 'none', color: 'inherit', transition: 'color 0.2s' }} onMouseEnter={(e)=>e.target.style.color='#fff'} onMouseLeave={(e)=>e.target.style.color='#CBD5E1'}>Live Demo</a>
                     </nav>
 
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                         {user ? (
                             <Link to="/dashboard" style={{ 
-                                background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', color: 'white', 
-                                borderRadius: '14px', padding: '10px 20px', fontWeight: 800, textDecoration: 'none',
-                                fontSize: '14px', boxShadow: '0 10px 20px rgba(79,70,229,0.3)'
-                            }}>Dashboard</Link>
+                                background: 'white', color: '#0F172A', 
+                                borderRadius: '12px', padding: '10px 24px', fontWeight: 800, textDecoration: 'none',
+                                fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px',
+                                transition: 'all 0.2s', boxShadow: '0 0 20px rgba(255,255,255,0.2)'
+                            }}>
+                                Go to Dashboard <ArrowRight size={16} />
+                            </Link>
                         ) : (
                             <>
                                 <Link to="/login" style={{ 
                                     color: 'white', fontWeight: 700, textDecoration: 'none', 
-                                    padding: '10px 16px', fontSize: '14px',
-                                    border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
-                                    background: 'rgba(255,255,255,0.05)'
-                                }}>Sign In</Link>
+                                    padding: '10px 16px', fontSize: '14px', transition: 'opacity 0.2s'
+                                }}>Log In</Link>
                                 <Link to="/register" style={{ 
-                                    background: 'white', color: '#0F172A', 
-                                    borderRadius: '12px', padding: '10px 20px', fontWeight: 800, textDecoration: 'none',
-                                    fontSize: '14px', transition: 'transform 0.2s'
-                                }}>Join Now</Link>
+                                    background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', color: 'white', 
+                                    borderRadius: '12px', padding: '10px 24px', fontWeight: 800, textDecoration: 'none',
+                                    fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px',
+                                    boxShadow: '0 4px 15px rgba(79,70,229,0.4)', transition: 'transform 0.2s'
+                                }} onMouseEnter={(e)=>e.currentTarget.style.transform='translateY(-2px)'} onMouseLeave={(e)=>e.currentTarget.style.transform='translateY(0)'}>
+                                    Start Free Trial
+                                </Link>
                             </>
                         )}
                     </div>
                 </div>
             </header>
 
-            <main style={{ paddingTop: '90px' }}>
+            <main style={{ paddingTop: '80px', position: 'relative', zIndex: 1 }}>
                 
-                {/* 2. HERO SECTION (Parallax & Premium) */}
-                <section className="hero-section" style={{ position: 'relative', padding: '100px 24px 120px', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}>
-                        <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', width: '1000px', height: '600px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%)', filter: 'blur(80px)' }}></div>
-                    </div>
+                {/* 2. ANIMATED HERO SECTION */}
+                <section style={{ padding: '120px 24px 80px', position: 'relative', textAlign: 'center', minHeight: '90vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    
+                    {/* Floating Icons Background */}
+                    <motion.div animate={floatingAnim} style={{ position: 'absolute', top: '15%', left: '15%', background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '20px', backdropFilter: 'blur(10px)' }}>
+                        <Calendar size={32} color="#818CF8" />
+                    </motion.div>
+                    <motion.div animate={floatingAnim} transition={{ delay: 1 }} style={{ position: 'absolute', top: '25%', right: '15%', background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '20px', backdropFilter: 'blur(10px)' }}>
+                        <Sparkles size={32} color="#C084FC" />
+                    </motion.div>
+                    <motion.div animate={floatingAnim} transition={{ delay: 0.5 }} style={{ position: 'absolute', bottom: '30%', left: '20%', background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '20px', backdropFilter: 'blur(10px)' }}>
+                        <Users size={32} color="#34D399" />
+                    </motion.div>
 
-                    <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: '1200px', margin: '0 auto' }}>
-                        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: "circOut" }}>
+                    <div className="container" style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
+                        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                             <div style={{ 
                                 display: 'inline-flex', alignItems: 'center', gap: '8px', 
-                                background: 'rgba(255,255,255,0.05)', padding: '8px 16px', 
-                                borderRadius: '100px', border: '1px solid rgba(255,255,255,0.1)',
-                                marginBottom: '24px', fontSize: '14px', fontWeight: 700, color: '#A5B4FC'
+                                background: 'rgba(99, 102, 241, 0.1)', padding: '8px 20px', 
+                                borderRadius: '100px', border: '1px solid rgba(99, 102, 241, 0.2)',
+                                marginBottom: '32px', fontSize: '13px', fontWeight: 800, color: '#818CF8',
+                                letterSpacing: '1px', textTransform: 'uppercase'
                             }}>
-                                <Sparkles size={16} /> <span>Trusted by 5,000+ businesses globally</span>
+                                <Rocket size={14} /> The Future of Booking Systems
                             </div>
                             
-                            <h1 className="hero-title" style={{ fontSize: '64px', fontWeight: 950, lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-1.5px' }}>
-                                The Operating System for <br/>
-                                <span style={{ background: 'linear-gradient(to right, #818CF8, #C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Modern Service Economy</span>
+                            <h1 style={{ fontSize: '72px', fontWeight: 950, lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-2px' }}>
+                                Book Services <br />
+                                <span className="gradient-text">Anytime, Anywhere.</span>
                             </h1>
                             
-                            <p className="hero-sub" style={{ fontSize: '20px', color: '#94A3B8', maxWidth: '800px', margin: '0 auto 48px', lineHeight: 1.6 }}>
-                                Automate your entire booking lifecycle, manage global teams, and scale your operations with AI-driven scheduling intelligence.
+                            <p style={{ fontSize: '20px', color: '#94A3B8', maxWidth: '600px', margin: '0 auto 48px', lineHeight: 1.6, fontWeight: 500 }}>
+                                Seamlessly manage appointments, staff, and clients with our premium AI-driven scheduling platform built for modern businesses.
                             </p>
                             
-                             <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '80px', flexWrap: 'wrap' }}>
+                             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
                                 <Link to="/register" style={{ 
-                                    background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', color: 'white', 
-                                    height: '60px', padding: '0 40px', borderRadius: '18px', fontWeight: 900,
-                                    fontSize: '18px', display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none',
-                                    boxShadow: '0 20px 40px -10px rgba(79,70,229,0.5)', transition: 'transform 0.2s'
-                                }}>
-                                    Launch Your Portal <ArrowRight size={20} />
+                                    background: 'white', color: '#0F172A', 
+                                    height: '56px', padding: '0 32px', borderRadius: '16px', fontWeight: 900,
+                                    fontSize: '16px', display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none',
+                                    transition: 'all 0.2s'
+                                }} onMouseEnter={(e)=>e.currentTarget.style.transform='scale(1.05)'} onMouseLeave={(e)=>e.currentTarget.style.transform='scale(1)'}>
+                                    Get Started for Free <ArrowRight size={18} />
                                 </Link>
 
-                                <div style={{ position: 'relative', height: '60px' }}>
-                                    <button 
-                                        onClick={() => setIsMoreOpen(!isMoreOpen)}
-                                        style={{ 
-                                            height: '100%', background: 'rgba(255,255,255,0.05)', color: 'white', 
-                                            padding: '0 30px', borderRadius: '18px', fontWeight: 800,
-                                            fontSize: '17px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
-                                            display: 'flex', alignItems: 'center', gap: '15px', backdropFilter: 'blur(10px)'
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{ background: 'white', color: '#4F46E5', padding: '4px', borderRadius: '6px', display: 'flex' }}>
-                                                {heroSectors[currentSectorIndex].icon}
-                                            </span>
-                                            <span>{heroSectors[currentSectorIndex].label}</span>
-                                        </div>
-                                        <ChevronDown size={18} style={{ transform: isMoreOpen ? 'rotate(180deg)' : 'none', transition: '0.3s' }} />
-                                    </button>
-                                    <AnimatePresence>
-                                        {isMoreOpen && (
-                                            <motion.div 
-                                                initial={{ opacity: 0, y: 10 }} 
-                                                animate={{ opacity: 1, y: 0 }} 
-                                                exit={{ opacity: 0, y: 10 }}
-                                                style={{ 
-                                                    position: 'absolute', top: 'calc(100% + 10px)', left: 0, width: '280px',
-                                                    background: '#1E293B', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)',
-                                                    boxShadow: '0 20px 50px rgba(0,0,0,0.5)', padding: '10px', zIndex: 50,
-                                                    maxHeight: '300px', overflowY: 'auto'
-                                                }}
-                                            >
-                                                {heroSectors.map((s, i) => (
-                                                    <button 
-                                                        key={i}
-                                                        onClick={() => { setCurrentSectorIndex(i); setIsMoreOpen(false); }}
-                                                        style={{ 
-                                                            width: '100%', padding: '12px 15px', borderRadius: '12px', 
-                                                            background: currentSectorIndex === i ? 'rgba(255,255,255,0.05)' : 'transparent', 
-                                                            color: 'white', border: 'none', cursor: 'pointer', textAlign: 'left',
-                                                            display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 600
-                                                        }}
-                                                    >
-                                                        {s.icon} {s.label}
-                                                    </button>
-                                                ))}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
+                                <a href="#demo" style={{ 
+                                    height: '56px', background: 'rgba(255,255,255,0.05)', color: 'white', 
+                                    padding: '0 32px', borderRadius: '16px', fontWeight: 800,
+                                    fontSize: '16px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
+                                    display: 'flex', alignItems: 'center', gap: '10px', backdropFilter: 'blur(10px)',
+                                    textDecoration: 'none', transition: 'all 0.2s'
+                                }} onMouseEnter={(e)=>e.currentTarget.style.background='rgba(255,255,255,0.1)'} onMouseLeave={(e)=>e.currentTarget.style.background='rgba(255,255,255,0.05)'}>
+                                    <Play size={18} /> Try Live Demo
+                                </a>
                             </div>
                         </motion.div>
+                    </div>
 
-                        <motion.div variants={floating} animate="animate" style={{ position: 'relative', marginTop: '40px', minHeight: '600px' }}>
-                            <div style={{ 
-                                position: 'absolute', inset: '-20px', 
-                                background: 'linear-gradient(180deg, rgba(129, 140, 248, 0.3) 0%, transparent 100%)',
-                                borderRadius: '40px', filter: 'blur(60px)', zIndex: 0
-                            }}></div>
+                    {/* Dashboard Preview Image overlaying bottom */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 100 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        transition={{ delay: 0.4, duration: 1, type: "spring" }}
+                        style={{ marginTop: '80px', width: '100%', maxWidth: '1100px', position: 'relative' }}
+                    >
+                        <div style={{ position: 'absolute', inset: '-20px', background: 'linear-gradient(180deg, rgba(79, 70, 229, 0.4) 0%, transparent 100%)', filter: 'blur(50px)', borderRadius: '40px', zIndex: -1 }} />
+                        <div className="glass-card" style={{ borderRadius: '24px', padding: '8px', overflow: 'hidden' }}>
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80" alt="Dashboard Preview" style={{ width: '100%', height: 'auto', borderRadius: '16px', display: 'block', opacity: 0.8 }} />
+                            {/* Overlay mock UI elements to make it look like our dash */}
+                            <div style={{ position: 'absolute', top: '40px', left: '40px', background: 'rgba(15,23,42,0.8)', backdropFilter: 'blur(10px)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: '16px', alignItems: 'center' }}>
+                                <div style={{ width: '48px', height: '48px', background: '#4F46E5', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Calendar size={24} color="white" />
+                                </div>
+                                <div>
+                                    <div style={{ color: '#94A3B8', fontSize: '12px', fontWeight: 800 }}>UPCOMING</div>
+                                    <div style={{ color: 'white', fontSize: '16px', fontWeight: 900 }}>Client Meeting at 2:00 PM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                </section>
+
+                {/* 3. REAL-TIME STATS COUNTER */}
+                <section style={{ padding: '60px 24px', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}>
+                    <div className="container" style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '40px' }}>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '48px', fontWeight: 950, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                                {stats.appointments} <span style={{ color: '#4F46E5' }}>+</span>
+                            </div>
+                            <div style={{ color: '#94A3B8', fontSize: '14px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Appointments Booked</div>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '48px', fontWeight: 950, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                                {stats.clients} <span style={{ color: '#10B981' }}>+</span>
+                            </div>
+                            <div style={{ color: '#94A3B8', fontSize: '14px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Active Businesses</div>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '48px', fontWeight: 950, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                                {stats.services} <span style={{ color: '#F59E0B' }}>+</span>
+                            </div>
+                            <div style={{ color: '#94A3B8', fontSize: '14px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Services Listed</div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 4. SMART BOOKING WIDGET (Live Demo) */}
+                <section id="demo" style={{ padding: '120px 24px', position: 'relative' }}>
+                    <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+                            <h2 style={{ fontSize: '42px', fontWeight: 950, color: 'white', marginBottom: '16px' }}>Experience the Magic</h2>
+                            <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Try our seamless booking flow right here. No login required.</p>
+                        </div>
+
+                        <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto', borderRadius: '32px', padding: '40px', position: 'relative', overflow: 'hidden' }}>
+                            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'rgba(255,255,255,0.1)' }}>
+                                <div style={{ height: '100%', background: '#4F46E5', width: `${(bookingStep / 3) * 100}%`, transition: 'width 0.3s ease' }} />
+                            </div>
 
                             <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={currentSectorIndex}
-                                    initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
-                                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                                    exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
-                                    transition={{ duration: 0.8, ease: "circOut" }}
-                                    style={{ position: 'relative', zIndex: 1 }}
-                                >
-                                    <div className="hero-image-container" style={{ position: 'relative', borderRadius: '32px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 40px 100px -20px rgba(0,0,0,0.6)' }}>
-                                        <img 
-                                            src={heroSectors[currentSectorIndex].image} 
-                                            alt={heroSectors[currentSectorIndex].label} 
-                                            style={{ width: '100%', height: '600px', objectFit: 'cover', display: 'block' }} 
-                                        />
-                                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(15,23,42,0.6) 0%, transparent 40%)' }}></div>
-                                        
-                                        <motion.div 
-                                            initial={{ x: -20, opacity: 0 }}
-                                            animate={{ x: 0, opacity: 1 }}
-                                            transition={{ delay: 0.3 }}
-                                            style={{ 
-                                                position: 'absolute', bottom: '40px', left: '40px',
-                                                background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(20px)',
-                                                padding: '12px 24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.2)',
-                                                display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
-                                            }}
-                                        >
-                                            <div style={{ background: 'white', color: '#4F46E5', padding: '8px', borderRadius: '10px' }}>
-                                                {heroSectors[currentSectorIndex].icon}
-                                            </div>
-                                            <div style={{ textAlign: 'left' }}>
-                                                <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', opacity: 0.6, letterSpacing: '1px' }}>Industry Focus</div>
-                                                <div style={{ fontSize: '18px', fontWeight: 900, color: 'white' }}>{heroSectors[currentSectorIndex].label}</div>
-                                            </div>
-                                        </motion.div>
-                                    </div>
-                                </motion.div>
+                                {bookingStep === 1 && (
+                                    <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                                        <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{ width: '32px', height: '32px', background: '#4F46E5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>1</div>
+                                            Select Your Sector
+                                        </h3>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '16px' }}>
+                                            {heroSectors.slice(0, 8).map((sector, i) => (
+                                                <button 
+                                                    key={i}
+                                                    onClick={() => { setSelectedWidgetSector(sector); setBookingStep(2); }}
+                                                    style={{ 
+                                                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
+                                                        padding: '20px', borderRadius: '16px', color: 'white', cursor: 'pointer',
+                                                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onMouseEnter={(e)=>e.currentTarget.style.background='rgba(99, 102, 241, 0.2)'}
+                                                    onMouseLeave={(e)=>e.currentTarget.style.background='rgba(255,255,255,0.05)'}
+                                                >
+                                                    <div style={{ color: '#818CF8' }}>{sector.icon}</div>
+                                                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{sector.label}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {bookingStep === 2 && (
+                                    <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                                        <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{ width: '32px', height: '32px', background: '#4F46E5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>2</div>
+                                            Pick a Service for {selectedWidgetSector?.label}
+                                        </h3>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+                                            {['Premium Consultation', 'Standard Service', 'Emergency Support'].map((service, i) => (
+                                                <button 
+                                                    key={i}
+                                                    onClick={() => { setSelectedWidgetService(service); setBookingStep(3); }}
+                                                    style={{ 
+                                                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
+                                                        padding: '24px', borderRadius: '16px', color: 'white', cursor: 'pointer',
+                                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onMouseEnter={(e)=>e.currentTarget.style.background='rgba(99, 102, 241, 0.2)'}
+                                                    onMouseLeave={(e)=>e.currentTarget.style.background='rgba(255,255,255,0.05)'}
+                                                >
+                                                    <div style={{ textAlign: 'left' }}>
+                                                        <div style={{ fontWeight: 800, fontSize: '16px', marginBottom: '4px' }}>{service}</div>
+                                                        <div style={{ fontSize: '13px', color: '#94A3B8' }}>30 mins • Highly Rated</div>
+                                                    </div>
+                                                    <ArrowRight size={20} color="#818CF8" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <button onClick={() => setBookingStep(1)} style={{ marginTop: '24px', background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', fontWeight: 600 }}>← Back</button>
+                                    </motion.div>
+                                )}
+
+                                {bookingStep === 3 && (
+                                    <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} style={{ textAlign: 'center', padding: '40px 0' }}>
+                                        <div style={{ width: '80px', height: '80px', background: 'rgba(16, 185, 129, 0.2)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', color: '#10B981' }}>
+                                            <Check size={40} />
+                                        </div>
+                                        <h3 style={{ fontSize: '32px', fontWeight: 900, marginBottom: '16px' }}>Preview Complete!</h3>
+                                        <p style={{ color: '#94A3B8', fontSize: '16px', maxWidth: '400px', margin: '0 auto 32px' }}>
+                                            You just experienced how fast your customers can book {selectedWidgetService} using our platform.
+                                        </p>
+                                        <Link to="/register" style={{ 
+                                            background: '#4F46E5', color: 'white', padding: '16px 32px', 
+                                            borderRadius: '16px', fontWeight: 900, textDecoration: 'none', display: 'inline-block'
+                                        }}>
+                                            Create Your Own System Now
+                                        </Link>
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
 
-                {/* Features Section */}
-                <section id="features" style={{ padding: '100px 24px', background: '#0F172A' }}>
-                    <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                {/* 5. HOVER SECTOR CARDS */}
+                <section id="industries" style={{ padding: '100px 24px', position: 'relative' }}>
+                    <div className="container" style={{ maxWidth: '1400px', margin: '0 auto' }}>
                         <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                            <h2 style={{ fontSize: '48px', fontWeight: 950, color: 'white', marginBottom: '20px' }}>Powerful Features</h2>
-                            <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Everything you need to manage appointments and grow your business in one place.</p>
+                            <h2 style={{ fontSize: '48px', fontWeight: 950, color: 'white', marginBottom: '16px' }}>Built For Every Industry</h2>
+                            <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>Select your sector to instantly generate a tailor-made scheduling portal and mini-website.</p>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
-                            {[
-                                { title: 'Smart Scheduling', desc: 'AI-powered booking system that eliminates double bookings.', icon: <Calendar size={32} /> },
-                                { title: 'Global Payments', desc: 'Accept payments from clients worldwide with secure integrations.', icon: <CreditCard size={32} /> },
-                                { title: 'Real-time Analytics', desc: 'Deep insights into your business performance and growth.', icon: <BarChart3 size={32} /> },
-                                { title: 'Instant Notifications', desc: 'Automated SMS and Email alerts for staff and customers.', icon: <Bell size={32} /> },
-                                { title: 'Custom Branding', desc: 'Make the platform yours with your logo and brand colors.', icon: <Sparkles size={32} /> },
-                                { title: 'Multi-device Sync', desc: 'Manage your business from anywhere—mobile, tablet, or PC.', icon: <Smartphone size={32} /> }
-                            ].map((f, i) => (
-                                <motion.div 
-                                    key={i}
-                                    whileHover={{ y: -10, background: 'rgba(255,255,255,0.05)' }}
-                                    style={{ padding: '40px', borderRadius: '32px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', transition: '0.3s' }}
-                                >
-                                    <div style={{ color: '#818CF8', marginBottom: '24px' }}>{f.icon}</div>
-                                    <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '12px' }}>{f.title}</h3>
-                                    <p style={{ color: '#64748B', lineHeight: 1.6, fontSize: '15px' }}>{f.desc}</p>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* FAQ Section */}
-                <section id="faq" style={{ padding: '100px 24px', background: '#F8FAFC', color: '#0F172A' }}>
-                    <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                            <h2 style={{ fontSize: '42px', fontWeight: 950, marginBottom: '16px' }}>Got Questions?</h2>
-                            <p style={{ color: '#64748B' }}>Find answers to common queries about our platform.</p>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            {[
-                                { q: "How long does the setup take?", a: "You can be live and accepting bookings in less than 5 minutes. Our onboarding wizard guides you through every step." },
-                                { q: "Can I use my own domain?", a: "Yes, our Enterprise plan allows you to use your custom domain for a fully white-labeled experience." },
-                                { q: "Is my data secure?", a: "Absolutely. We use 256-bit encryption and industry-standard security protocols to keep your data safe." },
-                                { q: "Do you offer customer support?", a: "Yes, we provide 24/7 support via chat and email to all our users." }
-                            ].map((item, i) => (
-                                <div key={i} style={{ background: 'white', borderRadius: '20px', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
-                                    <button 
-                                        onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                                        style={{ width: '100%', padding: '24px', textAlign: 'left', background: 'none', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-                                    >
-                                        <span style={{ fontSize: '18px', fontWeight: 800, color: '#1E293B' }}>{item.q}</span>
-                                        <ChevronDown size={20} style={{ transform: activeFaq === i ? 'rotate(180deg)' : 'none', transition: '0.3s' }} />
-                                    </button>
-                                    <AnimatePresence>
-                                        {activeFaq === i && (
-                                            <motion.div 
-                                                initial={{ height: 0, opacity: 0 }} 
-                                                animate={{ height: 'auto', opacity: 1 }} 
-                                                exit={{ height: 0, opacity: 0 }}
-                                                style={{ padding: '0 24px 24px', color: '#64748B', lineHeight: 1.6 }}
-                                            >
-                                                {item.a}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* Industries Section */}
-                <section id="industries" style={{ padding: '100px 24px', background: 'white', color: '#0F172A' }}>
-                    <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-                        <h2 style={{ fontSize: '48px', fontWeight: 950, color: '#3B82F6', marginBottom: '16px' }}>Tailored for Your Sector</h2>
-                        <p style={{ color: '#64748B', fontSize: '18px', marginBottom: '64px', maxWidth: '600px', margin: '0 auto 64px' }}>Specialized features and interfaces optimized for different business industries.</p>
                         
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                             {heroSectors.map((sector, i) => (
-                                <motion.div 
-                                    key={i} 
-                                    whileHover={{ y: -15, boxShadow: '0 30px 60px -12px rgba(0,0,0,0.15)' }}
-                                    style={{ 
-                                        position: 'relative', height: '400px', borderRadius: '32px', overflow: 'hidden', 
-                                        cursor: 'pointer', transition: '0.4s cubic-bezier(0.4, 0, 0.2, 1)', border: '1px solid #E2E8F0' 
-                                    }}
-                                    onClick={() => navigate(`/register?sector=${sector.label.toLowerCase()}`)}
-                                >
-                                    <img 
-                                        src={sector.image} 
-                                        alt={sector.label} 
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: '0.6s' }} 
-                                        className="sector-card-img"
-                                    />
-                                    <div style={{ 
-                                        position: 'absolute', inset: 0, 
-                                        background: 'linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.6) 40%, transparent 100%)',
-                                        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '40px', textAlign: 'left'
-                                    }}>
-                                        <div style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', color: 'white', width: 'fit-content', padding: '10px', borderRadius: '14px', marginBottom: '16px' }}>
+                                <div key={i} className="glass-card sector-card" style={{ 
+                                    position: 'relative', height: '350px', borderRadius: '24px', overflow: 'hidden', 
+                                    cursor: 'pointer', transition: 'all 0.4s ease', display: 'flex', flexDirection: 'column',
+                                    justifyContent: 'flex-end', padding: '32px'
+                                }} onClick={() => navigate(`/register?sector=${sector.label.toLowerCase()}`)}>
+                                    <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+                                        <img src={sector.image} alt={sector.label} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4, transition: '0.4s' }} />
+                                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(2,6,23,1) 0%, rgba(2,6,23,0.2) 100%)' }} />
+                                    </div>
+                                    
+                                    <div style={{ position: 'relative', zIndex: 1 }}>
+                                        <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', color: 'white', width: 'fit-content', padding: '12px', borderRadius: '16px', marginBottom: '20px' }}>
                                             {sector.icon}
                                         </div>
-                                        <h3 style={{ fontWeight: 950, fontSize: '24px', color: 'white', marginBottom: '8px' }}>{sector.label}</h3>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94A3B8', fontSize: '14px', fontWeight: 700 }}>
-                                            <span>Explore Solutions</span> <ArrowRight size={14} />
+                                        <h3 style={{ fontWeight: 900, fontSize: '28px', color: 'white', marginBottom: '12px' }}>{sector.label}</h3>
+                                        <div className="explore-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#818CF8', fontSize: '15px', fontWeight: 800 }}>
+                                            Explore Sector <ArrowRight size={16} />
                                         </div>
                                     </div>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* Pricing Section */}
-                <section id="pricing" style={{ padding: '100px 24px' }}>
-                    <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-                        <h2 style={{ fontSize: '48px', fontWeight: 950, marginBottom: '48px' }}>Pricing Plans</h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
-                            {[
-                                { name: 'Free', price: '0', features: ['50 Bookings/mo', 'Basic Support'] },
-                                { name: 'Pro', price: '299', features: ['Unlimited Bookings', 'WhatsApp Integration', 'Priority Support'] },
-                                { name: 'Enterprise', price: '799', features: ['Custom Features', 'Dedicated Manager', 'API Access'] }
-                            ].map((plan, i) => (
-                                <div key={i} style={{ padding: '48px', borderRadius: '32px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <h3 style={{ fontSize: '24px', fontWeight: 900 }}>{plan.name}</h3>
-                                    <div style={{ fontSize: '48px', fontWeight: 950, margin: '24px 0' }}>Rs. {plan.price}<span style={{ fontSize: '16px', opacity: 0.6 }}>/mo</span></div>
-                                    <ul style={{ listStyle: 'none', padding: 0, marginBottom: '40px', textAlign: 'left' }}>
-                                        {plan.features.map((f, j) => (
-                                            <li key={j} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', color: '#94A3B8' }}>
-                                                <CheckCircle size={18} color="#10B981" /> {f}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <Link to="/register" style={{ display: 'block', background: i === 1 ? '#4F46E5' : 'white', color: i === 1 ? 'white' : '#0F172A', padding: '16px', borderRadius: '16px', fontWeight: 900, textDecoration: 'none' }}>Get Started</Link>
+                {/* 6. MINI WEBSITE PREVIEW */}
+                <section style={{ padding: '120px 24px', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
+                        <div>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', padding: '8px 16px', borderRadius: '100px', fontWeight: 800, fontSize: '13px', marginBottom: '24px', textTransform: 'uppercase' }}>
+                                <Monitor size={16} /> Public Presence included
+                            </div>
+                            <h2 style={{ fontSize: '48px', fontWeight: 950, marginBottom: '24px', lineHeight: 1.1 }}>Free SEO-Optimized <br/> Mini Website</h2>
+                            <p style={{ color: '#94A3B8', fontSize: '18px', lineHeight: 1.6, marginBottom: '32px' }}>
+                                Every account comes with a stunning, sector-specific public portal. Your customers can view your services, meet your staff, and book appointments directly from your unique link.
+                            </p>
+                            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
+                                {['Dynamic Hero Sliders based on your Sector', 'Integrated Live Chat & Support', 'Fully mobile responsive design'].map((f, i) => (
+                                    <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#CBD5E1', fontWeight: 600 }}>
+                                        <div style={{ background: '#4F46E5', borderRadius: '50%', padding: '4px' }}><Check size={14} color="white" /></div>
+                                        {f}
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link to="/register" style={{ background: 'white', color: '#0F172A', padding: '16px 32px', borderRadius: '16px', fontWeight: 900, textDecoration: 'none', display: 'inline-block' }}>
+                                Claim Your Website Now
+                            </Link>
+                        </div>
+                        <div style={{ position: 'relative' }}>
+                            <div style={{ position: 'absolute', inset: '-20px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%)', filter: 'blur(40px)', zIndex: 0 }} />
+                            <div className="glass-card" style={{ padding: '20px', borderRadius: '32px', position: 'relative', zIndex: 1, border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" alt="Mini Website Preview" style={{ width: '100%', borderRadius: '20px', display: 'block' }} />
+                                {/* Overlay mock mobile */}
+                                <div style={{ position: 'absolute', bottom: '-30px', right: '-30px', background: '#0F172A', padding: '12px', borderRadius: '32px', border: '8px solid #1E293B', width: '160px', height: '320px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
+                                    <div style={{ width: '100%', height: '100%', background: '#4F46E5', borderRadius: '20px', overflow: 'hidden', position: 'relative' }}>
+                                        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=400&q=80" alt="Mobile View" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
+                                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '20px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.8), transparent)' }}>
+                                            <div style={{ color: 'white', fontWeight: 900, fontSize: '14px' }}>Book Now</div>
+                                        </div>
+                                    </div>
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     </div>
                 </section>
 
             </main>
 
-            <footer style={{ background: '#020617', padding: '100px 24px 40px', color: 'white', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '60px', marginBottom: '80px' }}>
-                        <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-                                <div style={{ background: 'white', padding: '6px', borderRadius: '10px', display: 'flex' }}>
-                                    <img src="/logo.png" alt="Logo" style={{ height: '24px' }} />
-                                </div>
-                                <span style={{ fontSize: '20px', fontWeight: 900 }}>SmartScheduler</span>
-                            </div>
-                            <p style={{ color: '#64748B', lineHeight: 1.8, fontSize: '15px' }}>
-                                The world's most advanced scheduling platform for the modern service economy. Automate your booking lifecycle and scale your business effortlessly.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 style={{ fontWeight: 900, marginBottom: '32px', fontSize: '14px', letterSpacing: '1px', color: '#818CF8' }}>PRODUCT</h4>
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '16px', color: '#94A3B8', fontSize: '15px', fontWeight: 600 }}>
-                                <li style={{ cursor: 'pointer' }}>Features & Tools</li>
-                                <li style={{ cursor: 'pointer' }}>Pricing Tiers</li>
-                                <li style={{ cursor: 'pointer' }}>Release Notes</li>
-                                <li style={{ cursor: 'pointer' }}>Mobile App</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 style={{ fontWeight: 900, marginBottom: '32px', fontSize: '14px', letterSpacing: '1px', color: '#818CF8' }}>INDUSTRIES</h4>
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '16px', color: '#94A3B8', fontSize: '15px', fontWeight: 600 }}>
-                                <li style={{ cursor: 'pointer' }}>Healthcare Providers</li>
-                                <li style={{ cursor: 'pointer' }}>Education & Tutoring</li>
-                                <li style={{ cursor: 'pointer' }}>Salon & Wellness</li>
-                                <li style={{ cursor: 'pointer' }}>Corporate Systems</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 style={{ fontWeight: 900, marginBottom: '32px', fontSize: '14px', letterSpacing: '1px', color: '#818CF8' }}>RESOURCES</h4>
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '16px', color: '#94A3B8', fontSize: '15px', fontWeight: 600 }}>
-                                <li style={{ cursor: 'pointer' }}>Documentation</li>
-                                <li style={{ cursor: 'pointer' }}>API Reference</li>
-                                <li style={{ cursor: 'pointer' }}>Community Forum</li>
-                                <li style={{ cursor: 'pointer' }}>Privacy Policy</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div style={{ paddingTop: '40px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-                        <div style={{ color: '#475569', fontSize: '14px', fontWeight: 600 }}>
-                            &copy; {new Date().getFullYear()} SmartScheduler. Powered by Forge-SAAS. All Rights Reserved.
-                        </div>
-                        <div style={{ display: 'flex', gap: '24px', color: '#64748B', fontWeight: 700, fontSize: '14px' }}>
-                            <span style={{ cursor: 'pointer' }}>Twitter</span>
-                            <span style={{ cursor: 'pointer' }}>LinkedIn</span>
-                            <span style={{ cursor: 'pointer' }}>GitHub</span>
-                        </div>
+            {/* FLOATING QUICK ACTIONS */}
+            <div style={{ position: 'fixed', bottom: '30px', left: '30px', zIndex: 100 }}>
+                <a href="mailto:support@smartsched.com" style={{ 
+                    width: '60px', height: '60px', borderRadius: '30px', background: 'rgba(255,255,255,0.1)', 
+                    backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    border: '1px solid rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer', transition: 'all 0.3s'
+                }} onMouseEnter={(e)=>e.currentTarget.style.background='#4F46E5'} onMouseLeave={(e)=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}>
+                    <MessageCircle size={24} />
+                </a>
+            </div>
+
+            <footer style={{ background: '#020617', padding: '80px 24px 40px', color: 'white', borderTop: '1px solid rgba(255,255,255,0.05)', position: 'relative', zIndex: 1 }}>
+                <div style={{ maxWidth: '1400px', margin: '0 auto', textAlign: 'center' }}>
+                    <h2 style={{ fontSize: '32px', fontWeight: 900, marginBottom: '24px' }}>Ready to transform your business?</h2>
+                    <Link to="/register" style={{ 
+                        background: 'white', color: '#0F172A', padding: '16px 40px', 
+                        borderRadius: '16px', fontWeight: 900, textDecoration: 'none', display: 'inline-block',
+                        marginBottom: '60px'
+                    }}>
+                        Start Your Free Trial
+                    </Link>
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '40px', color: '#64748B', fontSize: '14px', fontWeight: 600 }}>
+                        &copy; {new Date().getFullYear()} SmartScheduler. Built for modern businesses.
                     </div>
                 </div>
             </footer>

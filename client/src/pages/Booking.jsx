@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Calendar as CalendarIcon, Clock, CheckCircle2, ChevronRight, 
     Briefcase, Search, FileText, Upload, User, ArrowLeft,
-    Monitor, ShieldCheck, MapPin, Zap, ExternalLink, Building2, X, Smartphone
+    Monitor, ShieldCheck, MapPin, Zap, ExternalLink, Building2, X, Smartphone, Users
 } from 'lucide-react';
 import { API_BASE_URL, UPI_ID, UPI_NAME } from '../config/api';
 import { getSectorConfig } from '../config/sectorConfig';
@@ -607,12 +607,44 @@ const Booking = () => {
                                 ))}
                             </div>
                         ) : (
-                            <div style={{ padding: '60px', textAlign: 'center', background: '#F8FAFC', borderRadius: '24px', border: '2px dashed #E2E8F0' }}>
-                                <div style={{ width: '60px', height: '60px', background: '#F1F5F9', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#94A3B8' }}>
-                                    <Briefcase size={32} />
+                            <div style={{ animation: 'fadeIn 0.4s ease' }}>
+                                <div style={{ padding: '60px', textAlign: 'center', background: 'white', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px -10px rgba(0,0,0,0.05)', marginBottom: '40px' }}>
+                                    <div style={{ width: '64px', height: '64px', background: '#F1F5F9', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#94A3B8' }}>
+                                        <Users size={32} />
+                                    </div>
+                                    <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#0F172A', marginBottom: '12px' }}>Meet Our Professional {config.dashboard.employeeRole}s</h3>
+                                    <p style={{ color: '#64748B', fontWeight: 600, maxWidth: '500px', margin: '0 auto 32px' }}>While we don't have specific services listed yet, you can browse our team members below and book a consultation directly.</p>
+                                    
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px', textAlign: 'left' }}>
+                                        {staff.length > 0 ? staff.map(member => (
+                                            <div key={member._id} style={{ background: '#F8FAFC', padding: '24px', borderRadius: '24px', border: '1px solid #F1F5F9' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                                                    <div style={{ width: '56px', height: '56px', borderRadius: '16px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F1F5F9' }}>
+                                                        {member.avatar ? (
+                                                            <img src={member.avatar} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        ) : (
+                                                            <User size={24} color="var(--primary)" />
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontWeight: 900, fontSize: '16px' }}>{member.name}</div>
+                                                        <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase' }}>{member.specialty || member.role}</div>
+                                                    </div>
+                                                </div>
+                                                <button 
+                                                    onClick={() => navigate(`/mini/${organization?._id || organization?.id}`)}
+                                                    style={{ width: '100%', background: 'white', border: '1px solid #E2E8F0', padding: '10px', borderRadius: '12px', fontSize: '13px', fontWeight: 800, cursor: 'pointer' }}
+                                                >
+                                                    View Profile & Bio
+                                                </button>
+                                            </div>
+                                        )) : (
+                                            <div style={{ gridColumn: '1/-1', textAlign: 'center', color: '#94A3B8', fontSize: '14px', fontWeight: 600 }}>
+                                                No team members found for this organization.
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', marginBottom: '8px' }}>No services available</h3>
-                                <p style={{ color: '#64748B', fontWeight: 600, margin: 0 }}>This organization hasn't published any bookable services yet.</p>
                             </div>
                         )}
                     </div>

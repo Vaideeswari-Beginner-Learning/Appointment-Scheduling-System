@@ -333,25 +333,41 @@ const MiniWebsite = () => {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '32px' }}>
                         {(staff.length > 0 ? staff : [
-                            { _id: 'dummy1', name: `Sarah Jenkins`, specialty: `Senior ${config.dashboard.employeeRole}`, avatar: config.dummyStaff?.[0] || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80', dummy: true },
-                            { _id: 'dummy2', name: `Michael Chen`, specialty: `Lead ${config.dashboard.employeeRole}`, avatar: config.dummyStaff?.[1] || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80', dummy: true },
-                            { _id: 'dummy3', name: `Emma Thompson`, specialty: `Expert ${config.dashboard.employeeRole}`, avatar: config.dummyStaff?.[2] || 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=400&q=80', dummy: true }
-                        ]).map(member => (
-                            <motion.div 
-                                whileHover={{ y: -15 }}
-                                key={member._id}
-                                style={{ background: 'white', padding: '40px', borderRadius: '40px', border: '1px solid #E2E8F0', textAlign: 'center', transition: '0.3s', position: 'relative' }}
-                            >
-                                {member.dummy && org.plan?.type !== 'paid' && <div style={{ position: 'absolute', top: '16px', right: '16px', background: '#F1F5F9', color: '#64748B', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '12px' }}>Demo Profile</div>}
-                                <div style={{ width: '160px', height: '160px', margin: '0 auto 32px', borderRadius: '50px', overflow: 'hidden', border: `4px solid ${primaryColor}10`, padding: '8px' }}>
-                                    <img src={member.avatar || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80'} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '40px' }} alt="" />
-                                </div>
-                                <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '8px' }}>{member.name}</h3>
-                                <div style={{ fontSize: '13px', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', marginBottom: '24px' }}>{member.specialty || config.dashboard.employeeRole}</div>
-                                <p style={{ fontSize: '14px', color: '#64748B', lineHeight: 1.6, marginBottom: '32px' }}>Certified expert with extensive training and a commitment to delivering exceptional results.</p>
-                                <button onClick={() => navigate(`/book?clientId=${id}`)} style={{ width: '100%', height: '56px', borderRadius: '18px', border: `2px solid ${primaryColor}20`, background: 'transparent', color: primaryColor, fontWeight: 900, cursor: 'pointer', transition: '0.3s' }} onMouseOver={e => { e.currentTarget.style.background = primaryColor; e.currentTarget.style.color = 'white'; }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = primaryColor; }}>View Schedule</button>
-                            </motion.div>
-                        ))}
+                            { _id: 'dummy1', name: `Sarah Jenkins`, specialty: `Senior ${config.dashboard.employeeRole}`, gender: 'female', avatar: config.dummyStaff?.[0] || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80', dummy: true },
+                            { _id: 'dummy2', name: `Michael Chen`, specialty: `Lead ${config.dashboard.employeeRole}`, gender: 'male', avatar: config.dummyStaff?.[1] || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80', dummy: true },
+                            { _id: 'dummy3', name: `Emma Thompson`, specialty: `Expert ${config.dashboard.employeeRole}`, gender: 'female', avatar: config.dummyStaff?.[2] || 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=400&q=80', dummy: true }
+                        ]).map(member => {
+                            // Logic for gender-based default avatar
+                            const defaultAvatar = member.gender === 'female' 
+                                ? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' // Professional Woman
+                                : 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80'; // Professional Man
+
+                            // Logic for Role Label
+                            const displayRole = member.specialty || (
+                                member.role === 'hr' ? 'HR Manager' : 
+                                member.role === 'doctor' ? 'Medical Specialist' :
+                                member.role === 'interviewer' ? 'Senior Interviewer' :
+                                member.role === 'employee' ? 'Team Member' :
+                                member.role?.toUpperCase() || config.dashboard.employeeRole
+                            );
+
+                            return (
+                                <motion.div 
+                                    whileHover={{ y: -15 }}
+                                    key={member._id}
+                                    style={{ background: 'white', padding: '40px', borderRadius: '40px', border: '1px solid #E2E8F0', textAlign: 'center', transition: '0.3s', position: 'relative' }}
+                                >
+                                    {member.dummy && org.plan?.type !== 'paid' && <div style={{ position: 'absolute', top: '16px', right: '16px', background: '#F1F5F9', color: '#64748B', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '12px' }}>Demo Profile</div>}
+                                    <div style={{ width: '160px', height: '160px', margin: '0 auto 32px', borderRadius: '50px', overflow: 'hidden', border: `4px solid ${primaryColor}10`, padding: '8px' }}>
+                                        <img src={member.avatar || defaultAvatar} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '40px' }} alt={member.name} />
+                                    </div>
+                                    <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '8px' }}>{member.name}</h3>
+                                    <div style={{ fontSize: '13px', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', marginBottom: '24px' }}>{displayRole}</div>
+                                    <p style={{ fontSize: '14px', color: '#64748B', lineHeight: 1.6, marginBottom: '32px' }}>{member.bio || `Certified expert with extensive training and a commitment to delivering exceptional results.`}</p>
+                                    <button onClick={() => navigate(`/book?clientId=${id}`)} style={{ width: '100%', height: '56px', borderRadius: '18px', border: `2px solid ${primaryColor}20`, background: 'transparent', color: primaryColor, fontWeight: 900, cursor: 'pointer', transition: '0.3s' }} onMouseOver={e => { e.currentTarget.style.background = primaryColor; e.currentTarget.style.color = 'white'; }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = primaryColor; }}>View Schedule</button>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </section>
 

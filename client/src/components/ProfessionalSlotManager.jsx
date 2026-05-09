@@ -3,19 +3,30 @@ import axios from 'axios';
 import { Calendar, Clock, Plus, Zap, Trash2, CheckCircle, AlertCircle } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 import { useAuth } from '../context/AuthContext';
+import { getSectorConfig } from '../config/sectorConfig';
 
-const ProfessionalSlotManager = () => {
+const ProfessionalSlotManager = ({ sector }) => {
     const { user } = useAuth();
     const [slots, setSlots] = useState([]);
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
     
+    const sectorData = getSectorConfig(sector || user?.sector || 'general');
+    const slotTypes = sectorData?.subCategories || ['General'];
+
     const [form, setForm] = useState({
         date: new Date().toISOString().split('T')[0],
         startTime: '09:00',
         endTime: '10:00',
-        type: user?.role === 'doctor' ? 'medical' : user?.role === 'interviewer' ? 'interview' : 'general'
+        type: slotTypes[0] || 'general'
     });
+
+    useEffect(() => {
+        // Reset type when sector changes
+        if (slotTypes.length > 0) {
+            setForm(prev => ({ ...prev, type: slotTypes[0] }));
+        }
+    }, [sector]);
 
     useEffect(() => {
         if (user?._id) {
@@ -122,11 +133,10 @@ const ProfessionalSlotManager = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <label style={{ fontSize: '11px', fontWeight: 900, color: '#64748B', textTransform: 'uppercase' }}>Slot Type</label>
                         <select value={form.type} onChange={e => setForm({...form, type: e.target.value})} 
-                            style={{ padding: '14px', borderRadius: '12px', border: '1.5px solid #E2E8F0', fontSize: '14px', fontWeight: 600, background: 'white' }}>
-                            <option value="general">General</option>
-                            <option value="interview">Interview</option>
-                            <option value="medical">Medical</option>
-                            <option value="consultation">Consultation</option>
+                            style={{ padding: '14px', borderRadius: '12px', border: '1.5px solid #E2E8F0', fontSize: '14px', fontWeight: 600, background: 'white', textTransform: 'capitalize' }}>
+                            {slotTypes.map(type => (
+                                <option key={type} value={type.toLowerCase()}>{type}</option>
+                            ))}
                         </select>
                     </div>
 

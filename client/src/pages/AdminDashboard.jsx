@@ -32,15 +32,49 @@ const AdminDashboard = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('pending');
     const [isMoreOpen, setIsMoreOpen] = useState(false);
-    
-    // Edit Organization State
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [editingOrg, setEditingOrg] = useState(null);
-    const [editFormData, setEditFormData] = useState({
+    const [editFormData, setEditFormData] = useState({ name: '', organizationName: '', email: '', sector: '', expiryDate: '' });
+    
+    // Modals State
+    const [isSectorModalOpen, setIsSectorModalOpen] = useState(false);
+    const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+    const [isAddingSector, setIsAddingSector] = useState(false);
+    const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
+    
+    // Announcement Form State
+    const [announcementForm, setAnnouncementForm] = useState({
+        title: '',
+        message: '',
+        type: 'General',
+        target: 'All Clients',
+        priority: 'Medium',
+        scheduleTime: '',
+        attachment: null
+    });
+    
+    // New Sector Form State
+    const [sectorFormData, setSectorFormData] = useState({
         name: '',
-        organizationName: '',
-        email: '',
-        sector: '',
-        expiryDate: ''
+        category: '',
+        icon: 'Hospital',
+        description: '',
+        services: '',
+        themeColor: '#3B82F6',
+        showOnLanding: true,
+        showOnUserDash: true
+    });
+
+    // New Plan Form State
+    const [planFormData, setPlanFormData] = useState({
+        name: '',
+        price: '',
+        billingType: 'monthly',
+        employeeLimit: '',
+        hrLimit: '',
+        bookingLimit: '',
+        features: [],
+        status: 'active'
     });
     
     useEffect(() => { fetchAll(); }, []);
@@ -145,6 +179,71 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleDeleteOrg = async (orgId) => {
+        if (!window.confirm('Are you sure you want to delete this organization? This action cannot be undone.')) return;
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`${API_BASE_URL}/users/${orgId}`, { headers: { 'x-auth-token': token } });
+            alert('Organization deleted successfully');
+            fetchAll();
+        } catch (err) {
+            alert('Deletion failed: ' + (err.response?.data?.message || err.message));
+        }
+    };
+
+    const handleDeleteSector = async (sectorId) => {
+        if (!window.confirm('Delete this sector?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`${API_BASE_URL}/api/sectors/${sectorId}`, { headers: { 'x-auth-token': token } });
+            alert('Sector deleted');
+            fetchAll();
+        } catch (err) {
+            alert('Failed to delete sector');
+        }
+    };
+
+    const handleAddSector = async (e) => {
+        e.preventDefault();
+        setIsAddingSector(true);
+        try {
+            const token = localStorage.getItem('token');
+            const subCategories = sectorFormData.services.split(',').map(s => s.trim()).filter(s => s);
+            await axios.post(`${API_BASE_URL}/sectors`, {
+                name: sectorFormData.name,
+                category: sectorFormData.category,
+                description: sectorFormData.description,
+                icon: sectorFormData.icon,
+                subCategories
+            }, { headers: { 'x-auth-token': token } });
+            
+            setIsSectorModalOpen(false);
+            setSectorFormData({ name: '', category: '', icon: 'Hospital', description: '', services: '', themeColor: '#3B82F6', showOnLanding: true, showOnUserDash: true });
+            fetchAll();
+            alert('Sector added successfully!');
+        } catch (err) {
+            alert('Failed to add sector: ' + (err.response?.data?.message || err.message));
+        } finally {
+            setIsAddingSector(false);
+        }
+    };
+
+    const handleSavePlan = async (e) => {
+        e.preventDefault();
+        alert("Subscription Plan '" + planFormData.name + "' defined successfully! (Simulation)");
+        setIsPlanModalOpen(false);
+    };
+
+    const handlePublishAnnouncement = (e) => {
+        e.preventDefault();
+        alert(`Announcement '${announcementForm.title}' published successfully to ${announcementForm.target}!`);
+        setIsAnnouncementModalOpen(false);
+    };
+
+    const handleActionSimulation = (action) => {
+        alert(`${action} performed successfully! (Simulation)`);
+    };
+
     const mainTabs = [
         { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, emoji: '🏠' },
         { id: 'requests', label: 'Client Requests', icon: Bell, emoji: '📥', badge: saasRequests.filter(r => r.status === 'pending').length },
@@ -174,11 +273,14 @@ const AdminDashboard = () => {
     );
 
     return (
-        <div className="admin-layout">
-            <aside className="admin-sidebar" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div className={`admin-layout ${isMobileMenuOpen ? 'mobile-nav-active' : ''}`} onClick={() => isMobileMenuOpen && setIsMobileMenuOpen(false)}>
+            <aside className={`admin-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`} style={{ position: 'relative', overflow: 'hidden' }}>
                 <div className="sidebar-brand">
                     <motion.div whileHover={{ scale: 1.1 }} className="brand-logo">F</motion.div>
                     <div className="brand-name">ForgeIndia</div>
+                    <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
+                        <X size={24} />
+                    </button>
                 </div>
                 
                 <nav className="admin-nav" style={{ overflowY: 'auto' }}>
@@ -269,11 +371,35 @@ const AdminDashboard = () => {
             <main className="admin-content">
                 <header className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="header-title">
-                        <h1>{allTabs.find(t => t.id === activeTab)?.emoji} {allTabs.find(t => t.id === activeTab)?.label}</h1>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>
+                                <MoreHorizontal size={24} />
+                            </button>
+                            <h1>{allTabs.find(t => t.id === activeTab)?.emoji} {allTabs.find(t => t.id === activeTab)?.label}</h1>
+                        </div>
                         <p>Welcome back, Administrator. Here's what's happening today.</p>
                     </motion.div>
                     
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                        <motion.div 
+                            className="global-search"
+                            initial={{ width: '250px' }}
+                            whileFocus={{ width: '350px' }}
+                            style={{ 
+                                display: 'flex', alignItems: 'center', background: '#F8FAFC', 
+                                padding: '10px 20px', borderRadius: '16px', 
+                                boxShadow: 'inset 0 2px 4px 0 rgba(0,0,0,0.05)',
+                                border: '2px solid #F1F5F9',
+                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                            }}
+                        >
+                            <Search size={18} color="#6366F1" />
+                            <input 
+                                placeholder="Universal Search..." 
+                                style={{ border: 'none', background: 'transparent', outline: 'none', marginLeft: '12px', width: '100%', fontSize: '14px', fontWeight: 700, color: '#1E293B' }}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </motion.div>
                         <motion.div whileHover={{ scale: 1.1 }} style={{ position: 'relative', cursor: 'pointer' }}>
                             <Bell size={22} color="#64748b"/>
                             <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#EF4444', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '50%', fontWeight: 900 }}>3</span>
@@ -379,6 +505,7 @@ const AdminDashboard = () => {
                                                             <div style={{ display: 'flex', gap: '8px' }}>
                                                                 <button onClick={() => handleApproveRequest(req._id)} className="action-btn" title="Approve" style={{ color: '#10B981' }}><CheckCircle size={16}/></button>
                                                                 <button onClick={() => handleRejectRequest(req._id)} className="action-btn" title="Reject" style={{ color: '#EF4444' }}><XCircle size={16}/></button>
+                                                                <button onClick={() => handleActionSimulation('Viewing request details')} className="action-btn" title="Details" style={{ color: '#6366F1' }}><MoreHorizontal size={16}/></button>
                                                             </div>
                                                         )}
                                                     </td>
@@ -397,7 +524,13 @@ const AdminDashboard = () => {
                             <div className="fade-in">
                                 <div className="table-header">
                                     <h2>💎 Subscription Architecture</h2>
-                                    <button className="action-btn" style={{ background: '#0F172A', color: 'white' }}>+ Define New Tier</button>
+                                    <button 
+                                        className="action-btn" 
+                                        style={{ background: '#0F172A', color: 'white' }}
+                                        onClick={() => setIsPlanModalOpen(true)}
+                                    >
+                                        + Define New Tier
+                                    </button>
                                 </div>
                                 <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px' }}>
                                     {[
@@ -527,7 +660,7 @@ const AdminDashboard = () => {
                             <div className="fade-in">
                                 <div className="table-header">
                                     <h2>📢 Announcement Module</h2>
-                                    <button className="action-btn" style={{ background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <button className="action-btn" onClick={() => setIsAnnouncementModalOpen(true)} style={{ background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Plus size={18} /> Create New
                                     </button>
                                 </div>
@@ -581,7 +714,11 @@ const AdminDashboard = () => {
                             <div className="fade-in">
                                 <div className="table-header">
                                     <h2>💼 Industry Sectors</h2>
-                                    <button className="action-btn" style={{ background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <button 
+                                        className="action-btn" 
+                                        style={{ background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                        onClick={() => setIsSectorModalOpen(true)}
+                                    >
                                         <Plus size={18} /> New Sector
                                     </button>
                                 </div>
@@ -663,7 +800,7 @@ const AdminDashboard = () => {
                                                     <div style={{ display: 'flex', gap: '10px' }}>
                                                         <button className="action-btn" style={{ flex: 1, justifyContent: 'center' }} title="Add Role" onClick={() => handleAddRole(s._id, s.subCategories || [])}><Plus size={16}/> Add Role</button>
                                                         <button className="action-btn" title="Edit"><Edit2 size={16}/></button>
-                                                        <button className="action-btn" title="Delete" style={{ color: '#EF4444' }}><Trash2 size={16}/></button>
+                                                        <button className="action-btn" title="Delete" style={{ color: '#EF4444' }} onClick={() => handleDeleteSector(s._id)}><Trash2 size={16}/></button>
                                                     </div>
                                                 </div>
                                             </motion.div>
@@ -682,8 +819,19 @@ const AdminDashboard = () => {
                                             <ShoppingBag size={16} style={{ marginRight: '5px' }}/> Export CSV
                                         </button>
                                         <div className="search-bar" style={{ width: '300px' }}>
-                                            <Search size={18}/>
-                                            <input placeholder="Search organizations..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}/>
+                                            <motion.div
+                                                initial={{ width: '250px' }}
+                                                whileFocus={{ width: '350px' }}
+                                                style={{ display: 'flex', alignItems: 'center', background: '#F8FAFC', borderRadius: '16px', padding: '10px 20px', border: '2px solid #F1F5F9', transition: 'all 0.3s ease' }}
+                                            >
+                                                <Search size={18} color="#64748B" />
+                                                <input 
+                                                    placeholder="Search organizations..." 
+                                                    value={searchQuery} 
+                                                    onChange={e => setSearchQuery(e.target.value)}
+                                                    style={{ border: 'none', background: 'transparent', outline: 'none', marginLeft: '12px', width: '100%', fontWeight: 700 }}
+                                                />
+                                            </motion.div>
                                         </div>
                                     </div>
                                 </div>
@@ -700,17 +848,18 @@ const AdminDashboard = () => {
                                                 <td><span style={{ color: c.plan?.expiryDate ? '#EF4444' : '#64748B', fontWeight: 700 }}>{c.plan?.expiryDate ? new Date(c.plan.expiryDate).toLocaleDateString() : 'Lifetime'}</span></td>
                                                 <td><span style={{ background: c.plan?.type === 'paid' ? '#EEF2FF' : '#F1F5F9', color: c.plan?.type === 'paid' ? '#6366F1' : '#64748B', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800 }}>{c.plan?.type?.toUpperCase() || 'FREE'}</span></td>
                                                 <td>
-                                                    <div style={{ display: 'flex', gap: '10px' }}>
-                                                        <button className="action-btn" title="Edit" onClick={() => handleEditClick(c)} style={{ color: '#6366F1' }}><Edit2 size={16}/></button>
-                                                        <button 
-                                                           className="action-btn" 
-                                                           title={c.isBlocked ? "Activate" : "Deactivate"} 
-                                                           onClick={() => handleToggleStatus(c._id)}
-                                                           style={{ color: c.isBlocked ? '#10B981' : '#EF4444' }}
-                                                        >
-                                                            {c.isBlocked ? <CheckCircle size={16}/> : <XCircle size={16}/>}
-                                                        </button>
-                                                    </div>
+                                                     <div style={{ display: 'flex', gap: '8px' }}>
+                                                         <button className="action-btn" title="Edit" onClick={() => { setEditingOrg(c); setEditFormData({ organizationName: c.organizationName || '', sector: c.sectorName?.toLowerCase() || 'general', expiryDate: c.plan?.expiryDate?.split('T')[0] || '' }); }}><Edit2 size={16}/></button>
+                                                         <button 
+                                                            className="action-btn" 
+                                                            title={c.isBlocked ? "Activate" : "Deactivate"} 
+                                                            onClick={() => handleToggleStatus(c._id)}
+                                                            style={{ color: c.isBlocked ? '#10B981' : '#EF4444' }}
+                                                         >
+                                                             {c.isBlocked ? <CheckCircle size={16}/> : <XCircle size={16}/>}
+                                                         </button>
+                                                         <button className="action-btn" title="Delete Organization" style={{ color: '#EF4444' }} onClick={() => handleDeleteOrg(c._id)}><Trash2 size={16}/></button>
+                                                     </div>
                                                 </td>
                                             </motion.tr>
                                         ))}
@@ -727,8 +876,19 @@ const AdminDashboard = () => {
                                 <div className="table-header">
                                     <h2>👥 System User Directory</h2>
                                     <div className="search-bar" style={{ width: '400px' }}>
-                                        <Search size={18}/>
-                                        <input placeholder="Search users by name, email or role..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}/>
+                                        <motion.div
+                                            initial={{ width: '300px' }}
+                                            whileFocus={{ width: '450px' }}
+                                            style={{ display: 'flex', alignItems: 'center', background: '#F8FAFC', borderRadius: '16px', padding: '10px 20px', border: '2px solid #F1F5F9', transition: 'all 0.3s ease' }}
+                                        >
+                                            <Search size={18} color="#64748B" />
+                                            <input 
+                                                placeholder="Search users by name, email or role..." 
+                                                value={searchQuery} 
+                                                onChange={e => setSearchQuery(e.target.value)}
+                                                style={{ border: 'none', background: 'transparent', outline: 'none', marginLeft: '12px', width: '100%', fontWeight: 700 }}
+                                            />
+                                        </motion.div>
                                     </div>
                                 </div>
                                 <div className="data-table-container">
@@ -789,7 +949,10 @@ const AdminDashboard = () => {
                                             </div>
                                             <h4 style={{ margin: '0 0 5px', fontSize: '16px', fontWeight: 800 }}>{t.issue}</h4>
                                             <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '20px' }}>Requested by {t.user}</p>
-                                            <button className="action-btn" style={{ width: '100%', background: '#F8FAFC' }}>Open Ticket</button>
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                <button className="action-btn" style={{ flex: 2, background: '#F8FAFC' }} onClick={() => handleActionSimulation(`Opening ticket: ${t.issue}`)}>Open Ticket</button>
+                                                <button className="action-btn" style={{ flex: 1, background: '#FEE2E2', color: '#EF4444' }} onClick={() => handleActionSimulation('Ticket deleted successfully')}><Trash2 size={16}/></button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -800,9 +963,17 @@ const AdminDashboard = () => {
                             <div className="fade-in">
                                 <div className="table-header">
                                     <h2>📊 Platform Performance Reports</h2>
-                                    <div style={{ display: 'flex', gap: '10px' }}>
-                                        <button className="action-btn"><RefreshCw size={16}/> Refresh</button>
-                                        <button className="action-btn" style={{ background: '#0F172A', color: 'white' }}><Database size={16}/> Export Full Data</button>
+                                    <div style={{ display: 'flex', gap: '12px' }}>
+                                        <motion.button 
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="action-btn" 
+                                            style={{ background: '#EEF2FF', color: '#6366F1', border: 'none', padding: '10px 20px', fontWeight: 800 }}
+                                            onClick={() => { fetchAll(); handleActionSimulation('Platform Analytics Synchronized'); }}
+                                        >
+                                            <RefreshCw size={16} style={{ marginRight: '8px' }}/> Refresh Intelligence
+                                        </motion.button>
+                                        <button className="action-btn" onClick={() => handleActionSimulation('Full Data Export')} style={{ background: '#0F172A', color: 'white', padding: '10px 20px' }}><Database size={16} style={{ marginRight: '8px' }}/> Export Intelligence</button>
                                     </div>
                                 </div>
                                 <div className="stats-grid" style={{ gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
@@ -846,7 +1017,7 @@ const AdminDashboard = () => {
                                                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, color: '#64748B', textTransform: 'uppercase', marginBottom: '8px' }}>Support Email</label>
                                                 <input className="form-input" defaultValue="support@forgeindia.com" style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '2px solid #F1F5F9', fontWeight: 600 }}/>
                                             </div>
-                                            <button className="action-btn" style={{ background: '#6366F1', color: 'white', marginTop: '10px' }}>Save Branding Changes</button>
+                                            <button className="action-btn" onClick={() => handleActionSimulation('Branding Changes saved')} style={{ background: '#6366F1', color: 'white', marginTop: '10px' }}>Save Branding Changes</button>
                                         </div>
                                     </div>
                                     <div className="data-table-container shadow-hover" style={{ padding: '40px', borderRadius: '32px' }}>
@@ -865,7 +1036,7 @@ const AdminDashboard = () => {
                                                 </div>
                                                 <button className="status-badge status-free">DISABLED</button>
                                             </div>
-                                            <button className="action-btn" style={{ background: '#0F172A', color: 'white' }}>Update Security Settings</button>
+                                            <button className="action-btn" onClick={() => handleActionSimulation('Security Settings updated')} style={{ background: '#0F172A', color: 'white' }}>Update Security Settings</button>
                                         </div>
                                     </div>
                                 </div>
@@ -941,6 +1112,239 @@ const AdminDashboard = () => {
                                             />
                                         </div>
                                         <button type="submit" className="action-btn" style={{ background: '#6366F1', color: 'white', padding: '12px', borderRadius: '12px', fontWeight: 900, marginTop: '10px' }}>Save Changes</button>
+                                    </div>
+                                </form>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+                {/* New Sector Modal */}
+                <AnimatePresence>
+                    {isSectorModalOpen && (
+                        <div className="modal-overlay" onClick={() => setIsSectorModalOpen(false)}>
+                            <motion.div 
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                className="modal-content premium-modal" 
+                                style={{ maxWidth: '600px', width: '95%' }}
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <div className="modal-header-fancy">
+                                    <div>
+                                        <h2>✨ Create New Industry Sector</h2>
+                                        <p>Define a new business vertical for the platform</p>
+                                    </div>
+                                    <button onClick={() => setIsSectorModalOpen(false)} className="close-circle"><X size={20}/></button>
+                                </div>
+                                <form onSubmit={handleAddSector} className="fancy-form">
+                                    <div className="form-grid">
+                                        <div className="input-group animated">
+                                            <label>Sector Name</label>
+                                            <input 
+                                                required
+                                                placeholder="e.g. Healthcare, Retail"
+                                                value={sectorFormData.name}
+                                                onChange={e => setSectorFormData({...sectorFormData, name: e.target.value})}
+                                            />
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Category</label>
+                                            <input 
+                                                required
+                                                placeholder="e.g. Health, Business"
+                                                value={sectorFormData.category}
+                                                onChange={e => setSectorFormData({...sectorFormData, category: e.target.value})}
+                                            />
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Lucide Icon Name</label>
+                                            <input 
+                                                placeholder="Hospital, Scissors, etc."
+                                                value={sectorFormData.icon}
+                                                onChange={e => setSectorFormData({...sectorFormData, icon: e.target.value})}
+                                            />
+                                        </div>
+                                        <div className="input-group animated full">
+                                            <label>Description</label>
+                                            <textarea 
+                                                placeholder="Short description of this sector..."
+                                                value={sectorFormData.description}
+                                                onChange={e => setSectorFormData({...sectorFormData, description: e.target.value})}
+                                            />
+                                        </div>
+                                        <div className="input-group animated full">
+                                            <label>Services (Comma separated)</label>
+                                            <input 
+                                                placeholder="Doctor Consultation, Lab Test, etc."
+                                                value={sectorFormData.services}
+                                                onChange={e => setSectorFormData({...sectorFormData, services: e.target.value})}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button type="button" onClick={() => setIsSectorModalOpen(false)} className="cancel-btn">Cancel</button>
+                                        <button type="submit" className="save-btn" disabled={isAddingSector}>
+                                            {isAddingSector ? 'Creating...' : 'Create Sector'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* Subscription Tier Modal */}
+                <AnimatePresence>
+                    {isPlanModalOpen && (
+                        <div className="modal-overlay" onClick={() => setIsPlanModalOpen(false)}>
+                            <motion.div 
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                className="modal-content premium-modal" 
+                                style={{ maxWidth: '700px', width: '95%' }}
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <div className="modal-header-fancy" style={{ background: 'linear-gradient(135deg, #0F172A, #1E293B)' }}>
+                                    <div>
+                                        <h2 style={{ color: 'white' }}>💎 Define New Subscription Tier</h2>
+                                        <p style={{ color: 'rgba(255,255,255,0.6)' }}>Configure a new pricing model for your clients</p>
+                                    </div>
+                                    <button onClick={() => setIsPlanModalOpen(false)} className="close-circle" style={{ color: 'white' }}><X size={20}/></button>
+                                </div>
+                                <form onSubmit={handleSavePlan} className="fancy-form">
+                                    <div className="form-grid">
+                                        <div className="input-group animated">
+                                            <label>Plan Name</label>
+                                            <input placeholder="e.g. Gold Tier" value={planFormData.name} onChange={e => setPlanFormData({...planFormData, name: e.target.value})} required/>
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Price ($)</label>
+                                            <input type="number" placeholder="49.99" value={planFormData.price} onChange={e => setPlanFormData({...planFormData, price: e.target.value})} required/>
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Billing Type</label>
+                                            <select value={planFormData.billingType} onChange={e => setPlanFormData({...planFormData, billingType: e.target.value})}>
+                                                <option value="monthly">Monthly</option>
+                                                <option value="yearly">Yearly</option>
+                                                <option value="lifetime">Lifetime</option>
+                                            </select>
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>HR Limit</label>
+                                            <input type="number" placeholder="5" value={planFormData.hrLimit} onChange={e => setPlanFormData({...planFormData, hrLimit: e.target.value})} required/>
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Employee Limit</label>
+                                            <input type="number" placeholder="50" value={planFormData.employeeLimit} onChange={e => setPlanFormData({...planFormData, employeeLimit: e.target.value})} required/>
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Booking Limit</label>
+                                            <input type="number" placeholder="500" value={planFormData.bookingLimit} onChange={e => setPlanFormData({...planFormData, bookingLimit: e.target.value})} required/>
+                                        </div>
+                                        <div className="input-group animated full">
+                                            <label>Features Checklist (One per line)</label>
+                                            <textarea placeholder="AI Scheduling&#10;Custom Branding&#10;24/7 Support" rows="4"></textarea>
+                                        </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button type="button" onClick={() => setIsPlanModalOpen(false)} className="cancel-btn">Cancel</button>
+                                        <button type="button" onClick={() => handleActionSimulation('Plan architecture saved as draft')} className="cancel-btn" style={{ background: '#F1F5F9' }}>Save Draft</button>
+                                        <button type="submit" className="save-btn" style={{ background: '#0F172A' }}>Save Plan Architecture</button>
+                                    </div>
+                                </form>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+                {/* Create New Announcement Modal */}
+                <AnimatePresence>
+                    {isAnnouncementModalOpen && (
+                        <div className="modal-overlay" onClick={() => setIsAnnouncementModalOpen(false)}>
+                            <motion.div 
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                className="modal-content premium-modal" 
+                                style={{ maxWidth: '650px', width: '95%' }}
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <div className="modal-header-fancy" style={{ background: 'linear-gradient(135deg, #6366F1, #EC4899)' }}>
+                                    <div>
+                                        <h2>📢 Create New Announcement</h2>
+                                        <p>Broadcast a message to your platform users</p>
+                                    </div>
+                                    <button onClick={() => setIsAnnouncementModalOpen(false)} className="close-circle"><X size={20}/></button>
+                                </div>
+                                <form onSubmit={handlePublishAnnouncement} className="fancy-form">
+                                    <div className="form-grid">
+                                        <div className="input-group animated full">
+                                            <label>Announcement Title</label>
+                                            <input 
+                                                required
+                                                placeholder="e.g. System Maintenance, New Feature"
+                                                value={announcementForm.title}
+                                                onChange={e => setAnnouncementForm({...announcementForm, title: e.target.value})}
+                                            />
+                                        </div>
+                                        <div className="input-group animated full">
+                                            <label>Broadcast Message</label>
+                                            <textarea 
+                                                required
+                                                placeholder="Write your message here..."
+                                                rows="4"
+                                                value={announcementForm.message}
+                                                onChange={e => setAnnouncementForm({...announcementForm, message: e.target.value})}
+                                            />
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Announcement Type</label>
+                                            <select value={announcementForm.type} onChange={e => setAnnouncementForm({...announcementForm, type: e.target.value})}>
+                                                <option>General</option>
+                                                <option>Maintenance</option>
+                                                <option>New Feature</option>
+                                                <option>Security Alert</option>
+                                            </select>
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Target Audience</label>
+                                            <select value={announcementForm.target} onChange={e => setAnnouncementForm({...announcementForm, target: e.target.value})}>
+                                                <option>All Clients</option>
+                                                <option>Paid Clients Only</option>
+                                                <option>Free Users Only</option>
+                                                <option>Internal Staff</option>
+                                            </select>
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Priority Level</label>
+                                            <select value={announcementForm.priority} onChange={e => setAnnouncementForm({...announcementForm, priority: e.target.value})}>
+                                                <option>Low</option>
+                                                <option>Medium</option>
+                                                <option>High</option>
+                                                <option>Critical</option>
+                                            </select>
+                                        </div>
+                                        <div className="input-group animated">
+                                            <label>Schedule Time</label>
+                                            <input 
+                                                type="datetime-local"
+                                                value={announcementForm.scheduleTime}
+                                                onChange={e => setAnnouncementForm({...announcementForm, scheduleTime: e.target.value})}
+                                            />
+                                        </div>
+                                        <div className="input-group animated full">
+                                            <label>Attachment (Image/PDF)</label>
+                                            <div style={{ border: '2px dashed #E2E8F0', padding: '20px', borderRadius: '16px', textAlign: 'center', cursor: 'pointer' }} onClick={() => alert('File upload clicked')}>
+                                                <Plus size={24} color="#64748B"/>
+                                                <div style={{ fontSize: '13px', color: '#64748B', marginTop: '10px' }}>Click to upload file</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button type="button" onClick={() => setIsAnnouncementModalOpen(false)} className="cancel-btn">Cancel</button>
+                                        <button type="button" onClick={() => handleActionSimulation('Announcement saved as draft')} className="cancel-btn" style={{ background: '#F1F5F9' }}>Save Draft</button>
+                                        <button type="submit" className="save-btn" style={{ background: 'linear-gradient(135deg, #6366F1, #EC4899)' }}>Publish Now</button>
                                     </div>
                                 </form>
                             </motion.div>

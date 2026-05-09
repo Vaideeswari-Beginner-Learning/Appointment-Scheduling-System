@@ -6,7 +6,7 @@ import {
     Video, CheckCircle, Clock, Building, Scissors, GripVertical, ChevronDown, X, XCircle, 
     ArrowRight, CreditCard, QrCode, Sparkles, ShieldCheck, Building2, ExternalLink, Play, MapPin,
     Wrench, BookOpen, Zap, ShoppingBag, Car, GraduationCap, Music, Dumbbell, Gavel, Heart, Home,
-    Laptop, Cpu, Scale, Camera, Smartphone
+    Laptop, Cpu, Scale, Camera, Smartphone, Search, Megaphone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -109,7 +109,7 @@ const ClientDashboard = () => {
     const [tutorialScene, setTutorialScene] = useState(1);
     
     // Forms
-    const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', role: 'employee', department: '' });
+    const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', role: 'employee', department: '', gender: '' });
     const [serviceForm, setServiceForm] = useState({ 
         name: '', description: '', price: 0, duration: 30, category: '',
         customFields: [] 
@@ -141,7 +141,8 @@ const ClientDashboard = () => {
         organizationWebsite: '',
         organizationLogo: '',
         organizationImages: '',
-        organizationDescription: ''
+        organizationDescription: '',
+        sector: ''
     });
     const [paymentStage, setPaymentStage] = useState('idle'); // idle, processing, rocket, completed
     const [paymentData, setPaymentData] = useState({ amount: 'Rs. 1', title: 'Plan Upgrade' });
@@ -521,7 +522,8 @@ const ClientDashboard = () => {
                 organizationImages: user.organizationImages || '',
                 organizationDescription: user.organizationDescription || '',
                 organizationStory: user.organizationStory || '',
-                organizationPurpose: user.organizationPurpose || ''
+                organizationPurpose: user.organizationPurpose || '',
+                sector: user.sector || 'general'
             });
 
             // Fetch All Sectors for onboarding
@@ -550,7 +552,7 @@ const ClientDashboard = () => {
             const endpoint = staffForm.role === 'hr' ? '/users/create-hr' : '/users/create-professional';
             await axios.post(`${API_BASE_URL}${endpoint}`, staffForm, { headers: { 'x-auth-token': token } });
             setShowStaffModal(false);
-            setStaffForm({ name: '', email: '', password: '', role: 'employee', department: '' });
+            setStaffForm({ name: '', email: '', password: '', role: 'employee', department: '', gender: '' });
             fetchData();
         } catch (error) {
             alert(error.response?.data?.message || "Failed to add staff");
@@ -584,7 +586,7 @@ const ClientDashboard = () => {
             await axios.patch(`${API_BASE_URL}/users/${selectedUserId}`, staffForm, { headers: { 'x-auth-token': token } });
             setShowStaffModal(false);
             setIsEditMode(false);
-            setStaffForm({ name: '', email: '', password: '', role: 'employee', department: '' });
+            setStaffForm({ name: '', email: '', password: '', role: 'employee', department: '', gender: '' });
             fetchData();
         } catch (error) {
             alert(error.response?.data?.message || "Failed to update staff");
@@ -862,6 +864,9 @@ const ClientDashboard = () => {
                     <NavItem id="employees" label={`${config.dashboard.employeeRole}s`} icon={Users} />
                     <NavItem id="users" label={`${config.dashboard.userRole} Data`} icon={UserIcon} />
 
+                    <div style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-light)', textTransform: 'uppercase', marginTop: '32px', marginBottom: '12px', letterSpacing: '1px', paddingLeft: '16px' }}>Communications</div>
+                    <NavItem id="announcements" label="Announcements" icon={Megaphone} />
+
                     <div style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-light)', textTransform: 'uppercase', marginTop: '32px', marginBottom: '12px', letterSpacing: '1px', paddingLeft: '16px' }}>Tenant Config</div>
                     <NavItem id="plan" label="Plan & Usage" icon={PieChart} />
                     <NavItem id="settings" label="Settings" icon={Settings} />
@@ -1002,7 +1007,9 @@ const ClientDashboard = () => {
 
                         <div className="flex-between" style={{ marginBottom: '32px' }}>
                             <div>
-                                <h1 style={{ fontSize: '28px', margin: '0 0 8px', fontWeight: 900, color: 'var(--primary)' }}>Workspace Overview</h1>
+                                <h1 style={{ fontSize: '28px', margin: '0 0 8px', fontWeight: 900, color: 'var(--primary)' }}>
+                                    {user.organizationName || 'Workspace'} Overview
+                                </h1>
                                 <p style={{ color: 'var(--text-gray)', margin: 0 }}>Monitor your operations, active staff, and upcoming schedule.</p>
                             </div>
                             <button className="btn btn-primary" style={{ padding: '12px 24px' }} onClick={() => fetchData()}><Activity size={18} /> Refresh</button>
@@ -1109,7 +1116,18 @@ const ClientDashboard = () => {
                                 <tbody>
                                     {employees.filter(e => activeTab === 'hr' ? e.role === 'hr' : (e.role !== 'hr')).map(emp => (
                                         <tr key={emp._id} style={{ borderBottom: '1px solid var(--bg-light)' }}>
-                                            <td style={{ padding: '16px', fontWeight: 800 }}>{emp.name}</td>
+                                            <td style={{ padding: '16px', fontWeight: 800 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--bg-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'var(--primary)', overflow: 'hidden' }}>
+                                                        {emp.avatar ? (
+                                                            <img src={emp.avatar} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        ) : (
+                                                            emp.role === 'hr' ? <UserIcon size={16} color="#8B5CF6" /> : <UserIcon size={16} color="#6366F1" />
+                                                        )}
+                                                    </div>
+                                                    {emp.name}
+                                                </div>
+                                            </td>
                                             <td style={{ padding: '16px', color: 'var(--text-gray)' }}>{emp.email}</td>
                                             <td style={{ padding: '16px' }}><span className="badge badge-outline">{emp.department || 'General'}</span></td>
                                             <td style={{ padding: '16px' }}>
@@ -1129,7 +1147,7 @@ const ClientDashboard = () => {
                                                         className="btn btn-sm btn-ghost" 
                                                         style={{ color: '#64748B', padding: '6px' }}
                                                         onClick={() => {
-                                                            setStaffForm({ name: emp.name, email: emp.email, role: emp.role, department: emp.department });
+                                                            setStaffForm({ name: emp.name, email: emp.email, role: emp.role, department: emp.department, gender: emp.gender || '' });
                                                             setSelectedUserId(emp._id);
                                                             setIsEditMode(true);
                                                             setShowStaffModal(true);
@@ -1406,10 +1424,28 @@ const ClientDashboard = () => {
                     <div style={{ animation: 'fadeIn 0.3s ease', position: 'relative' }}>
                         {isExpired && <LockOverlay onUpgrade={() => setActiveTab('plan')} />}
                         <div className="flex-between" style={{ marginBottom: '32px' }}>
-
-                            <div>
-                                <h1 style={{ fontSize: '24px', margin: '0 0 8px', fontWeight: 900 }}>Customer Index</h1>
-                                <p style={{ color: 'var(--text-gray)', margin: 0 }}>Global tracking of all {config.dashboard.userRole.toLowerCase()}s intersecting with your organization.</p>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                <div>
+                                    <h1 style={{ fontSize: '24px', margin: '0 0 8px', fontWeight: 900 }}>Customer Index</h1>
+                                    <p style={{ color: 'var(--text-gray)', margin: 0 }}>Global tracking of all {config.dashboard.userRole.toLowerCase()}s intersecting with your organization.</p>
+                                </div>
+                                <motion.div 
+                                    initial={{ width: '250px' }}
+                                    whileFocus={{ width: '350px' }}
+                                    style={{ 
+                                        display: 'flex', alignItems: 'center', background: 'white', 
+                                        padding: '10px 20px', borderRadius: '16px', 
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                                        border: '2px solid #F1F5F9'
+                                    }}
+                                >
+                                    <Search size={18} color="#6366F1" />
+                                    <input 
+                                        placeholder="Search by name, role or ID..." 
+                                        style={{ border: 'none', background: 'transparent', outline: 'none', marginLeft: '12px', width: '100%', fontWeight: 700, fontSize: '14px' }}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </motion.div>
                             </div>
                         </div>
 
@@ -1632,6 +1668,26 @@ const ClientDashboard = () => {
                                         onChange={e => setOrganizationForm({...organizationForm, organizationName: e.target.value})}
                                     />
                                 </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '8px', color: '#1E293B' }}>INDUSTRY SECTOR</label>
+                                    <select 
+                                        className="input-field" 
+                                        value={organizationForm.sector}
+                                        onChange={e => setOrganizationForm({...organizationForm, sector: e.target.value})}
+                                        style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '2px solid #F1F5F9', fontWeight: 600 }}
+                                    >
+                                        <option value="health">Healthcare (Hospital/Clinic)</option>
+                                        <option value="education">Education (School/College)</option>
+                                        <option value="salon">Salon & Beauty</option>
+                                        <option value="hotel">Hospitality (Hotel/Resort)</option>
+                                        <option value="automobile">Automobile (Garage/Service)</option>
+                                        <option value="corporate">Corporate / Office</option>
+                                        <option value="consultancy">Consultancy / Legal</option>
+                                        <option value="general">General Services</option>
+                                    </select>
+                                    <p style={{ margin: '6px 0 0', fontSize: '11px', color: 'var(--text-gray)' }}>Changing the sector will update your dashboard theme and end-user booking images.</p>
+                                </div>
                                 
                                 <div>
                                     <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '8px', color: '#1E293B' }}>Bannner / Gallery Images (URLs, comma-separated)</label>
@@ -1759,9 +1815,18 @@ const ClientDashboard = () => {
                                     <input type="password" className="input-field" value={staffForm.password} onChange={e => setStaffForm({...staffForm, password: e.target.value})} required />
                                 </div>
                             )}
-                            <div style={{ marginBottom: '32px' }}>
+                            <div style={{ marginBottom: '20px' }}>
                                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: 'var(--text-gray)', marginBottom: '8px' }}>DEPARTMENT / SPECIALTY</label>
                                 <input type="text" className="input-field" value={staffForm.department} onChange={e => setStaffForm({...staffForm, department: e.target.value})} placeholder={user.userType === 'hospital' ? 'e.g. Cardiology' : 'e.g. Operations'} />
+                            </div>
+                            <div style={{ marginBottom: '32px' }}>
+                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: 'var(--text-gray)', marginBottom: '8px' }}>GENDER</label>
+                                <select className="input-field" value={staffForm.gender} onChange={e => setStaffForm({...staffForm, gender: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '2px solid #F1F5F9', fontWeight: 600 }}>
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
                             </div>
                             <div style={{ display: 'flex', gap: '12px' }}>
                                 <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => { setShowStaffModal(false); setIsEditMode(false); }}>Cancel</button>
@@ -2240,7 +2305,28 @@ const ClientDashboard = () => {
 
                 </main>
     
-                {/* MAIN CONTENT AREA FOOTER */}
+                {/* 10. ANNOUNCEMENTS */}
+                {activeTab === 'announcements' && (
+                    <div style={{ animation: 'fadeIn 0.3s ease' }}>
+                        <div style={{ marginBottom: '32px' }}>
+                            <h1 style={{ fontSize: '24px', margin: '0 0 8px', fontWeight: 900 }}>Announcements & Broadcasts</h1>
+                            <p style={{ color: 'var(--text-gray)', margin: 0 }}>View critical system updates or broadcast messages to your team.</p>
+                        </div>
+
+                        <div style={{ background: 'white', borderRadius: '32px', padding: '80px 40px', textAlign: 'center', maxWidth: '800px', margin: '0 auto', border: '1px solid #E2E8F0' }}>
+                            <div style={{ width: '80px', height: '80px', background: '#FEF3C7', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706', margin: '0 auto 24px' }}>
+                                <Megaphone size={40} />
+                            </div>
+                            <h3 style={{ margin: '0 0 12px', fontSize: '24px', fontWeight: 900, color: '#0F172A' }}>Announcements Module</h3>
+                            <p style={{ margin: 0, color: '#64748B', fontSize: '15px', maxWidth: '400px', marginInline: 'auto', marginBottom: '24px' }}>
+                                This feature is currently being tailored for the {config.label} dashboard. Stay tuned for upcoming tools.
+                            </p>
+                            <button className="btn btn-primary" onClick={() => setActiveTab('dashboard')}>Return to Dashboard</button>
+                        </div>
+                    </div>
+                )}
+
+                {/* --- FOOTER / TUTORIAL OVERLAY --- */}
                 <div style={{ padding: '60px 40px 40px', borderTop: '1px solid #E2E8F0', marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8FAFC' }}>
                     <div>
                          <div style={{ fontSize: '11px', fontWeight: 900, color: '#94A3B8', marginBottom: '4px' }}>POWERED BY</div>

@@ -61,6 +61,18 @@ const tenantGuard = (req, res, next) => {
         req.tenantFilter = {}; 
         return next();
     }
+    
+    // Fallback for global roles or if clientId is missing but it's a client user
+    const globalRoles = ['super-admin', 'admin'];
+    if (globalRoles.includes(userRole)) {
+        req.tenantFilter = {};
+        return next();
+    }
+
+    // AUTO-FIX: If role is 'client' and clientId is missing, treat their own ID as clientId
+    if (userRole === 'client' && !req.user.clientId) {
+        req.user.clientId = req.user.id;
+    }
 
     if (!req.user.clientId) {
         // Fallback for roles that might not have a clientId yet

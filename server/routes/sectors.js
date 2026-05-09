@@ -51,4 +51,15 @@ router.patch('/:id', auth, authorize('super-admin'), async (req, res) => {
     }
 });
 
+// Delete sector (Super Admin only)
+router.delete('/:id', auth, authorize('super-admin'), async (req, res) => {
+    try {
+        const sector = await Sector.findByIdAndDelete(req.params.id);
+        if (!sector) return res.status(404).json({ message: 'Sector not found' });
+        res.json({ message: 'Sector deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
 module.exports = router;

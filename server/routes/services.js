@@ -16,6 +16,11 @@ router.get('/public/:clientId', async (req, res) => {
     try {
         console.log(`🔍 Fetching public services for clientId: ${req.params.clientId}`);
         
+        if (!mongoose.Types.ObjectId.isValid(req.params.clientId)) {
+            console.warn(`⚠️ Invalid Client ID provided: ${req.params.clientId}`);
+            return res.json([]); // Return empty list instead of 500
+        }
+
         const services = await Service.find({
             clientId: req.params.clientId,
             isActive: true

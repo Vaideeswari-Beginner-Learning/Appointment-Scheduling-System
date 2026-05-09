@@ -17,6 +17,16 @@
   min-height: 100vh;
   background-color: var(--admin-bg);
   font-family: 'Outfit', sans-serif;
+  position: relative;
+}
+
+.admin-layout.mobile-nav-active::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+  backdrop-filter: blur(4px);
 }
 
 .admin-sidebar {
@@ -115,6 +125,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--admin-bg);
+  padding: 10px 0;
 }
 
 .header-title h1 {
@@ -304,11 +319,214 @@
   background: transparent;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    position: fixed;
+    left: -300px;
+    top: 0;
+    bottom: 0;
+    transition: left 0.3s ease;
+  }
+
+  .admin-sidebar.mobile-open {
+    left: 0;
+  }
+
+  .admin-content {
+    padding: 20px;
+  }
 }
 
-.fade-in {
-  animation: fadeIn 0.5s ease forwards;
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .search-bar {
+    width: 100% !important;
+  }
+}
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.premium-modal {
+  background: white;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-header-fancy {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  padding: 30px 40px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header-fancy h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.modal-header-fancy p {
+  margin: 5px 0 0;
+  opacity: 0.8;
+  font-size: 14px;
+}
+
+.close-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.close-circle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.fancy-form {
+  padding: 40px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.input-group.full {
+  grid-column: span 2;
+}
+
+.input-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  color: #64748B;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.input-group input, 
+.input-group select, 
+.input-group textarea {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 16px;
+  border: 2px solid #F1F5F9;
+  background: #F8FAFC;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1E293B;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.input-group input:focus, 
+.input-group select:focus, 
+.input-group textarea:focus {
+  border-color: #6366F1;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.modal-footer {
+  margin-top: 40px;
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+}
+
+.cancel-btn {
+  padding: 14px 30px;
+  border-radius: 16px;
+  border: none;
+  background: #F1F5F9;
+  color: #64748B;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.save-btn {
+  padding: 14px 40px;
+  border-radius: 16px;
+  border: none;
+  background: #6366F1;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+}
+
+/* Mobile Toggle Buttons */
+.mobile-menu-btn {
+  display: none;
+  background: white;
+  border: none;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  cursor: pointer;
+}
+
+.mobile-close-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .mobile-menu-btn, .mobile-close-btn {
+    display: flex;
+  }
+}
+
+/* Animations */
+@keyframes labelPop {
+  0% { transform: translateY(5px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.input-group.animated label {
+  animation: labelPop 0.4s ease forwards;
 }

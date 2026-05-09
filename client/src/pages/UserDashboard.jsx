@@ -494,7 +494,10 @@ const UserDashboard = () => {
             <nav style={{ position:'sticky', top:0, zIndex:100, background: 'var(--navbar-bg, rgba(255,255,255,0.95))', backdropFilter:'blur(20px)', borderBottom:'1px solid var(--border-color)', padding:'12px 40px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
                     <div style={{ background:'#6366F1', padding:'8px', borderRadius:'12px', color:'white', display:'flex' }}><Activity size={20} /></div>
-                    <span style={{ fontSize:'20px', fontWeight:900, color: 'var(--text-dark)' }}>{config.label} <span style={{ color:'#6366F1' }}>Portal</span></span>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize:'20px', fontWeight:900, color: 'var(--text-dark)', lineHeight: 1 }}>{config.label} <span style={{ color:'#6366F1' }}>Portal</span></span>
+                        {user.sector && <span style={{ fontSize: '10px', fontWeight: 800, color: '#6366F1', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>{user.sector} SECTOR</span>}
+                    </div>
                 </div>
                 <div style={{ display:'flex', gap:'32px', fontWeight:700, color: 'var(--text-gray)', fontSize:'14px' }}>
                     {['Home','Services','Appointments','Reviews'].map(item => (
@@ -566,7 +569,13 @@ const UserDashboard = () => {
                         <Search size={20} style={{ color:'var(--text-gray)' }} />
                         <input placeholder={`Search ${config.label.toLowerCase()} services...`} style={{ flex:1, border:'none', outline:'none', fontSize:'16px', fontWeight:600, background:'transparent', color: 'var(--text-dark)' }} />
                         <select style={{ padding:'12px 20px', borderRadius:'14px', border:'1px solid var(--border-color)', fontWeight:700, fontSize:'14px', background:'var(--bg-light)', color:'var(--text-dark)' }}>
-                            <option>Today</option><option>Tomorrow</option><option>This Week</option>
+                            <option value="">All Sectors</option>
+                            {Array.from(new Set(allSectors.map(s => s.category))).map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
+                        <select style={{ padding:'12px 20px', borderRadius:'14px', border:'1px solid var(--border-color)', fontWeight:700, fontSize:'14px', background:'var(--bg-light)', color:'var(--text-dark)' }}>
+                            <option>Any Time</option><option>Today</option><option>Tomorrow</option><option>This Week</option>
                         </select>
                         <button className="ud-btn" onClick={() => navigate('/book')} style={{ background:'#6366F1', color:'white' }}>Search <ArrowRight size={16} /></button>
                     </div>

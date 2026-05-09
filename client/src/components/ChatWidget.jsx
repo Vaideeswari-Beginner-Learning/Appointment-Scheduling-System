@@ -42,9 +42,15 @@ const ChatWidget = ({ role = 'user' }) => {
             } else if (lowInput.includes('profile')) {
                 botResponse = "You can update your personal details in the 'Profile' tab of your dashboard.";
             } else if (lowInput.includes('staff') || lowInput.includes('employee')) {
-                botResponse = "Clients can add staff members in the 'Staff Management' tab of the Client Dashboard.";
+                botResponse = "Clients can add staff members in the 'Staff & Users' section of the Client Dashboard.";
+            } else if (lowInput.includes('support') || lowInput.includes('contact')) {
+                botResponse = "Our support team is here for you! Please reach out to us at support@smart-sched.com or call 1-800-SCHED-IT for immediate assistance.";
+            } else if (lowInput.includes('analytics') || lowInput.includes('report')) {
+                botResponse = "You can view your detailed analytics and metrics right on the 'Overview' page of your main dashboard.";
+            } else if (lowInput.includes('password') || lowInput.includes('reset')) {
+                botResponse = "To reset your password, please log out and click 'Forgot Password' on the login screen, or update it directly from the 'Settings' tab in your dashboard.";
             } else {
-                botResponse = "I'm still learning, but I can certainly help you navigate the scheduling platform. Try asking about 'booking' or 'profile'!";
+                botResponse = "I'm still learning, but I can help you navigate the platform! Try asking about 'booking', 'staff', 'analytics', or 'support'.";
             }
 
             setMessages(prev => [...prev, { id: Date.now() + 1, text: botResponse, sender: 'bot', time: new Date() }]);

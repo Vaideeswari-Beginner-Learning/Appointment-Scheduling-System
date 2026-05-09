@@ -634,7 +634,8 @@ router.get('/public/staff/:clientId', async (req, res) => {
     try {
         const { serviceId } = req.query;
         if (!mongoose.Types.ObjectId.isValid(req.params.clientId)) {
-            return res.status(400).json({ message: 'Invalid Client ID' });
+            console.warn(`⚠️ Invalid Client ID provided for staff fetch: ${req.params.clientId}`);
+            return res.json([]); // Return empty list instead of 500
         }
         
         let staffIds = null;

@@ -61,14 +61,10 @@ const Register = () => {
             }
             setStep(2);
         } else if (step === 2) {
-            if (formData.role === 'client') {
-                setStep(3);
-            } else {
-                handleSubmit();
-            }
+            setStep(3);
         } else if (step === 3) {
-            if (!formData.sectorName || !formData.organizationName) {
-                setError('Please provide industry details');
+            if (!formData.sectorName || (formData.role === 'client' && !formData.organizationName)) {
+                setError(formData.role === 'client' ? 'Please provide industry and organization details' : 'Please select an industry sector');
                 return;
             }
             handleSubmit();
@@ -163,11 +159,11 @@ const Register = () => {
                         {step === 2 && (
                             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                    <div onClick={() => setFormData({...formData, role: 'user'})} style={{ padding: '24px', borderRadius: '20px', border: formData.role === 'user' ? '2px solid #6366F1' : '2px solid #F1F5F9', background: formData.role === 'user' ? '#EEF2FF' : 'white', cursor: 'pointer', transition: '0.2s' }}>
+                                    <div onClick={() => { setFormData({...formData, role: 'user'}); }} style={{ padding: '24px', borderRadius: '20px', border: formData.role === 'user' ? '2px solid #6366F1' : '2px solid #F1F5F9', background: formData.role === 'user' ? '#EEF2FF' : 'white', cursor: 'pointer', transition: '0.2s' }}>
                                         <div style={{ fontWeight: 900, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '10px' }}><User size={20} color={formData.role === 'user' ? '#6366F1' : '#64748B'}/> I'm a Customer</div>
                                         <p style={{ fontSize: '13px', color: '#64748B', margin: '8px 0 0', lineHeight: 1.5 }}>Browse services, book appointments, and track your history.</p>
                                     </div>
-                                    <div onClick={() => setFormData({...formData, role: 'client'})} style={{ padding: '24px', borderRadius: '20px', border: formData.role === 'client' ? '2px solid #6366F1' : '2px solid #F1F5F9', background: formData.role === 'client' ? '#EEF2FF' : 'white', cursor: 'pointer', transition: '0.2s', position: 'relative' }}>
+                                    <div onClick={() => { setFormData({...formData, role: 'client'}); }} style={{ padding: '24px', borderRadius: '20px', border: formData.role === 'client' ? '2px solid #6366F1' : '2px solid #F1F5F9', background: formData.role === 'client' ? '#EEF2FF' : 'white', cursor: 'pointer', transition: '0.2s', position: 'relative' }}>
                                         <div style={{ position: 'absolute', top: '-10px', right: '16px', background: '#10B981', color: 'white', padding: '4px 12px', borderRadius: '99px', fontSize: '11px', fontWeight: 900 }}>🎁 1 DAY FREE TRIAL</div>
                                         <div style={{ fontWeight: 900, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '10px' }}><Building2 size={20} color={formData.role === 'client' ? '#6366F1' : '#64748B'}/> I'm a Business Owner</div>
                                         <p style={{ fontSize: '13px', color: '#64748B', margin: '8px 0 0', lineHeight: 1.5 }}>Register your business, manage staff & bookings. <strong>Pay after 1 day trial.</strong></p>
@@ -179,13 +175,21 @@ const Register = () => {
                         {step === 3 && (
                             <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                    <div><label style={{ display: 'block', fontSize: '14px', fontWeight: 800, color: '#1E293B', marginBottom: '8px' }}>Industry Sector</label>
-                                        <select value={formData.sectorName} onChange={e => setFormData({...formData, sectorName: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #F1F5F9', outline: 'none' }}>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '14px', fontWeight: 800, color: '#1E293B', marginBottom: '8px' }}>
+                                            {formData.role === 'client' ? 'Industry Sector' : 'Primary Interest (Sector)'}
+                                        </label>
+                                        <select value={formData.sectorName} onChange={e => setFormData({...formData, sectorName: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #F1F5F9', outline: 'none', fontWeight: 700 }}>
                                             <option value="">Select Industry...</option>
                                             {allSectors.map(s => <option key={s._id} value={s.name}>{s.name}</option>)}
                                         </select>
                                     </div>
-                                    <div><label style={{ display: 'block', fontSize: '14px', fontWeight: 800, color: '#1E293B', marginBottom: '8px' }}>Organization Name</label><input type="text" value={formData.organizationName} onChange={e => setFormData({...formData, organizationName: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #F1F5F9', outline: 'none' }} placeholder="e.g. Acme Services"/></div>
+                                    {formData.role === 'client' && (
+                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                            <label style={{ display: 'block', fontSize: '14px', fontWeight: 800, color: '#1E293B', marginBottom: '8px' }}>Organization Name</label>
+                                            <input type="text" value={formData.organizationName} onChange={e => setFormData({...formData, organizationName: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #F1F5F9', outline: 'none' }} placeholder="e.g. Acme Services"/>
+                                        </motion.div>
+                                    )}
                                 </div>
                             </motion.div>
                         )}
@@ -209,9 +213,9 @@ const Register = () => {
 
                     {step < 4 && (
                         <div style={{ display: 'flex', gap: '16px', marginTop: '40px' }}>
-                            {step > 1 && <button onClick={handleBack} style={{ flex: 1, padding: '16px', borderRadius: '16px', background: '#F1F5F9', color: '#475569', fontWeight: 900, border: 'none', cursor: 'pointer' }}>Back</button>}
-                            <button onClick={handleNext} disabled={isLoading} style={{ flex: 2, padding: '16px', borderRadius: '16px', background: '#6366F1', color: 'white', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                                {isLoading ? 'Processing...' : (step === (formData.role === 'client' ? 3 : 2) ? 'Create Account' : 'Continue')} <ArrowRight size={18}/>
+                            {step > 1 && <button type="button" onClick={handleBack} style={{ flex: 1, padding: '16px', borderRadius: '16px', background: '#F1F5F9', color: '#475569', fontWeight: 900, border: 'none', cursor: 'pointer' }}>Back</button>}
+                            <button type="button" onClick={handleNext} disabled={isLoading} style={{ flex: 2, padding: '16px', borderRadius: '16px', background: '#6366F1', color: 'white', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                                {isLoading ? 'Processing...' : (step === 3 ? 'Create Account' : 'Continue')} <ArrowRight size={18}/>
                             </button>
                         </div>
                     )}

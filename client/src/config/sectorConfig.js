@@ -415,7 +415,7 @@ export const sectorConfig = {
                 { label: 'Attendee Name', fieldKey: 'name', type: 'text', placeholder: 'Your Name', required: true },
                 { label: 'Event Type', fieldKey: 'event_type', type: 'text', placeholder: 'Wedding, Seminar...', required: true }
             ],
-            image: '/sector_venues_real.png',
+            image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80',
             secondaryImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -485,7 +485,7 @@ export const sectorConfig = {
                 { label: 'Client Name', fieldKey: 'name', type: 'text', placeholder: 'Your Name', required: true },
                 { label: 'Topic', fieldKey: 'topic', type: 'text', placeholder: 'Consultancy topic', required: true }
             ],
-            image: '/sector_freelancer_real.png',
+            image: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=1200&q=80',
             secondaryImage: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {
@@ -519,6 +519,11 @@ export const sectorConfig = {
                 { label: 'Your Name', fieldKey: 'name', type: 'text', placeholder: 'Full Name', required: true }
             ],
             image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            images: [
+                'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1400&q=80',
+                'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1400&q=80'
+            ],
             secondaryImage: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
         },
         websiteContent: {

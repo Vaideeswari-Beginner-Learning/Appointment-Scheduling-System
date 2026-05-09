@@ -68,7 +68,7 @@ const HRDashboard = () => {
     });
     const [bookingLoading, setBookingLoading] = useState(false);
     const [showStaffModal, setShowStaffModal] = useState(false);
-    const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', role: 'employee', department: user?.department || '', specialty: '' });
+    const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', role: 'employee', department: user?.department || '', specialty: '', gender: '' });
     const [isEditMode, setIsEditMode] = useState(false);
     const [selectedStaffId, setSelectedStaffId] = useState(null);
 
@@ -141,7 +141,7 @@ const HRDashboard = () => {
             alert(isEditMode ? 'Staff updated!' : 'Staff onboarded!');
             setShowStaffModal(false);
             setIsEditMode(false);
-            setStaffForm({ name: '', email: '', password: '', role: 'employee', department: user?.department || '', specialty: '' });
+            setStaffForm({ name: '', email: '', password: '', role: 'employee', department: user?.department || '', specialty: '', gender: '' });
             fetchData();
         } catch (err) { alert('Operation failed'); }
     };
@@ -188,9 +188,13 @@ const HRDashboard = () => {
             <nav style={{ flex: 1, padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {[
                     { id: 'overview', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
-                    { id: 'bookings', icon: <Calendar size={18} />, label: 'Live Bookings' },
-                    { id: 'employees', icon: <Users size={18} />, label: 'Staff Management' },
-                    { id: 'analytics', icon: <TrendingUp size={18} />, label: 'Performance' },
+                    { id: 'employees', icon: <Users size={18} />, label: 'Employees' },
+                    { id: 'appointments', icon: <Calendar size={18} />, label: 'Appointments' },
+                    { id: 'availability', icon: <Clock size={18} />, label: 'Availability' },
+                    { id: 'schedule', icon: <FileText size={18} />, label: 'Schedule' },
+                    { id: 'attendance', icon: <CheckCircle size={18} />, label: 'Attendance' },
+                    { id: 'notifications', icon: <Bell size={18} />, label: 'Notifications' },
+                    { id: 'reports', icon: <BarChart2 size={18} />, label: 'Reports' },
                     { id: 'settings', icon: <Settings size={18} />, label: 'Settings' }
                 ].map(item => (
                     <button 
@@ -316,8 +320,8 @@ const HRDashboard = () => {
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                                                 {[
                                                     { icon: <UserPlus size={18} />, label: 'Add Staff', onClick: () => { setActiveTab('employees'); setShowStaffModal(true); } },
-                                                    { icon: <FileText size={18} />, label: 'Reports', onClick: () => setActiveTab('analytics') },
-                                                    { icon: <Calendar size={18} />, label: 'Calendar', onClick: () => setActiveTab('bookings') },
+                                                    { icon: <FileText size={18} />, label: 'Reports', onClick: () => setActiveTab('reports') },
+                                                    { icon: <Calendar size={18} />, label: 'Calendar', onClick: () => setActiveTab('appointments') },
                                                     { icon: <Settings size={18} />, label: 'Settings', onClick: () => setActiveTab('settings') }
                                                 ].map((s, i) => (
                                                     <button key={i} onClick={s.onClick} style={{ padding: '16px', borderRadius: '20px', border: '1px solid #F1F5F9', background: '#F8FAFC', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.2s' }}>
@@ -332,7 +336,7 @@ const HRDashboard = () => {
                             </motion.div>
                         )}
 
-                        {activeTab === 'bookings' && (
+                        {activeTab === 'appointments' && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: 'white', borderRadius: '28px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
                                 <div style={{ padding: '24px 32px', borderBottom: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <h3 style={{ margin: 0, fontWeight: 900 }}>Live Booking Monitor</h3>
@@ -407,7 +411,13 @@ const HRDashboard = () => {
                                             <tr key={emp._id} style={{ borderBottom: '1px solid #F1F5F9' }}>
                                                 <td style={{ padding: '20px 32px' }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#3B82F6' }}>{emp.name[0]}</div>
+                                                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#3B82F6', overflow: 'hidden' }}>
+                                                            {emp.avatar ? (
+                                                                <img src={emp.avatar} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                            ) : (
+                                                                <User size={18} color="#3B82F6" />
+                                                            )}
+                                                        </div>
                                                         <div style={{ fontWeight: 800 }}>{emp.name}</div>
                                                     </div>
                                                 </td>
@@ -428,7 +438,7 @@ const HRDashboard = () => {
                                                     <div style={{ display: 'flex', gap: '10px' }}>
                                                         <button 
                                                             onClick={() => {
-                                                                setStaffForm({ name: emp.name, email: emp.email, role: emp.role, department: emp.department, specialty: emp.specialty });
+                                                                setStaffForm({ name: emp.name, email: emp.email, role: emp.role, department: emp.department, specialty: emp.specialty, gender: emp.gender || '' });
                                                                 setSelectedStaffId(emp._id);
                                                                 setIsEditMode(true);
                                                                 setShowStaffModal(true);
@@ -446,6 +456,17 @@ const HRDashboard = () => {
                                         ))}
                                     </tbody>
                                 </table>
+                            </motion.div>
+                        )}
+                        {['availability', 'schedule', 'attendance', 'notifications', 'reports', 'settings'].includes(activeTab) && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: 'white', borderRadius: '28px', border: '1px solid #E2E8F0', padding: '60px', textAlign: 'center' }}>
+                                <div style={{ width: '80px', height: '80px', background: '#F1F5F9', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', margin: '0 auto 24px' }}>
+                                    <Settings size={40} />
+                                </div>
+                                <h3 style={{ margin: '0 0 12px', fontSize: '24px', fontWeight: 900, color: '#0F172A' }}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Module</h3>
+                                <p style={{ margin: 0, color: '#64748B', fontSize: '15px', maxWidth: '400px', marginInline: 'auto' }}>
+                                    This module is currently being configured for your {user?.department || 'organization'} department. Check back soon for the full suite of HR tools.
+                                </p>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -500,6 +521,12 @@ const HRDashboard = () => {
                                 <input required type="email" placeholder="Email Address" value={staffForm.email} onChange={e => setStaffForm({...staffForm, email: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0' }} />
                                 {!isEditMode && <input required type="password" placeholder="Set Password" value={staffForm.password} onChange={e => setStaffForm({...staffForm, password: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0' }} />}
                                 <input placeholder="Specialty (e.g. Cardiology, Frontend)" value={staffForm.specialty} onChange={e => setStaffForm({...staffForm, specialty: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0' }} />
+                                <select className="input-field" value={staffForm.gender} onChange={e => setStaffForm({...staffForm, gender: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0', fontWeight: 600 }}>
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
                                 <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
                                     <button type="button" onClick={() => setShowStaffModal(false)} style={{ flex: 1, padding: '14px', borderRadius: '14px', border: '1px solid #E2E8F0', background: 'white', fontWeight: 800, cursor: 'pointer' }}>Cancel</button>
                                     <button type="submit" style={{ flex: 2, padding: '14px', borderRadius: '14px', border: 'none', background: '#3B82F6', color: 'white', fontWeight: 800, cursor: 'pointer' }}>{isEditMode ? 'Save Changes' : 'Create Account'}</button>
