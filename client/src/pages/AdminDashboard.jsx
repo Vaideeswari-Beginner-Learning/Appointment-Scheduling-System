@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
     LayoutDashboard, Users, CreditCard, BarChart3, Bell, Settings, LogOut,
-    Plus, X, TrendingUp, Activity, Building, ShieldAlert, Crown, Clock,
+    Plus, X, TrendingUp, Activity, Building2, ShieldAlert, Crown, Clock,
     CheckCircle, XCircle, Edit2, ChevronDown, Search, Megaphone, ArrowRight, Briefcase, Trash2,
     PieChart, Filter, Save, Globe, Mail, Zap, ShoppingBag, Heart, Scissors, Home, Wrench, GraduationCap, Gavel, Camera, MapPin, UserCheck, Shield, Key, Database, RefreshCw, Smartphone, Eye, MoreHorizontal, ChevronRight,
-    Car, Sparkles, Dumbbell, Music, Building2, Laptop, Cpu, Scale, Calendar
+    Car, Sparkles, Dumbbell, Music, Laptop, Cpu, Scale, Calendar
 } from 'lucide-react';
 import {
     Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
@@ -14,7 +15,6 @@ import {
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api';
 import { getSectorConfig } from '../config/sectorConfig';
 import './AdminDashboard.css';
@@ -24,7 +24,19 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarEleme
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    if (!user) return null; // Prevent crash if user is not yet loaded
     const [activeTab, setActiveTab] = useState('overview');
+    
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tab = params.get('tab');
+        if (tab && tab !== activeTab) {
+            setActiveTab(tab);
+        }
+    }, [location.search, activeTab]);
+
     const [allUsers, setAllUsers] = useState([]);
     const [saasRequests, setSaasRequests] = useState([]);
     const [sectors, setSectors] = useState([]);
@@ -60,7 +72,7 @@ const AdminDashboard = () => {
         icon: 'Hospital',
         description: '',
         services: '',
-        themeColor: '#3B82F6',
+        themeColor: '#5A315D',
         showOnLanding: true,
         showOnUserDash: true
     });
@@ -195,7 +207,7 @@ const AdminDashboard = () => {
         if (!window.confirm('Delete this sector?')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`${API_BASE_URL}/api/sectors/${sectorId}`, { headers: { 'x-auth-token': token } });
+            await axios.delete(`${API_BASE_URL}/sectors/${sectorId}`, { headers: { 'x-auth-token': token } });
             alert('Sector deleted');
             fetchAll();
         } catch (err) {
@@ -218,7 +230,7 @@ const AdminDashboard = () => {
             }, { headers: { 'x-auth-token': token } });
             
             setIsSectorModalOpen(false);
-            setSectorFormData({ name: '', category: '', icon: 'Hospital', description: '', services: '', themeColor: '#3B82F6', showOnLanding: true, showOnUserDash: true });
+            setSectorFormData({ name: '', category: '', icon: 'Hospital', description: '', services: '', themeColor: '#5A315D', showOnLanding: true, showOnUserDash: true });
             fetchAll();
             alert('Sector added successfully!');
         } catch (err) {
@@ -247,7 +259,7 @@ const AdminDashboard = () => {
     const mainTabs = [
         { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, emoji: '🏠' },
         { id: 'requests', label: 'Client Requests', icon: Bell, emoji: '📥', badge: saasRequests.filter(r => r.status === 'pending').length },
-        { id: 'clients', label: 'Organizations', icon: Building, emoji: '🏢' },
+        { id: 'clients', label: 'Organizations', icon: Building2, emoji: '🏢' },
         { id: 'sectors', label: 'Industry Sectors', icon: Briefcase, emoji: '💼' },
         { id: 'plans', label: 'Subscription Plans', icon: Crown, emoji: '💎' },
     ];
@@ -265,184 +277,130 @@ const AdminDashboard = () => {
 
     if (loading) return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#F8FAFC' }}>
-            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} style={{ color: '#6366F1', marginBottom: '20px' }}>
+            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} style={{ color: 'var(--primary)', marginBottom: '20px' }}>
                 <RefreshCw size={48} />
             </motion.div>
-            <h2 style={{ fontWeight: 900, color: '#0F172A', letterSpacing: '2px' }}>FORGEINDIA ADMIN</h2>
+            <h2 style={{ fontWeight: 900, color: '#2D3748', letterSpacing: '2px' }}>FORGEINDIA ADMIN</h2>
         </div>
     );
 
     return (
-        <div className={`admin-layout ${isMobileMenuOpen ? 'mobile-nav-active' : ''}`} onClick={() => isMobileMenuOpen && setIsMobileMenuOpen(false)}>
-            <aside className={`admin-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`} style={{ position: 'relative', overflow: 'hidden' }}>
-                <div className="sidebar-brand">
-                    <motion.div whileHover={{ scale: 1.1 }} className="brand-logo">F</motion.div>
-                    <div className="brand-name">ForgeIndia</div>
-                    <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
-                        <X size={24} />
-                    </button>
-                </div>
-                
-                <nav className="admin-nav" style={{ overflowY: 'auto' }}>
-                    <div style={{ marginBottom: '10px', padding: '0 10px' }}>
-                        <small style={{ color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '10px' }}>Main Menu</small>
-                    </div>
-                    {mainTabs.map(t => (
-                        <motion.button 
-                            key={t.id} 
-                            whileHover={{ x: 5 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => { setActiveTab(t.id); setIsMoreOpen(false); }} 
-                            className={`nav-item ${activeTab === t.id ? 'active' : ''}`}
-                        >
-                            <t.icon size={18} />
-                            <span>{t.label}</span>
-                            {t.badge > 0 && (
-                                <motion.span 
-                                    initial={{ scale: 0 }} animate={{ scale: 1 }}
-                                    style={{ marginLeft: 'auto', background: '#EF4444', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', fontWeight: 900 }}
-                                >
-                                    {t.badge}
-                                </motion.span>
-                            )}
-                        </motion.button>
-                    ))}
-
-                    <div style={{ marginTop: '20px', padding: '0 10px' }}>
-                        <small style={{ color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '10px' }}>Additional</small>
-                    </div>
-
-                    <div style={{ position: 'relative' }}>
-                        <motion.button 
-                            whileHover={{ x: 5 }}
-                            onClick={() => setIsMoreOpen(!isMoreOpen)} 
-                            className={`nav-item ${moreTabs.some(t => t.id === activeTab) ? 'active' : ''}`}
-                            style={{ justifyContent: 'space-between' }}
-                        >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                <MoreHorizontal size={18} />
-                                <span>More Functions</span>
-                            </div>
-                            <motion.div animate={{ rotate: isMoreOpen ? 90 : 0 }}>
-                                <ChevronRight size={16} />
-                            </motion.div>
-                        </motion.button>
-
-                        <AnimatePresence>
-                            {isMoreOpen && (
-                                <motion.div 
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    style={{ overflow: 'hidden', paddingLeft: '20px' }}
-                                >
-                                    {moreTabs.map(t => (
-                                        <motion.button 
-                                            key={t.id} 
-                                            whileHover={{ x: 5 }}
-                                            onClick={() => setActiveTab(t.id)} 
-                                            className={`nav-item ${activeTab === t.id ? 'active' : ''}`}
-                                            style={{ padding: '10px 18px', fontSize: '14px' }}
-                                        >
-                                            <t.icon size={16} />
-                                            <span>{t.label}</span>
-                                        </motion.button>
-                                    ))}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </nav>
-
-                <div style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                    <motion.button 
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => { logout(); navigate('/login'); }} 
-                        className="nav-item" 
-                        style={{ background: '#FEE2E2', color: '#DC2626', border: '1px solid #FECACA' }}
-                    >
-                        <LogOut size={18} />
-                        <span>Sign Out</span>
-                    </motion.button>
-                </div>
-            </aside>
-
-            <main className="admin-content">
-                <header className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="header-title">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                            <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>
-                                <MoreHorizontal size={24} />
-                            </button>
-                            <h1>{allTabs.find(t => t.id === activeTab)?.emoji} {allTabs.find(t => t.id === activeTab)?.label}</h1>
-                        </div>
-                        <p>Welcome back, Administrator. Here's what's happening today.</p>
-                    </motion.div>
-                    
-                    <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                        <motion.div 
-                            className="global-search"
-                            initial={{ width: '250px' }}
-                            whileFocus={{ width: '350px' }}
-                            style={{ 
-                                display: 'flex', alignItems: 'center', background: '#F8FAFC', 
-                                padding: '10px 20px', borderRadius: '16px', 
-                                boxShadow: 'inset 0 2px 4px 0 rgba(0,0,0,0.05)',
-                                border: '2px solid #F1F5F9',
-                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+        <div className="admin-content" style={{ width: '100%' }}>
+            <div className="scrollable-content" style={{ width: '100%', maxWidth: '1400px', margin: '0 auto' }}>
+                {/* Premium Tab Navigation - Centered */}
+                <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                    marginBottom: '40px',
+                    width: '100%'
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        gap: '8px',
+                        background: 'white',
+                        padding: '8px',
+                        borderRadius: '20px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+                        border: '1px solid #F1F5F9'
+                    }}>
+                    {mainTabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '12px 24px',
+                                borderRadius: '14px',
+                                border: 'none',
+                                background: activeTab === tab.id ? 'var(--primary)' : 'transparent',
+                                color: activeTab === tab.id ? 'white' : '#64748B',
+                                fontWeight: 800,
+                                fontSize: '14px',
+                                cursor: 'pointer',
+                                transition: '0.3s'
                             }}
                         >
-                            <Search size={18} color="#6366F1" />
-                            <input 
-                                placeholder="Universal Search..." 
-                                style={{ border: 'none', background: 'transparent', outline: 'none', marginLeft: '12px', width: '100%', fontSize: '14px', fontWeight: 700, color: '#1E293B' }}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </motion.div>
-                        <motion.div whileHover={{ scale: 1.1 }} style={{ position: 'relative', cursor: 'pointer' }}>
-                            <Bell size={22} color="#64748b"/>
-                            <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#EF4444', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '50%', fontWeight: 900 }}>3</span>
-                        </motion.div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', background: 'white', padding: '8px 16px', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A' }}>{user.name}</div>
-                                <div style={{ color: '#64748B', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>Super Admin</div>
-                            </div>
-                            <div style={{ width: '42px', height: '42px', background: 'linear-gradient(135deg, #6366F1, #A855F7)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 950, fontSize: '18px', boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)' }}>{user.name[0]}</div>
-                        </div>
-                    </div>
-                </header>
+                            <tab.icon size={18} />
+                            {tab.label}
+                            {tab.badge > 0 && (
+                                <span style={{ background: '#EF4444', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '10px' }}>{tab.badge}</span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div>
 
-                <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait">
                     <motion.div 
-                        key={activeTab}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                    >
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                >
                         {activeTab === 'overview' && (
                             <div className="fade-in">
-                                <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-                                    <div className="stat-card" style={{ background: '#FEE2E2', border: '1px solid #FECACA' }}>
-                                        <div className="stat-icon" style={{ background: 'white', color: '#EF4444' }}><Clock size={24}/></div>
-                                        <div className="stat-info"><div className="label" style={{ color: '#991B1B' }}>Expiring Soon</div><div className="value" style={{ color: '#991B1B' }}>5 Clients</div></div>
-                                    </div>
-                                    <div className="stat-card">
-                                        <div className="stat-icon" style={{ background: '#DCFCE7', color: '#16A34A' }}><Zap size={24}/></div>
-                                        <div className="stat-info"><div className="label">Server Status</div><div className="value" style={{ color: '#16A34A', fontSize: '18px' }}>ONLINE</div></div>
-                                    </div>
-                                    <div className="stat-card">
-                                        <div className="stat-icon" style={{ background: '#E0E7FF', color: '#6366F1' }}><Activity size={24}/></div>
-                                        <div className="stat-info"><div className="label">API Latency</div><div className="value">42ms</div></div>
-                                    </div>
-                                    <div className="stat-card">
-                                        <div className="stat-icon" style={{ background: '#F3F4F6', color: '#64748B' }}><ShoppingBag size={24}/></div>
-                                        <div className="stat-info"><div className="label">Total Bookings</div><div className="value">1,284</div></div>
+                                <div className="stats-grid">
+                                    {[
+                                        { label: 'EXPIRING SOON', value: '5 Clients', icon: <Clock size={20}/>, bg: 'rgba(183, 110, 121, 0.1)', color: '#B76E79' },
+                                        { label: 'SERVER STATUS', value: 'ONLINE', icon: <Zap size={20}/>, bg: 'rgba(99, 102, 241, 0.1)', color: '#6366F1' },
+                                        { label: 'API LATENCY', value: '42ms', icon: <Activity size={20}/>, bg: 'rgba(79, 70, 229, 0.1)', color: '#4F46E5' },
+                                        { label: 'TOTAL BOOKINGS', value: '1,284', icon: <ShoppingBag size={20}/>, bg: 'rgba(16, 185, 129, 0.1)', color: '#10B981' }
+                                    ].map((s, i) => (
+                                        <motion.div 
+                                            key={i}
+                                            whileHover={{ y: -8 }}
+                                            style={{ 
+                                                background: 'white', padding: '32px', 
+                                                borderRadius: '30px', display: 'flex', alignItems: 'center', gap: '20px',
+                                                boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+                                            }}
+                                        >
+                                            <div style={{ background: s.bg, color: s.color, width: '56px', height: '56px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.icon}</div>
+                                            <div>
+                                                <div style={{ fontSize: '10px', fontWeight: 900, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>{s.label}</div>
+                                                <div style={{ fontSize: '24px', fontWeight: 950, color: '#1E293B', marginTop: '2px' }}>{s.value}</div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+
+                                <div style={{ marginTop: '50px' }}>
+                                    <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#1E293B', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <Zap size={22} color="#6366F1"/> Platform Capabilities Monitor
+                                    </h3>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
+                                        {[
+                                            { icon: <Clock size={20}/>, title: 'Instant Booking', desc: 'Active scheduling nodes', status: 'Optimal' },
+                                            { icon: <Users size={20}/>, title: 'Team Control', desc: 'Staff permission layers', status: 'Secure' },
+                                            { icon: <Shield size={20}/>, title: 'Secure Payments', desc: 'Gateway encryption level', status: 'Level 1' },
+                                            { icon: <BarChart3 size={20}/>, title: 'Live Analytics', desc: 'Data ingestion speed', status: '42ms' },
+                                            { icon: <Bell size={20}/>, title: 'Smart Alerts', desc: 'Notification queue', status: 'Empty' },
+                                            { icon: <Smartphone size={20}/>, title: 'Invoice Automation', desc: 'PDF generation engine', status: 'Ready' }
+                                        ].map((card, i) => (
+                                            <motion.div 
+                                                key={i}
+                                                whileHover={{ y: -5 }}
+                                                style={{ background: 'white', padding: '32px', borderRadius: '28px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.03)' }}
+                                            >
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                                                    <div style={{ width: '44px', height: '44px', background: '#F8FAFC', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366F1' }}>{card.icon}</div>
+                                                    <span style={{ fontSize: '9px', fontWeight: 900, padding: '5px 12px', background: '#F0FDF4', color: '#166534', borderRadius: '8px', textTransform: 'uppercase' }}>{card.status}</span>
+                                                </div>
+                                                <div style={{ fontWeight: 900, fontSize: '16px', color: '#1E293B', marginBottom: '4px' }}>{card.title}</div>
+                                                <div style={{ fontSize: '13px', color: '#64748B', fontWeight: 600 }}>{card.desc}</div>
+                                            </motion.div>
+                                        ))}
                                     </div>
                                 </div>
-                                <div className="table-header" style={{ marginTop: '30px' }}><h2>🚀 Platform Vital Signs</h2></div>
+
+                                <div style={{ marginTop: '50px', marginBottom: '20px' }}>
+                                    <h3 style={{ fontSize: '20px', fontWeight: 900, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <Activity size={22} color="var(--accent)"/> Platform Vital Signs
+                                    </h3>
+                                 </div>
                                 <div style={{ height: '350px' }} className="data-table-container">
                                     <Line 
                                         data={{ 
@@ -454,7 +412,7 @@ const AdminDashboard = () => {
                                                 borderWidth: 4,
                                                 tension: 0.4,
                                                 pointRadius: 6,
-                                                pointBackgroundColor: 'white',
+                                                pointBackgroundcolor: '#2D3748',
                                                 fill: true, 
                                                 backgroundColor: 'rgba(99, 102, 241, 0.1)' 
                                             }] 
@@ -492,7 +450,7 @@ const AdminDashboard = () => {
                                                         <div style={{ fontWeight: 900 }}>{req.clientName || req.clientId?.name}</div>
                                                         <div style={{ fontSize: '11px', color: '#64748B' }}>{req.clientId?.email}</div>
                                                     </td>
-                                                    <td><span style={{ fontWeight: 800, color: '#6366F1' }}>{req.type?.replace('_', ' ').toUpperCase()}</span></td>
+                                                    <td><span style={{ fontWeight: 800, color: 'var(--primary)' }}>{req.type?.replace('_', ' ').toUpperCase()}</span></td>
                                                     <td style={{ fontSize: '13px', color: '#475569', maxWidth: '200px' }}>{req.message}</td>
                                                     <td style={{ fontSize: '12px' }}>{new Date(req.createdAt).toLocaleDateString()}</td>
                                                     <td>
@@ -500,12 +458,12 @@ const AdminDashboard = () => {
                                                             {req.status.toUpperCase()}
                                                         </span>
                                                     </td>
-                                                    <td>
+                                                    <td style={{ textAlign: 'right' }}>
                                                         {req.status === 'pending' && (
-                                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                                <button onClick={() => handleApproveRequest(req._id)} className="action-btn" title="Approve" style={{ color: '#10B981' }}><CheckCircle size={16}/></button>
-                                                                <button onClick={() => handleRejectRequest(req._id)} className="action-btn" title="Reject" style={{ color: '#EF4444' }}><XCircle size={16}/></button>
-                                                                <button onClick={() => handleActionSimulation('Viewing request details')} className="action-btn" title="Details" style={{ color: '#6366F1' }}><MoreHorizontal size={16}/></button>
+                                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                                <button onClick={() => handleApproveRequest(req._id)} className="action-btn" title="Approve" style={{ background: '#F0FDF4', color: '#166534' }}><CheckCircle size={16}/></button>
+                                                                <button onClick={() => handleRejectRequest(req._id)} className="action-btn" title="Reject" style={{ background: '#FEF2F2', color: '#EF4444' }}><XCircle size={16}/></button>
+                                                                <button onClick={() => handleActionSimulation('Viewing request details')} className="action-btn" title="Details" style={{ background: '#F8FAFC', color: 'var(--primary)' }}><MoreHorizontal size={16}/></button>
                                                             </div>
                                                         )}
                                                     </td>
@@ -526,7 +484,7 @@ const AdminDashboard = () => {
                                     <h2>💎 Subscription Architecture</h2>
                                     <button 
                                         className="action-btn" 
-                                        style={{ background: '#0F172A', color: 'white' }}
+                                        style={{ background: '#FFFFFF', color: '#2D3748' }}
                                         onClick={() => setIsPlanModalOpen(true)}
                                     >
                                         + Define New Tier
@@ -534,19 +492,19 @@ const AdminDashboard = () => {
                                 </div>
                                 <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px' }}>
                                     {[
-                                        { name: 'Starter', price: '$0', color: '#94A3B8', features: ['50 Appointments', '1 Service', 'Basic Analytics'] },
-                                        { name: 'Pro Business', price: '$49', color: '#6366F1', features: ['Unlimited Bookings', '10 Staff Members', 'AI Scheduling', 'Advanced Reports'], active: true },
-                                        { name: 'Enterprise', price: 'Custom', color: '#0F172A', features: ['Global Presence', 'Dedicated Support', 'White-labeling', 'API Access'] }
+                                        { name: 'Starter', price: '$0', color: '#718096', features: ['50 Appointments', '1 Service', 'Basic Analytics'] },
+                                        { name: 'Pro Business', price: '$49', color: 'var(--primary)', features: ['Unlimited Bookings', '10 Staff Members', 'AI Scheduling', 'Advanced Reports'], active: true },
+                                        { name: 'Enterprise', price: 'Custom', color: '#2D3748', features: ['Global Presence', 'Dedicated Support', 'White-labeling', 'API Access'] }
                                     ].map((plan, i) => (
                                         <div key={i} className="data-table-container shadow-hover" style={{ padding: '35px', borderRadius: '32px', border: plan.active ? '2px solid #6366F1' : '1px solid #F1F5F9', position: 'relative' }}>
-                                            {plan.active && <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#6366F1', color: 'white', fontSize: '10px', padding: '4px 12px', borderRadius: '20px', fontWeight: 900 }}>MOST POPULAR</div>}
+                                            {plan.active && <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#6366F1', color: '#2D3748', fontSize: '10px', padding: '4px 12px', borderRadius: '20px', fontWeight: 900 }}>MOST POPULAR</div>}
                                             <div style={{ fontSize: '12px', fontWeight: 900, color: '#64748B', textTransform: 'uppercase', marginBottom: '8px' }}>Tier Level {i+1}</div>
-                                            <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0F172A', marginBottom: '8px' }}>{plan.name}</h3>
+                                            <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#2D3748', marginBottom: '8px' }}>{plan.name}</h3>
                                             <div style={{ fontSize: '32px', fontWeight: 950, color: plan.color, marginBottom: '24px' }}>{plan.price}<small style={{ fontSize: '14px', color: '#64748B', fontWeight: 600 }}>/month</small></div>
                                             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '30px' }}>
                                                 {plan.features.map((f, j) => (
                                                     <li key={j} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#475569' }}>
-                                                        <CheckCircle size={14} color="#10B981"/> {f}
+                                                        <CheckCircle size={14} color="#5A315D"/> {f}
                                                     </li>
                                                 ))}
                                             </ul>
@@ -569,24 +527,24 @@ const AdminDashboard = () => {
 
                                 <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '30px' }}>
                                     <div className="stat-card" style={{ background: '#EEF2FF', border: '1px solid #E0E7FF' }}>
-                                        <div className="stat-icon" style={{ background: '#6366F1', color: 'white' }}><Crown size={20}/></div>
+                                        <div className="stat-icon" style={{ background: '#6366F1', color: '#2D3748' }}><Crown size={20}/></div>
                                         <div className="stat-info">
                                             <div className="label" style={{ color: '#4338CA' }}>Paid Subscriptions</div>
                                             <div className="value" style={{ color: '#1E1B4B' }}>{allUsers.filter(u => u.role === 'client' && u.plan?.type === 'paid').length}</div>
                                         </div>
                                     </div>
                                     <div className="stat-card" style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-                                        <div className="stat-icon" style={{ background: '#94A3B8', color: 'white' }}><Users size={20}/></div>
+                                        <div className="stat-icon" style={{ background: '#718096', color: '#2D3748' }}><Users size={20}/></div>
                                         <div className="stat-info">
                                             <div className="label">Free / Starter Users</div>
                                             <div className="value">{allUsers.filter(u => u.role === 'client' && (u.plan?.type === 'free' || !u.plan?.type)).length}</div>
                                         </div>
                                     </div>
                                     <div className="stat-card" style={{ background: '#ECFDF5', border: '1px solid #D1FAE5' }}>
-                                        <div className="stat-icon" style={{ background: '#10B981', color: 'white' }}><TrendingUp size={20}/></div>
+                                        <div className="stat-icon" style={{ background: '#5A315D', color: '#2D3748' }}><TrendingUp size={20}/></div>
                                         <div className="stat-info">
                                             <div className="label" style={{ color: '#047857' }}>Active Ratio</div>
-                                            <div className="value" style={{ color: '#064E3B' }}>
+                                            <div className="value" style={{ color: '#FDFBF7' }}>
                                                 {allUsers.filter(u => u.role === 'client').length > 0 
                                                     ? Math.round((allUsers.filter(u => u.role === 'client' && u.plan?.type === 'paid').length / allUsers.filter(u => u.role === 'client').length) * 100)
                                                     : 0}%
@@ -639,10 +597,13 @@ const AdminDashboard = () => {
                                                             <td style={{ fontSize: '13px', fontWeight: 700 }}>
                                                                 {client.plan?.expiryDate ? new Date(client.plan.expiryDate).toLocaleDateString() : 'LIFETIME'}
                                                             </td>
-                                                            <td>
-                                                                <button className="action-btn" onClick={() => alert("Opening subscription manager...")} title="Manage Subscription">
-                                                                    <Settings size={16}/>
-                                                                </button>
+                                                            <td style={{ textAlign: 'right' }}>
+                                                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                                    <button className="action-btn" onClick={() => alert("Opening subscription manager...")} title="Manage Subscription" style={{ background: '#F8FAFC' }}>
+                                                                        <Settings size={16}/>
+                                                                    </button>
+                                                                    <button className="action-btn" title="Delete Organization" style={{ background: '#FEF2F2', color: '#EF4444' }} onClick={() => handleDeleteOrg(client._id)}><Trash2 size={16}/></button>
+                                                                </div>
                                                             </td>
                                                         </motion.tr>
                                                     );
@@ -660,7 +621,7 @@ const AdminDashboard = () => {
                             <div className="fade-in">
                                 <div className="table-header">
                                     <h2>📢 Announcement Module</h2>
-                                    <button className="action-btn" onClick={() => setIsAnnouncementModalOpen(true)} style={{ background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <button className="action-btn" onClick={() => setIsAnnouncementModalOpen(true)} style={{ background: '#6366F1', color: '#2D3748', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Plus size={18} /> Create New
                                     </button>
                                 </div>
@@ -716,7 +677,7 @@ const AdminDashboard = () => {
                                     <h2>💼 Industry Sectors</h2>
                                     <button 
                                         className="action-btn" 
-                                        style={{ background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                        style={{ background: '#6366F1', color: '#2D3748', display: 'flex', alignItems: 'center', gap: '8px' }}
                                         onClick={() => setIsSectorModalOpen(true)}
                                     >
                                         <Plus size={18} /> New Sector
@@ -747,8 +708,8 @@ const AdminDashboard = () => {
                                                                     case 'Heart': return '#F43F5E';
                                                                     case 'Scissors': return '#EC4899';
                                                                     case 'Home': return '#F59E0B';
-                                                                    case 'Car': return '#3B82F6';
-                                                                    case 'Dumbbell': return '#10B981';
+                                                                    case 'Car': return '#5A315D';
+                                                                    case 'Dumbbell': return '#5A315D';
                                                                     case 'GraduationCap': return '#8B5CF6';
                                                                     case 'Laptop': return '#6366F1';
                                                                     case 'Cpu': return '#06B6D4';
@@ -764,7 +725,7 @@ const AdminDashboard = () => {
                                                             };
                                                             const iconColor = getIconColor(s.icon);
                                                             return (
-                                                                <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', color: 'white', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.3)' }}>
+                                                                <div style={{ background: 'rgba(90, 49, 93, 0.2)', backdropFilter: 'blur(10px)', color: '#2D3748', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.3)' }}>
                                                                     {s.icon === 'Hospital' && <Building2 size={20}/>}
                                                                     {s.icon === 'Heart' && <Heart size={20}/>}
                                                                     {s.icon === 'Scissors' && <Scissors size={20}/>}
@@ -785,7 +746,7 @@ const AdminDashboard = () => {
                                                                 </div>
                                                             );
                                                         })()}
-                                                        <div style={{ color: 'white' }}>
+                                                        <div style={{ color: '#2D3748' }}>
                                                             <div style={{ fontSize: '18px', fontWeight: 900 }}>{s.name}</div>
                                                             <div style={{ fontSize: '11px', opacity: 0.8, fontWeight: 700, textTransform: 'uppercase' }}>{s.category}</div>
                                                         </div>
@@ -793,7 +754,7 @@ const AdminDashboard = () => {
                                                 </div>
                                                 <div style={{ padding: '20px' }}>
                                                     {s.subCategories && s.subCategories.length > 0 && (
-                                                        <div style={{ fontSize: '11px', color: '#6366F1', fontWeight: 700, background: '#EEF2FF', padding: '6px 12px', borderRadius: '8px', display: 'block', marginBottom: '15px' }}>
+                                                        <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 700, background: '#EEF2FF', padding: '6px 12px', borderRadius: '8px', display: 'block', marginBottom: '15px' }}>
                                                             Roles: {s.subCategories.join(', ')}
                                                         </div>
                                                     )}
@@ -841,24 +802,24 @@ const AdminDashboard = () => {
                                         {allUsers.filter(u => u.role === 'client' && (u.organizationName?.toLowerCase().includes(searchQuery.toLowerCase()) || u.name.toLowerCase().includes(searchQuery.toLowerCase()))).map((c, i) => (
                                             <motion.tr key={c._id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
                                                 <td>
-                                                    <div style={{ fontWeight: 900, color: '#0F172A' }}>{c.organizationName || c.name}</div>
+                                                    <div style={{ fontWeight: 900, color: '#2D3748' }}>{c.organizationName || c.name}</div>
                                                     <div style={{ fontSize: '11px', color: '#64748B' }}>{c.email}</div>
                                                 </td>
                                                 <td><span style={{ background: '#F1F5F9', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 700 }}>{c.sectorName || 'General'}</span></td>
                                                 <td><span style={{ color: c.plan?.expiryDate ? '#EF4444' : '#64748B', fontWeight: 700 }}>{c.plan?.expiryDate ? new Date(c.plan.expiryDate).toLocaleDateString() : 'Lifetime'}</span></td>
                                                 <td><span style={{ background: c.plan?.type === 'paid' ? '#EEF2FF' : '#F1F5F9', color: c.plan?.type === 'paid' ? '#6366F1' : '#64748B', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800 }}>{c.plan?.type?.toUpperCase() || 'FREE'}</span></td>
-                                                <td>
-                                                     <div style={{ display: 'flex', gap: '8px' }}>
-                                                         <button className="action-btn" title="Edit" onClick={() => { setEditingOrg(c); setEditFormData({ organizationName: c.organizationName || '', sector: c.sectorName?.toLowerCase() || 'general', expiryDate: c.plan?.expiryDate?.split('T')[0] || '' }); }}><Edit2 size={16}/></button>
+                                                <td style={{ textAlign: 'right' }}>
+                                                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                         <button className="action-btn" title="Edit" style={{ background: '#F8FAFC' }} onClick={() => { setEditingOrg(c); setEditFormData({ organizationName: c.organizationName || '', sector: c.sectorName?.toLowerCase() || 'general', expiryDate: c.plan?.expiryDate?.split('T')[0] || '' }); }}><Edit2 size={16}/></button>
                                                          <button 
                                                             className="action-btn" 
                                                             title={c.isBlocked ? "Activate" : "Deactivate"} 
                                                             onClick={() => handleToggleStatus(c._id)}
-                                                            style={{ color: c.isBlocked ? '#10B981' : '#EF4444' }}
+                                                            style={{ background: c.isBlocked ? '#FDF2F8' : '#FEF2F2', color: c.isBlocked ? '#5A315D' : '#EF4444' }}
                                                          >
                                                              {c.isBlocked ? <CheckCircle size={16}/> : <XCircle size={16}/>}
                                                          </button>
-                                                         <button className="action-btn" title="Delete Organization" style={{ color: '#EF4444' }} onClick={() => handleDeleteOrg(c._id)}><Trash2 size={16}/></button>
+                                                         <button className="action-btn" title="Delete Organization" style={{ background: '#FEF2F2', color: '#EF4444' }} onClick={() => handleDeleteOrg(c._id)}><Trash2 size={16}/></button>
                                                      </div>
                                                 </td>
                                             </motion.tr>
@@ -910,17 +871,18 @@ const AdminDashboard = () => {
                                                         <span style={{ 
                                                             padding: '4px 12px', borderRadius: '20px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase',
                                                             background: u.role === 'super-admin' ? '#FEF3C7' : u.role === 'client' ? '#E0E7FF' : '#F1F5F9',
-                                                            color: u.role === 'super-admin' ? '#D97706' : u.role === 'client' ? '#4F46E5' : '#64748B'
+                                                            color: u.role === 'super-admin' ? '#B76E79' : u.role === 'client' ? '#4F46E5' : '#64748B'
                                                         }}>
                                                             {u.role}
                                                         </span>
                                                     </td>
-                                                    <td><span style={{ color: '#10B981', fontWeight: 700, fontSize: '12px' }}>● ACTIVE</span></td>
+                                                    <td><span style={{ color: '#5A315D', fontWeight: 700, fontSize: '12px' }}>● ACTIVE</span></td>
                                                     <td style={{ fontSize: '12px' }}>{new Date(u.createdAt).toLocaleDateString()}</td>
-                                                    <td>
-                                                        <div style={{ display: 'flex', gap: '10px' }}>
-                                                            <button className="action-btn" title="Edit Permissions"><Shield size={16}/></button>
-                                                            <button className="action-btn" title="Ban User" style={{ color: '#EF4444' }}><XCircle size={16}/></button>
+                                                    <td style={{ textAlign: 'right' }}>
+                                                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                                                            <button className="action-btn" title="Edit Permissions" style={{ background: '#F8FAFC' }}><Shield size={16}/></button>
+                                                            <button className="action-btn" title="Ban User" style={{ background: '#FFF7ED', color: '#F59E0B' }} onClick={() => handleToggleStatus(u._id)}>{u.isBlocked ? <CheckCircle size={16}/> : <XCircle size={16}/>}</button>
+                                                            <button className="action-btn" title="Delete User" style={{ background: '#FEF2F2', color: '#EF4444' }} onClick={() => handleDeleteOrg(u._id)}><Trash2 size={16}/></button>
                                                         </div>
                                                     </td>
                                                 </motion.tr>
@@ -935,7 +897,7 @@ const AdminDashboard = () => {
                             <div className="fade-in">
                                 <div className="table-header">
                                     <h2>💬 Help & Support Requests</h2>
-                                    <button className="action-btn" style={{ background: '#6366F1', color: 'white' }}>Support Tickets (2)</button>
+                                    <button className="action-btn" style={{ background: '#6366F1', color: '#2D3748' }}>Support Tickets (2)</button>
                                 </div>
                                 <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
                                     {[
@@ -968,12 +930,12 @@ const AdminDashboard = () => {
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                             className="action-btn" 
-                                            style={{ background: '#EEF2FF', color: '#6366F1', border: 'none', padding: '10px 20px', fontWeight: 800 }}
+                                            style={{ background: '#EEF2FF', color: 'var(--primary)', border: 'none', padding: '10px 20px', fontWeight: 800 }}
                                             onClick={() => { fetchAll(); handleActionSimulation('Platform Analytics Synchronized'); }}
                                         >
                                             <RefreshCw size={16} style={{ marginRight: '8px' }}/> Refresh Intelligence
                                         </motion.button>
-                                        <button className="action-btn" onClick={() => handleActionSimulation('Full Data Export')} style={{ background: '#0F172A', color: 'white', padding: '10px 20px' }}><Database size={16} style={{ marginRight: '8px' }}/> Export Intelligence</button>
+                                        <button className="action-btn" onClick={() => handleActionSimulation('Full Data Export')} style={{ background: '#FFFFFF', color: '#2D3748', padding: '10px 20px' }}><Database size={16} style={{ marginRight: '8px' }}/> Export Intelligence</button>
                                     </div>
                                 </div>
                                 <div className="stats-grid" style={{ gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
@@ -992,7 +954,7 @@ const AdminDashboard = () => {
                                         <Doughnut 
                                             data={{ 
                                                 labels: ['Admin', 'Clients', 'Users'], 
-                                                datasets: [{ data: [5, 45, 150], backgroundColor: ['#0F172A', '#6366F1', '#E0E7FF'], borderWidth: 0 }] 
+                                                datasets: [{ data: [5, 45, 150], backgroundColor: ['#FFFFFF', '#6366F1', '#E0E7FF'], borderWidth: 0 }] 
                                             }} 
                                             options={{ maintainAspectRatio: false }}
                                         />
@@ -1017,7 +979,7 @@ const AdminDashboard = () => {
                                                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, color: '#64748B', textTransform: 'uppercase', marginBottom: '8px' }}>Support Email</label>
                                                 <input className="form-input" defaultValue="support@forgeindia.com" style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '2px solid #F1F5F9', fontWeight: 600 }}/>
                                             </div>
-                                            <button className="action-btn" onClick={() => handleActionSimulation('Branding Changes saved')} style={{ background: '#6366F1', color: 'white', marginTop: '10px' }}>Save Branding Changes</button>
+                                            <button className="action-btn" onClick={() => handleActionSimulation('Branding Changes saved')} style={{ background: '#6366F1', color: '#2D3748', marginTop: '10px' }}>Save Branding Changes</button>
                                         </div>
                                     </div>
                                     <div className="data-table-container shadow-hover" style={{ padding: '40px', borderRadius: '32px' }}>
@@ -1036,7 +998,7 @@ const AdminDashboard = () => {
                                                 </div>
                                                 <button className="status-badge status-free">DISABLED</button>
                                             </div>
-                                            <button className="action-btn" onClick={() => handleActionSimulation('Security Settings updated')} style={{ background: '#0F172A', color: 'white' }}>Update Security Settings</button>
+                                            <button className="action-btn" onClick={() => handleActionSimulation('Security Settings updated')} style={{ background: '#FFFFFF', color: '#2D3748' }}>Update Security Settings</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1111,7 +1073,7 @@ const AdminDashboard = () => {
                                                 style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
                                             />
                                         </div>
-                                        <button type="submit" className="action-btn" style={{ background: '#6366F1', color: 'white', padding: '12px', borderRadius: '12px', fontWeight: 900, marginTop: '10px' }}>Save Changes</button>
+                                        <button type="submit" className="action-btn" style={{ background: '#6366F1', color: '#2D3748', padding: '12px', borderRadius: '12px', fontWeight: 900, marginTop: '10px' }}>Save Changes</button>
                                     </div>
                                 </form>
                             </motion.div>
@@ -1206,12 +1168,12 @@ const AdminDashboard = () => {
                                 style={{ maxWidth: '700px', width: '95%' }}
                                 onClick={e => e.stopPropagation()}
                             >
-                                <div className="modal-header-fancy" style={{ background: 'linear-gradient(135deg, #0F172A, #1E293B)' }}>
+                                <div className="modal-header-fancy" style={{ background: 'linear-gradient(135deg, #FFFFFF, #1E293B)' }}>
                                     <div>
-                                        <h2 style={{ color: 'white' }}>💎 Define New Subscription Tier</h2>
+                                        <h2 style={{ color: '#2D3748' }}>💎 Define New Subscription Tier</h2>
                                         <p style={{ color: 'rgba(255,255,255,0.6)' }}>Configure a new pricing model for your clients</p>
                                     </div>
-                                    <button onClick={() => setIsPlanModalOpen(false)} className="close-circle" style={{ color: 'white' }}><X size={20}/></button>
+                                    <button onClick={() => setIsPlanModalOpen(false)} className="close-circle" style={{ color: '#2D3748' }}><X size={20}/></button>
                                 </div>
                                 <form onSubmit={handleSavePlan} className="fancy-form">
                                     <div className="form-grid">
@@ -1251,7 +1213,7 @@ const AdminDashboard = () => {
                                     <div className="modal-footer">
                                         <button type="button" onClick={() => setIsPlanModalOpen(false)} className="cancel-btn">Cancel</button>
                                         <button type="button" onClick={() => handleActionSimulation('Plan architecture saved as draft')} className="cancel-btn" style={{ background: '#F1F5F9' }}>Save Draft</button>
-                                        <button type="submit" className="save-btn" style={{ background: '#0F172A' }}>Save Plan Architecture</button>
+                                        <button type="submit" className="save-btn" style={{ background: '#FFFFFF' }}>Save Plan Architecture</button>
                                     </div>
                                 </form>
                             </motion.div>
@@ -1351,7 +1313,7 @@ const AdminDashboard = () => {
                         </div>
                     )}
                 </AnimatePresence>
-            </main>
+            </div>
         </div>
     );
 };

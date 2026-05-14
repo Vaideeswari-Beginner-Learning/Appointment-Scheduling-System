@@ -44,11 +44,11 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
             <div style={{ background: 'white', borderRadius: '24px', width: '440px', maxWidth: '95vw', boxShadow: '0 25px 50px rgba(0,0,0,0.2)', overflow: 'hidden' }}>
                 {/* Header */}
                 <div style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ color: 'white' }}>
+                    <div style={{ color: '#2D3748' }}>
                         <div style={{ fontSize: '18px', fontWeight: 900 }}>Secure Payment</div>
                         <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '2px' }}>Appointment #{appointment?._id?.slice(-6).toUpperCase()}</div>
                     </div>
-                    <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: 'white', display: 'flex' }}>
+                    <button onClick={onClose} style={{ background: 'rgba(90, 49, 93, 0.15)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: '#2D3748', display: 'flex' }}>
                         <X size={18} />
                     </button>
                 </div>
@@ -57,8 +57,8 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
                     {/* Amount */}
                     <div style={{ background: '#F8FAFC', borderRadius: '14px', padding: '20px', textAlign: 'center', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
                         <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '8px' }}>Amount to Pay</div>
-                        <div style={{ fontSize: '42px', fontWeight: 900, color: '#0F172A' }}>Rs. {amount}</div>
-                        <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '4px' }}>{appointment?.purpose || 'Appointment Service'}</div>
+                        <div style={{ fontSize: '42px', fontWeight: 900, color: '#2D3748' }}>Rs. {amount}</div>
+                        <div style={{ fontSize: '12px', color: '#718096', marginTop: '4px' }}>{appointment?.purpose || 'Appointment Service'}</div>
                     </div>
 
                     {step === 1 && (
@@ -79,8 +79,8 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
                                             cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s'
                                         }}>
                                             <div style={{ marginBottom: '4px', color: method === m.id ? '#4F46E5' : '#64748B' }}>{m.icon}</div>
-                                            <div style={{ fontWeight: 800, fontSize: '13px', color: method === m.id ? '#4F46E5' : '#0F172A' }}>{m.label}</div>
-                                            <div style={{ fontSize: '11px', color: '#94A3B8' }}>{m.desc}</div>
+                                            <div style={{ fontWeight: 800, fontSize: '13px', color: method === m.id ? '#4F46E5' : '#FFFFFF' }}>{m.label}</div>
+                                            <div style={{ fontSize: '11px', color: '#718096' }}>{m.desc}</div>
                                         </button>
                                     ))}
                                 </div>
@@ -88,17 +88,17 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
 
                             {method === 'upi' && (
                                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                                    <div style={{ background: '#1A1A2E', padding: '32px 24px', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: 'white', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 28px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                    <div style={{ background: '#1A1A2E', padding: '32px 24px', borderRadius: '32px', border: '1px solid rgba(90, 49, 93, 0.1)', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: '#2D3748', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 28px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                             <Smartphone size={16} /> Secure PhonePe Payment
                                         </div>
 
                                         <div style={{ marginBottom: '24px' }}>
                                             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>Amount to Pay</div>
-                                            <div style={{ fontSize: '42px', fontWeight: 950, color: '#10B981' }}>Rs. {amount}</div>
+                                            <div style={{ fontSize: '42px', fontWeight: 950, color: '#5A315D' }}>Rs. {amount}</div>
                                         </div>
                                         
-                                        <div style={{ background: '#1A1A2E', padding: '20px', borderRadius: '28px', display: 'inline-block', border: '1px solid rgba(255,255,255,0.1)', position: 'relative', marginBottom: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+                                        <div style={{ background: '#1A1A2E', padding: '20px', borderRadius: '28px', display: 'inline-block', border: '1px solid rgba(90, 49, 93, 0.1)', position: 'relative', marginBottom: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
                                             <img 
                                                 src="/phonepe-qr.jpeg" 
                                                 alt="PhonePe QR Code" 
@@ -116,15 +116,15 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
                                                 }}
                                             />
                                             {/* Decorative Corner Accents */}
-                                            <div style={{ position: 'absolute', top: '10px', left: '10px', width: '20px', height: '20px', borderTop: '2px solid rgba(255,255,255,0.2)', borderLeft: '2px solid rgba(255,255,255,0.2)', borderRadius: '4px 0 0 0' }}></div>
-                                            <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '20px', height: '20px', borderBottom: '2px solid rgba(255,255,255,0.2)', borderRight: '2px solid rgba(255,255,255,0.2)', borderRadius: '0 0 4px 0' }}></div>
+                                            <div style={{ position: 'absolute', top: '10px', left: '10px', width: '20px', height: '20px', borderTop: '2px solid rgba(90, 49, 93, 0.2)', borderLeft: '2px solid rgba(90, 49, 93, 0.2)', borderRadius: '4px 0 0 0' }}></div>
+                                            <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '20px', height: '20px', borderBottom: '2px solid rgba(90, 49, 93, 0.2)', borderRight: '2px solid rgba(90, 49, 93, 0.2)', borderRadius: '0 0 4px 0' }}></div>
                                         </div>
 
                                         <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>Scan with any UPI App</div>
-                                        <div style={{ color: 'white', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
+                                        <div style={{ color: '#2D3748', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
 
-                                        <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                                            <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                                        <div style={{ background: 'rgba(90, 49, 93, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#5A315D', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(90, 49, 93, 0.2)' }}>
+                                            <div style={{ width: '6px', height: '6px', background: '#5A315D', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
                                             Secure System Verification Active
                                         </div>
                                     </div>
@@ -140,7 +140,7 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
 
                             <button onClick={handlePay} style={{
                                 width: '100%', padding: '16px', background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
-                                color: 'white', border: 'none', borderRadius: '14px', fontWeight: 900, fontSize: '16px',
+                                color: '#2D3748', border: 'none', borderRadius: '14px', fontWeight: 900, fontSize: '16px',
                                 cursor: 'pointer', boxShadow: '0 8px 20px rgba(79,70,229,0.3)'
                             }}>
                                 Pay Rs. {amount} Securely
@@ -151,7 +151,7 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
                     {step === 2 && (
                         <div style={{ textAlign: 'center', padding: '20px 0' }}>
                             <div style={{ width: '60px', height: '60px', border: '4px solid #EEF2FF', borderTopColor: '#4F46E5', borderRadius: '50%', margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
-                            <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Processing Payment...</div>
+                            <div style={{ fontSize: '18px', fontWeight: 900, color: '#2D3748', marginBottom: '8px' }}>Processing Payment...</div>
                             <div style={{ color: '#64748B', fontSize: '14px' }}>Please do not close this window</div>
                         </div>
                     )}
@@ -166,7 +166,7 @@ const PaymentModal = ({ appointment, onClose, onSuccess }) => {
                             >
                                 <CheckCircle2 size={48} />
                             </motion.div>
-                            <div style={{ fontSize: '28px', fontWeight: 950, color: '#0F172A', marginBottom: '12px' }}>Thank You!</div>
+                            <div style={{ fontSize: '28px', fontWeight: 950, color: '#2D3748', marginBottom: '12px' }}>Thank You!</div>
                             <div style={{ color: '#64748B', fontSize: '16px', fontWeight: 700, marginBottom: '24px' }}>Your payment was processed successfully.</div>
                             
                             <div style={{ background: '#F8FAFC', padding: '12px 20px', borderRadius: '14px', color: '#4F46E5', fontSize: '13px', fontWeight: 900, display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid #EEF2FF' }}>

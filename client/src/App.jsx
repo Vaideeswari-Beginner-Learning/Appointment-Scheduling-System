@@ -1,9 +1,10 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { ToastProvider } from './context/ToastContext';
+import { ThemeProvider } from './context/ThemeContext';
 import LandingPage from './pages/LandingPage';
 import LandingPageV2 from './pages/LandingPageV2';
 import Login from './pages/Login';
@@ -23,7 +24,8 @@ import MainLayout from './components/MainLayout';
 import ClientPicker from './pages/ClientPicker';
 import OnboardingWizard from './pages/OnboardingWizard';
 import MiniWebsite from './pages/MiniWebsite';
-import { Zap, Building2, User, Briefcase } from 'lucide-react';
+import InfoPage from './pages/info/InfoPage';
+import { Zap, Building2, User, Briefcase, CreditCard, Clock } from 'lucide-react';
 
 const ProtectedRoute = ({ children, roles }) => {
     const { user, loading } = useAuth();
@@ -48,8 +50,6 @@ const ProtectedRoute = ({ children, roles }) => {
     if (!user) return <Navigate to="/login" />;
     if (roles && !roles.includes(user.role)) return <Navigate to="/dashboard" />;
     
-    const manualLayoutRoles = ['admin', 'super-admin', 'hr', 'client'];
-    if (manualLayoutRoles.includes(user.role)) return <>{children}</>;
     if (location === '/onboarding') return <>{children}</>;
     
     return <MainLayout>{children}</MainLayout>;
@@ -57,55 +57,9 @@ const ProtectedRoute = ({ children, roles }) => {
 
 const DashboardRedirect = () => {
     const { user, loading } = useAuth();
-    const [identifying, setIdentifying] = React.useState(true);
 
-    React.useEffect(() => {
-        if (!loading && user) {
-            const timer = setTimeout(() => setIdentifying(false), 2000);
-            return () => clearTimeout(timer);
-        }
-    }, [loading, user]);
-
-    if (loading || (user && identifying)) {
-        return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-main)', transition: 'background 0.3s' }}>
-                <motion.div 
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [0, 1.2, 1], rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 0.8 }}
-                    style={{ color: user?.role === 'client' ? '#4F46E5' : (user?.role === 'hr' ? '#6366F1' : '#10B981'), marginBottom: '24px' }}
-                >
-                    {user?.role === 'client' ? <Building2 size={80} /> : (user?.role === 'hr' ? <Briefcase size={80} /> : <User size={80} />)}
-                </motion.div>
-                
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ 
-                            background: user?.role === 'client' ? '#4F46E5' : (user?.role === 'hr' ? '#6366F1' : '#10B981'), 
-                            color: 'white', padding: '10px 24px', borderRadius: '99px', 
-                            fontSize: '14px', fontWeight: 900, textTransform: 'uppercase',
-                            letterSpacing: '2px', boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
-                        }}>
-                            Role: {user?.role === 'client' ? 'Business Owner' : (user?.role === 'hr' ? 'HR Manager' : (['doctor', 'employee', 'staff'].includes(user?.role) ? 'Professional' : 'Verified Customer'))}
-                        </span>
-                        {user?.sector && (
-                            <span style={{ color: 'var(--text-gray)', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                Sector: {user.sector}
-                            </span>
-                        )}
-                    </div>
-                </motion.div>
-
-                <h1 style={{ fontSize: '32px', fontWeight: 950, color: 'var(--text-dark)', marginTop: '32px' }}>
-                    {user?.role === 'client' ? 'Management Mode' : (user?.role === 'hr' ? 'HR Control Center' : 'System Dashboard')}
-                </h1>
-                
-                <p style={{ color: 'var(--text-gray)', fontWeight: 600, marginTop: '12px' }}>
-                    Setting up your personalized {user?.sector || 'service'} portal...
-                </p>
-            </div>
-        );
-    }
+    if (loading) return null;
+ 
  
     if (!user) return <Navigate to="/login" />;
     if (user.role === 'super-admin' || user.role === 'admin') return <AdminDashboard />;
@@ -115,48 +69,94 @@ const DashboardRedirect = () => {
     return <UserDashboard />;
 };
 
-function App() {
-    const [darkMode, setDarkMode] = React.useState(() => localStorage.getItem('darkMode') === 'true');
+// Client Approval & Payment Check Wrapper
+const ClientApprovalCheck = ({ children }) => {
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
-    React.useEffect(() => {
-        document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-        localStorage.setItem('darkMode', darkMode);
-    }, [darkMode]);
+    // Bypass for super-admin or admin
+    if (user?.role === 'super-admin' || user?.role === 'admin') {
+        return children;
+    }
+
+    // Real approval state from backend (with simulation fallback for dev testing)
+    const isApproved = user?.isApproved !== false; 
+    const isPendingPayment = sessionStorage.getItem('pendingPayment') === 'true';
+
+    if (isPendingPayment) {
+        return (
+            <div style={{ background: '#FDFBF7', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#B76E79', textAlign: 'center', padding: '40px' }}>
+                <CreditCard size={80} style={{ marginBottom: '24px' }} />
+                <h1 style={{ fontSize: '48px', fontWeight: 900, marginBottom: '16px' }}>Payment Required</h1>
+                <p style={{ fontSize: '20px', maxWidth: '600px', marginBottom: '40px', color: '#64748B' }}>Your request has been accepted! Please complete the payment to activate your professional dashboard.</p>
+                <button onClick={() => { sessionStorage.removeItem('pendingPayment'); window.location.reload(); }} style={{ background: '#B76E79', color: 'white', padding: '18px 48px', borderRadius: '16px', border: 'none', fontWeight: 900, fontSize: '18px', cursor: 'pointer', boxShadow: '0 10px 30px rgba(183,110,121,0.3)' }}>
+                    Pay & Activate Now
+                </button>
+            </div>
+        );
+    }
+
+    if (!isApproved) {
+        return (
+            <div style={{ background: '#FDFBF7', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#B76E79', textAlign: 'center', padding: '40px' }}>
+                <Clock size={80} style={{ marginBottom: '24px' }} />
+                <h1 style={{ fontSize: '48px', fontWeight: 900, marginBottom: '16px' }}>Waiting for Approval</h1>
+                <p style={{ fontSize: '20px', maxWidth: '600px', marginBottom: '40px', color: '#64748B' }}>Your organization request has been sent to our administrators. We will verify your details and notify you once accepted.</p>
+                <button onClick={() => { logout(); navigate('/login'); }} style={{ background: 'transparent', color: '#B76E79', border: '2px solid #B76E79', padding: '12px 24px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer' }}>
+                    Log Out
+                </button>
+            </div>
+        );
+    }
+
+    return children;
+};
+
+function App() {
 
     return (
-        <AuthProvider>
-            <ToastProvider>
-                <SocketProvider>
-                    <Router>
-                        <div style={{ minHeight: '100vh', background: darkMode ? '#0F172A' : '#F8FAFC', fontFamily: "'Inter', sans-serif", transition: 'background 0.3s' }}>
-                            <button className="dark-mode-toggle" onClick={() => setDarkMode(!darkMode)} title={darkMode ? 'Light Mode' : 'Dark Mode'}>
-                                {darkMode ? '☀️' : '🌙'}
-                            </button>
+        <ThemeProvider>
+            <AuthProvider>
+                <ToastProvider>
+                    <SocketProvider>
+                        <Router>
                             <Routes>
-                                <Route path="/" element={<LandingPageV2 />} />
-                                <Route path="/old-home" element={<LandingPage />} />
+                                <Route path="/" element={<LandingPage />} />
+                                <Route path="/landing-v2" element={<LandingPageV2 />} />
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/register" element={<Register />} />
                                 <Route path="/client-register" element={<ClientRegister />} />
-                                <Route path="/dashboard" element={<DashboardRedirect />} />
                                 <Route path="/book" element={<Booking />} />
-                                <Route path="/select-organization" element={<ProtectedRoute><ClientPicker /></ProtectedRoute>} />
-                                <Route path="/staff/:id" element={<StaffProfile />} />
-                                <Route path="/admin" element={<ProtectedRoute roles={['super-admin']}><AdminDashboard /></ProtectedRoute>} />
-                                <Route path="/onboarding" element={<ProtectedRoute roles={['client']}><OnboardingWizard /></ProtectedRoute>} />
-                                <Route path="/track" element={<UserDashboard />} />
-                                <Route path="/my-appointments" element={<MyAppointments />} />
+                                <Route path="/onboarding" element={<ProtectedRoute><OnboardingWizard /></ProtectedRoute>} />
+                                <Route path="/professional/:id" element={<StaffProfile />} />
+                                <Route path="/dashboard" element={
+                                    <ProtectedRoute>
+                                        <ClientApprovalCheck>
+                                            <DashboardRedirect />
+                                        </ClientApprovalCheck>
+                                    </ProtectedRoute>
+                                } />
                                 <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
-                                <Route path="/professional-dashboard" element={<ProtectedRoute roles={['doctor', 'interviewer', 'service', 'admin']}><ProfessionalDashboard /></ProtectedRoute>} />
-                                <Route path="/org/:id" element={<MiniWebsite />} />
                                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                                <Route path="/my-appointments" element={<ProtectedRoute><MyAppointments /></ProtectedRoute>} />
+                                <Route path="/client/:id" element={<MiniWebsite />} />
+
+                                <Route path="/blog" element={<InfoPage type="blog" />} />
+                                <Route path="/press" element={<InfoPage type="press" />} />
+                                <Route path="/contact" element={<InfoPage type="contact" />} />
+                                <Route path="/help" element={<InfoPage type="help" />} />
+                                <Route path="/privacy" element={<InfoPage type="privacy" />} />
+                                <Route path="/terms" element={<InfoPage type="terms" />} />
+                                <Route path="/cookies" element={<InfoPage type="cookies" />} />
+                                <Route path="/status" element={<InfoPage type="status" />} />
+
                                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
                             </Routes>
-                        </div>
-                    </Router>
-                </SocketProvider>
-            </ToastProvider>
-        </AuthProvider>
+                        </Router>
+                    </SocketProvider>
+                </ToastProvider>
+            </AuthProvider>
+        </ThemeProvider>
     );
 }
 

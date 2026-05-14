@@ -8,8 +8,8 @@ const AvailabilityToggle = ({ currentStatus = 'available', onStatusChange }) => 
 
     const statuses = [
         { id: 'available', label: 'Available', color: '#16A34A', bg: '#DCFCE7', dot: '#22C55E' },
-        { id: 'busy', label: 'Busy', color: '#D97706', bg: '#FEF3C7', dot: '#F59E0B' },
-        { id: 'offline', label: 'Offline', color: '#64748B', bg: '#F1F5F9', dot: '#94A3B8' },
+        { id: 'busy', label: 'Busy', color: '#B76E79', bg: '#FEF3C7', dot: '#F59E0B' },
+        { id: 'offline', label: 'Offline', color: '#64748B', bg: '#F1F5F9', dot: '#718096' },
     ];
 
     const current = statuses.find(s => s.id === status) || statuses[0];

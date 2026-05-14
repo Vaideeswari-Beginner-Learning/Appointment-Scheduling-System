@@ -5,3 +5,4 @@ export { default as TopNavbar } from './TopNavbar';
 export { default as MainLayout } from './MainLayout';
 export { default as SlotCreation } from './SlotCreation';
 export { default as Navbar } from './Navbar';
+export { default as LottieWrapper } from './LottieWrapper';

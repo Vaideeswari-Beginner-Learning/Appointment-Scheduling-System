@@ -19,12 +19,12 @@ import ChatWidget from '../components/ChatWidget';
 
 const StatusBadge = ({ status }) => {
     const map = {
-        pending:   { bg: '#FEF3C7', color: '#D97706', label: 'Pending' },
+        pending:   { bg: '#FEF3C7', color: '#B76E79', label: 'Pending' },
         confirmed: { bg: '#E0F2FE', color: '#0284C7', label: 'Confirmed' },
         approved:  { bg: '#E0F2FE', color: '#0284C7', label: 'Confirmed' },
         accepted:  { bg: '#E0F2FE', color: '#0284C7', label: 'Confirmed' },
         ongoing:   { bg: '#EDE9FE', color: '#7C3AED', label: 'Live' },
-        completed: { bg: '#D1FAE5', color: '#059669', label: 'Completed' },
+        completed: { bg: '#D1FAE5', color: '#4A1C40', label: 'Completed' },
         rejected:  { bg: '#FEE2E2', color: '#DC2626', label: 'Rejected' },
     };
     const s = map[status] || { bg: '#F3F4F6', color: '#6B7280', label: status };
@@ -52,7 +52,7 @@ const LockOverlay = ({ onUpgrade }) => (
             }}>
                 <ShieldAlert size={32} />
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Feature Locked</h3>
+            <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#2D3748', marginBottom: '8px' }}>Feature Locked</h3>
             <p style={{ color: '#64748B', fontSize: '14px', lineHeight: '1.5', marginBottom: '24px', fontWeight: 600 }}>
                 Your 24-Hour Free Trial has ended. Please upgrade to unlock full access to staff, slots, and bookings.
             </p>
@@ -63,10 +63,66 @@ const LockOverlay = ({ onUpgrade }) => (
     </div>
 );
 
+const OopsTrialExpired = ({ onRequestExtension, isRequesting }) => (
+    <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(10px)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        zIndex: 9999, textAlign: 'center', padding: '24px'
+    }}>
+        <div style={{ 
+            background: 'white', padding: '48px', borderRadius: '32px', 
+            boxShadow: '0 40px 100px rgba(0,0,0,0.5)', maxWidth: '500px', width: '100%' 
+        }}>
+            <div style={{ 
+                background: '#FEF2F2', color: '#DC2626', width: '80px', height: '80px', borderRadius: '50%', 
+                display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' 
+            }}>
+                <XCircle size={48} />
+            </div>
+            <h2 style={{ fontSize: '32px', fontWeight: 950, color: '#0F172A', marginBottom: '16px', letterSpacing: '-1px' }}>Oops! Trial Expired</h2>
+            <p style={{ color: '#475569', fontSize: '16px', lineHeight: '1.6', marginBottom: '32px', fontWeight: 500 }}>
+                Your 1-Day Free Trial has concluded. To continue using your business scheduling platform, you can request an emergency 5-hour extension from the administrator.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <button 
+                    onClick={onRequestExtension} 
+                    disabled={isRequesting}
+                    style={{ 
+                        width: '100%', padding: '16px', borderRadius: '16px', background: '#4A1C40', 
+                        color: 'white', fontWeight: 800, border: 'none', cursor: isRequesting ? 'not-allowed' : 'pointer',
+                        fontSize: '16px', opacity: isRequesting ? 0.7 : 1, transition: '0.2s'
+                    }}
+                >
+                    {isRequesting ? 'Requesting...' : 'Request 5-Hour Extension'}
+                </button>
+                <button 
+                    onClick={() => window.location.href = '/login'}
+                    style={{ 
+                        width: '100%', padding: '16px', borderRadius: '16px', background: 'transparent', 
+                        color: '#64748B', fontWeight: 800, border: '2px solid #E2E8F0', cursor: 'pointer',
+                        fontSize: '16px'
+                    }}
+                >
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+);
+
 const ClientDashboard = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+
+    if (!user) return null;
     const [activeTab, setActiveTab] = useState('dashboard');
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab) setActiveTab(tab);
+    }, [window.location.search]);
     const config = getSectorConfig(user?.sector || 'general');
     
     // Check for Plan Expiry
@@ -142,27 +198,29 @@ const ClientDashboard = () => {
         organizationLogo: '',
         organizationImages: '',
         organizationDescription: '',
-        sector: ''
+        sector: '',
+        phone: ''
     });
     const [paymentStage, setPaymentStage] = useState('idle'); // idle, processing, rocket, completed
     const [paymentData, setPaymentData] = useState({ amount: 'Rs. 1', title: 'Plan Upgrade' });
     const [isServiceEdit, setIsServiceEdit] = useState(false);
     const [selectedServiceId, setSelectedServiceId] = useState(null);
+    const [isRequestingExtension, setIsRequestingExtension] = useState(false);
 
     const staticSectors = [
         { id: 'healthcare', label: 'Healthcare', icon: <Building2 />, color: '#EF4444' },
-        { id: 'education', label: 'Education', icon: <Building2 />, color: '#3B82F6' },
+        { id: 'education', label: 'Education', icon: <Building2 />, color: '#5A315D' },
         { id: 'salon', label: 'Salon & Beauty', icon: <Scissors />, color: '#EC4899' },
         { id: 'hospitality', label: 'Hospitality', icon: <Building2 />, color: '#F59E0B' },
         { id: 'corporate', label: 'Corporate', icon: <Briefcase />, color: '#6366F1' },
         { id: 'automobile', label: 'Automobile', icon: <Building2 />, color: '#F97316' },
-        { id: 'fitness', label: 'Fitness', icon: <Zap />, color: '#10B981' },
+        { id: 'fitness', label: 'Fitness', icon: <Zap />, color: '#5A315D' },
         { id: 'legal', label: 'Legal', icon: <Building2 />, color: '#64748B' },
         { id: 'property', label: 'Property', icon: <Building2 />, color: '#8B5CF6' },
         { id: 'repair', label: 'Repair Services', icon: <Wrench />, color: '#F97316' },
         { id: 'events', label: 'Events', icon: <Building2 />, color: '#D946EF' },
         { id: 'retail', label: 'Retail', icon: <ShoppingBag />, color: '#06B6D4' },
-        { id: 'consultancy', label: 'Consultancy', icon: <Briefcase />, color: '#94A3B8' }
+        { id: 'consultancy', label: 'Consultancy', icon: <Briefcase />, color: '#718096' }
     ];
 
     // ═══ PAYMENT ANIMATION OVERLAY ═══
@@ -180,14 +238,14 @@ const ClientDashboard = () => {
                                 src="/images/payment_processing.png" 
                                 className="processing-image" 
                                 alt="Processing" 
-                                style={{ borderRadius: '32px', border: '8px solid rgba(255,255,255,0.1)' }}
+                                style={{ borderRadius: '32px', border: '8px solid rgba(90, 49, 93, 0.1)' }}
                             />
                             <div style={{ 
                                 position: 'absolute', bottom: '-20px', left: '50%', transform: 'translateX(-50%)',
-                                background: 'white', color: '#0F172A', padding: '12px 24px', borderRadius: '16px',
+                                background: 'white', color: '#2D3748', padding: '12px 24px', borderRadius: '16px',
                                 fontWeight: 900, boxShadow: '0 10px 30px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: '10px'
                             }}>
-                                <div className="spinner" style={{ width: '16px', height: '16px', border: '3px solid #E2E8F0', borderTopColor: '#3B82F6', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                                <div className="spinner" style={{ width: '16px', height: '16px', border: '3px solid #E2E8F0', borderTopColor: '#5A315D', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                                 SECURE VERIFICATION
                             </div>
                         </div>
@@ -242,13 +300,13 @@ const ClientDashboard = () => {
                         className="processing-container"
                     >
                         <div style={{ 
-                            width: '120px', height: '120px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', 
+                            width: '120px', height: '120px', background: 'linear-gradient(135deg, #5A315D 0%, #4A1C40 100%)', 
                             borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                            boxShadow: '0 0 60px rgba(16, 185, 129, 0.6)', border: '4px solid white'
+                            boxShadow: '0 0 60px rgba(90, 49, 93, 0.6)', border: '4px solid white'
                         }}>
                             <CheckCircle size={70} color="white" />
                         </div>
-                        <div className="success-text" style={{ background: 'linear-gradient(to right, #10B981, #34D399)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                        <div className="success-text" style={{ background: 'linear-gradient(to right, #5A315D, #34D399)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                             MISSION ACCOMPLISHED
                         </div>
                         <p style={{ opacity: 0.8, fontWeight: 700 }}>Your workspace is now upgraded to Premium.</p>
@@ -388,18 +446,18 @@ const ClientDashboard = () => {
     // 🗺️ Map User Sector to allowed Industry Templates
     const sectorToTemplateMap = {
         'healthcare': [{ id: 'healthcare', label: 'Healthcare', icon: <Building2 />, color: '#EF4444' },],
-        'education': [{ id: 'education', label: 'Education', icon: <Building2 />, color: '#3B82F6' },],
+        'education': [{ id: 'education', label: 'Education', icon: <Building2 />, color: '#5A315D' },],
         'salon': [{ id: 'salon', label: 'Salon & Beauty', icon: <Scissors />, color: '#EC4899' },],
         'hospitality': [{ id: 'hospitality', label: 'Hospitality', icon: <Building2 />, color: '#F59E0B' },],
         'corporate': [{ id: 'corporate', label: 'Corporate', icon: <Briefcase />, color: '#6366F1' },],
         'automobile': [{ id: 'automobile', label: 'Automobile', icon: <Building2 />, color: '#F97316' },],
-        'fitness': [{ id: 'fitness', label: 'Fitness', icon: <Zap />, color: '#10B981' },],
+        'fitness': [{ id: 'fitness', label: 'Fitness', icon: <Zap />, color: '#5A315D' },],
         'legal': [{ id: 'legal', label: 'Legal', icon: <Building2 />, color: '#64748B' },],
         'property': [{ id: 'property', label: 'Property', icon: <Building2 />, color: '#8B5CF6' },],
         'repair': [{ id: 'repair', label: 'Repair Services', icon: <Wrench />, color: '#F97316' },],
         'events': [{ id: 'events', label: 'Events', icon: <Building2 />, color: '#D946EF' },],
         'retail': [{ id: 'retail', label: 'Retail', icon: <ShoppingBag />, color: '#06B6D4' },],
-        'consultancy': [{ id: 'consultancy', label: 'Consultancy', icon: <Briefcase />, color: '#94A3B8' },],
+        'consultancy': [{ id: 'consultancy', label: 'Consultancy', icon: <Briefcase />, color: '#718096' },],
         'general': [{ id: 'other', label: 'Other', icon: <Building2 />, color: '#64748B' },]
     };
 
@@ -523,7 +581,8 @@ const ClientDashboard = () => {
                 organizationDescription: user.organizationDescription || '',
                 organizationStory: user.organizationStory || '',
                 organizationPurpose: user.organizationPurpose || '',
-                sector: user.sector || 'general'
+                sector: user.sector || 'general',
+                phone: user.phone || ''
             });
 
             // Fetch All Sectors for onboarding
@@ -704,7 +763,9 @@ const ClientDashboard = () => {
     const handleSaaSRequest = async (type, extraData = {}) => {
         const token = localStorage.getItem('token');
         try {
-            let msg = `Client ${user.name} from ${user.organizationName} requested ${type.replace('_', ' ')}.`;
+            if (type === 'trial_extension_5hr') setIsRequestingExtension(true);
+            
+            let msg = `Client ${user.name} from ${user.organizationName} requested ${type.replace(/_/g, ' ')}.`;
             if (extraData.packageName) msg += ` Selected Package: ${extraData.packageName}`;
             
             const res = await axios.post(`${API_BASE_URL}/saas/request`, { type, message: msg, sector: user.sector }, { headers: { 'x-auth-token': token } });
@@ -713,12 +774,18 @@ const ClientDashboard = () => {
                 alert("SYSTEM AUTO-APPROVAL: Your request has been approved instantly! Your dashboard is now UNLOCKED.");
                 window.location.reload(); // Force refresh to update user plan context
             } else {
-                setShowSaaSRequestSuccess(true);
-                setShowTrainingPayment(false);
-                setTimeout(() => setShowSaaSRequestSuccess(false), 5000);
+                if (type === 'trial_extension_5hr') {
+                    alert('Your 5-hour extension request has been sent to the Admin successfully! You will receive an SMS/Email notification once approved.');
+                } else {
+                    setShowSaaSRequestSuccess(true);
+                    setShowTrainingPayment(false);
+                    setTimeout(() => setShowSaaSRequestSuccess(false), 5000);
+                }
             }
         } catch (error) {
             alert("Error sending request: " + (error.response?.data?.message || error.message));
+        } finally {
+            if (type === 'trial_extension_5hr') setIsRequestingExtension(false);
         }
     };
 
@@ -801,7 +868,7 @@ const ClientDashboard = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Icon size={18} /> {label}
             </div>
-            {alert && <div style={{ background: '#EF4444', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px' }}>{alert}</div>}
+            {alert && <div style={{ background: '#EF4444', color: '#2D3748', fontSize: '10px', padding: '2px 6px', borderRadius: '10px' }}>{alert}</div>}
         </button>
     );
 
@@ -814,88 +881,31 @@ const ClientDashboard = () => {
     }
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-light)' }}>
-            <PaymentAnimationOverlay />
-            {/* SIDEBAR */}
-            <aside style={{ width: '280px', background: '#fff', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', background: 'var(--primary)', color: 'white' }}>
-                    <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Building size={20} /> {config.label} Management Portal
-                    </h2>
-                    <p style={{ margin: '4px 0 0', fontSize: '12px', opacity: 0.8 }}>Tenant ID: {user.clientId?.substring(0, 8)}</p>
+        <div className="fade-in">
+            <header style={{ marginBottom: '40px', borderBottom: '1px solid var(--border-color)', paddingBottom: '32px' }}>
+                <h1 style={{ fontSize: '36px', fontWeight: 900 }}>Business <span className="text-gold">Command Center</span></h1>
+                <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Operational hub for {user.organizationName || 'your organization'}.</p>
+                
+                <div style={{ display: 'flex', gap: '16px', marginTop: '24px' }}>
                     <a 
-                        href={`/org/${user._id || user.id}`} 
+                        href={`/client/${user._id || user.id}`} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        style={{ 
-                            display: 'inline-flex', 
-                            alignItems: 'center', 
-                            gap: '8px', 
-                            marginTop: '12px', 
-                            fontSize: '11px', 
-                            fontWeight: 900, 
-                            background: 'rgba(255,255,255,0.2)', 
-                            color: 'white', 
-                            padding: '6px 12px', 
-                            borderRadius: '8px', 
-                            textDecoration: 'none',
-                            transition: 'background 0.2s',
-                            width: '100%',
-                            justifyContent: 'center'
-                        }}
-                        onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
-                        onMouseLeave={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+                        className="btn-gold"
+                        style={{ padding: '12px 24px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}
                     >
-                        <ExternalLink size={14} /> View My Public Website
+                        <ExternalLink size={18} /> View Public Website
                     </a>
                 </div>
-                
-                <div style={{ padding: '24px 16px', flex: 1, overflowY: 'auto' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-light)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '1px', paddingLeft: '16px' }}>Main Systems</div>
-                    <NavItem id="dashboard" label="Overview" icon={LayoutDashboard} />
-                    <NavItem id="bookings" label={config.dashboard.bookingLabel} icon={ClipboardList} alert={bookings.filter(b => b.status === 'pending').length || null} />
-                    
-                    {/* Sector-Specific Tabs */}
-                    <NavItem id="slots" label={config.dashboard.slotLabel} icon={Calendar} />
-                    <NavItem id="services" label={config.dashboard.serviceLabel} icon={Briefcase} />
+            </header>
 
-                    <div style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-light)', textTransform: 'uppercase', marginTop: '32px', marginBottom: '12px', letterSpacing: '1px', paddingLeft: '16px' }}>Staff & Users</div>
-                    <NavItem id="hr" label="HR / Managers" icon={ShieldAlert} />
-                    <NavItem id="employees" label={`${config.dashboard.employeeRole}s`} icon={Users} />
-                    <NavItem id="users" label={`${config.dashboard.userRole} Data`} icon={UserIcon} />
-
-                    <div style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-light)', textTransform: 'uppercase', marginTop: '32px', marginBottom: '12px', letterSpacing: '1px', paddingLeft: '16px' }}>Communications</div>
-                    <NavItem id="announcements" label="Announcements" icon={Megaphone} />
-
-                    <div style={{ fontSize: '11px', fontWeight: 900, color: 'var(--text-light)', textTransform: 'uppercase', marginTop: '32px', marginBottom: '12px', letterSpacing: '1px', paddingLeft: '16px' }}>Tenant Config</div>
-                    <NavItem id="plan" label="Plan & Usage" icon={PieChart} />
-                    <NavItem id="settings" label="Settings" icon={Settings} />
-                </div>
-                
-                <div style={{ padding: '16px', borderTop: '1px solid var(--border-color)', background: '#F8FAFC' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '12px', background: 'white', border: '1px solid var(--border-color)', marginBottom: '12px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                            {user.name.charAt(0)}
-                        </div>
-                        <div style={{ overflow: 'hidden' }}>
-                            <div style={{ fontWeight: 900, fontSize: '16px', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{user.name}</div>
-                            <div style={{ fontSize: '12px', fontWeight: 900, color: '#4F46E5', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                {config.label} Admin
-                            </div>
-                        </div>
-                    </div>
-                    <button className="btn btn-outline" style={{ width: '100%', color: '#EF4444' }} onClick={logout}>Sign Out</button>
-                </div>
-            </aside>
-
-            {/* RIGHT SIDE WRAPPER */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflowY: 'auto', position: 'relative' }}>
+            <div>
                 
                 {/* EXPIRY BANNER */}
                 {isExpired && (
                     <div style={{ 
                         background: 'linear-gradient(90deg, #F87171, #EF4444)', 
-                        color: 'white', 
+                        color: '#2D3748', 
                         padding: '12px 24px', 
                         display: 'flex', 
                         justifyContent: 'space-between', 
@@ -908,7 +918,7 @@ const ClientDashboard = () => {
                         boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>
+                            <div style={{ background: 'rgba(90, 49, 93, 0.2)', padding: '6px', borderRadius: '8px' }}>
                                 <ShieldAlert size={20} />
                             </div>
                             <span>Your Training Period has Expired! Please upgrade your plan to unlock full dashboard features.</span>
@@ -940,7 +950,7 @@ const ClientDashboard = () => {
                     </div>
                 )}
 
-                <main style={{ flex: 1, padding: '40px', position: 'relative' }}>
+                <div style={{ flex: 1, position: 'relative' }}>
                     {/* 1. OVERVIEW DASHBOARD */}
                 {activeTab === 'dashboard' && (
                     <div style={{ animation: 'fadeIn 0.3s ease', position: 'relative' }}>
@@ -952,18 +962,18 @@ const ClientDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 style={{ 
-                                    background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)', 
+                                    background: 'linear-gradient(135deg, #1E293B 0%, #FFFFFF 100%)', 
                                     borderRadius: '32px', 
                                     padding: '40px', 
                                     marginBottom: '40px', 
                                     display: 'flex', 
                                     justifyContent: 'space-between', 
                                     alignItems: 'center',
-                                    color: 'white',
+                                    color: '#2D3748',
                                     boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)',
                                     position: 'relative',
                                     overflow: 'hidden',
-                                    border: '1px solid rgba(255,255,255,0.1)'
+                                    border: '1px solid rgba(90, 49, 93, 0.1)'
                                 }}
                             >
                                 <div style={{ position: 'absolute', inset: 0, opacity: 0.2 }}>
@@ -989,17 +999,17 @@ const ClientDashboard = () => {
                                         >
                                             Upgrade to Pro Now
                                         </button>
-                                        <button onClick={() => setShowTutorialModal(true)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '0 24px', height: '56px', borderRadius: '16px', cursor: 'pointer', fontWeight: 800, backdropFilter: 'blur(10px)' }}>
+                                        <button onClick={() => setShowTutorialModal(true)} style={{ background: 'rgba(90, 49, 93, 0.1)', color: '#2D3748', border: '1px solid rgba(90, 49, 93, 0.2)', padding: '0 24px', height: '56px', borderRadius: '16px', cursor: 'pointer', fontWeight: 800, backdropFilter: 'blur(10px)' }}>
                                             Watch Tutorials
                                         </button>
                                     </div>
                                 </div>
                                 <div style={{ display: 'block', marginRight: '40px', position: 'relative', zIndex: 1 }}>
-                                    <div style={{ width: '180px', height: '180px', background: 'rgba(255,255,255,0.05)', borderRadius: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)', transform: 'rotate(-5deg)', backdropFilter: 'blur(10px)' }}>
+                                    <div style={{ width: '180px', height: '180px', background: 'rgba(255,255,255,0.05)', borderRadius: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(90, 49, 93, 0.1)', transform: 'rotate(-5deg)', backdropFilter: 'blur(10px)' }}>
                                         {config.label?.toLowerCase().includes('health') ? <Activity size={80} color="rgba(255,255,255,0.4)" /> :
                                          config.label?.toLowerCase().includes('education') ? <BookOpen size={80} color="rgba(255,255,255,0.4)" /> :
                                          config.label?.toLowerCase().includes('repair') ? <Wrench size={80} color="rgba(255,255,255,0.4)" /> :
-                                         <Building2 size={80} color="rgba(255,255,255,0.2)" />}
+                                         <Building2 size={80} color="rgba(90, 49, 93, 0.2)" />}
                                     </div>
                                 </div>
                             </motion.div>
@@ -1017,7 +1027,7 @@ const ClientDashboard = () => {
 
                         <div className="grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '40px' }}>
                             <div className="stat-card" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '24px', borderRadius: '16px' }}>
-                                <ClipboardList size={24} color="#2563EB" style={{ marginBottom: '12px' }} />
+                                <ClipboardList size={24} color="#4A1C40" style={{ marginBottom: '12px' }} />
                                 <h3 style={{ fontSize: '13px', color: '#1E3A8A', margin: '0 0 4px', fontWeight: 800 }}>TOTAL {config.dashboard.bookingLabel.toUpperCase()}</h3>
                                 <div style={{ fontSize: '32px', fontWeight: 900, color: '#1E3A8A' }}>{metrics.totalBookings}</div>
                             </div>
@@ -1037,7 +1047,7 @@ const ClientDashboard = () => {
                                 <div style={{ fontSize: '32px', fontWeight: 900, color: '#7F1D1D' }}>{metrics.totalEmployees}</div>
                             </div>
                             <div className="stat-card" style={{ background: '#FEF3C7', border: '1px solid #FDE68A', padding: '24px', borderRadius: '16px' }}>
-                                <Bell size={24} color="#D97706" style={{ marginBottom: '12px' }} />
+                                <Bell size={24} color="#B76E79" style={{ marginBottom: '12px' }} />
                                 <h3 style={{ fontSize: '13px', color: '#92400E', margin: '0 0 4px', fontWeight: 800 }}>PENDING REQUESTS</h3>
                                 <div style={{ fontSize: '32px', fontWeight: 900, color: '#92400E' }}>{metrics.pendingRequests}</div>
                             </div>
@@ -1061,7 +1071,7 @@ const ClientDashboard = () => {
                                             alignItems: 'center' 
                                         }}>
                                             <div>
-                                                <div style={{ fontWeight: 800, fontSize: '16px', color: '#0F172A', marginBottom: '4px' }}>{b.userId?.name || b.patientName || 'Anonymous'}</div>
+                                                <div style={{ fontWeight: 800, fontSize: '16px', color: '#2D3748', marginBottom: '4px' }}>{b.userId?.name || b.patientName || 'Anonymous'}</div>
                                                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>{b.type || 'General'} | {b.date || b.manualDate || 'No Date'}</div>
                                             </div>
                                             <div style={{ 
@@ -1074,14 +1084,14 @@ const ClientDashboard = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    {bookings.length === 0 && <p style={{ fontSize: '14px', color: '#94A3B8', textAlign: 'center', padding: '40px 0' }}>No recent activity to show.</p>}
+                                    {bookings.length === 0 && <p style={{ fontSize: '14px', color: '#718096', textAlign: 'center', padding: '40px 0' }}>No recent activity to show.</p>}
                                 </div>
                             </div>
                             <div className="data-card" style={{ background: 'white', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                                 <h3 style={{ margin: '0 0 24px', fontSize: '20px', fontWeight: 900, color: 'var(--primary)' }}>Recent Staff Activity</h3>
                                 <div style={{ padding: '40px 0', textAlign: 'center' }}>
                                     <Activity size={40} color="#E2E8F0" style={{ marginBottom: '16px' }} />
-                                    <p style={{ fontSize: '14px', color: '#94A3B8', margin: 0, fontWeight: 600 }}>Live feed integration coming soon.</p>
+                                    <p style={{ fontSize: '14px', color: '#718096', margin: 0, fontWeight: 600 }}>Live feed integration coming soon.</p>
                                 </div>
                             </div>
                         </div>
@@ -1196,7 +1206,7 @@ const ClientDashboard = () => {
                             {services.map(s => (
                                 <div key={s._id} style={{ background: 'white', borderRadius: '20px', border: '1px solid var(--border-color)', overflow: 'hidden', transition: 'box-shadow 0.2s' }}>
                                     {/* Card Header */}
-                                    <div style={{ background: 'linear-gradient(135deg, var(--primary), #7C3AED)', padding: '20px 24px', color: 'white' }}>
+                                    <div style={{ background: 'linear-gradient(135deg, var(--primary), #7C3AED)', padding: '20px 24px', color: '#2D3748' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                             <div>
                                                 <div style={{ fontSize: '10px', fontWeight: 900, opacity: 0.7, textTransform: 'uppercase', marginBottom: '4px' }}>{s.category}</div>
@@ -1210,12 +1220,12 @@ const ClientDashboard = () => {
                                                         setIsServiceEdit(true);
                                                         setShowServiceModal(true);
                                                     }} 
-                                                    style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: 'white' }}
+                                                    style={{ background: 'rgba(90, 49, 93, 0.15)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: '#2D3748' }}
                                                     title="Edit Service"
                                                 >
                                                     <Settings size={14} />
                                                 </button>
-                                                <button onClick={() => handleDeleteService(s._id)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: 'white' }} title="Delete Service">
+                                                <button onClick={() => handleDeleteService(s._id)} style={{ background: 'rgba(90, 49, 93, 0.15)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: '#2D3748' }} title="Delete Service">
                                                     <Trash2 size={14} />
                                                 </button>
                                             </div>
@@ -1370,12 +1380,12 @@ const ClientDashboard = () => {
                                             <td style={{ padding: '16px' }}>
                                                 <div style={{ display: 'flex', gap: '8px' }}>
                                                     {b.status === 'pending' && (
-                                                        <button className="btn btn-sm" style={{ background: '#10B981', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 800 }} onClick={() => handleUpdateBookingStatus(b._id, 'confirmed')}>
+                                                        <button className="btn btn-sm" style={{ background: '#5A315D', color: '#2D3748', border: 'none', borderRadius: '6px', fontWeight: 800 }} onClick={() => handleUpdateBookingStatus(b._id, 'confirmed')}>
                                                             <CheckCircle size={14} /> Confirm
                                                         </button>
                                                     )}
                                                     {['pending', 'confirmed', 'approved'].includes(b.status) && (
-                                                        <button className="btn btn-sm" style={{ background: '#EF4444', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 800 }} onClick={() => handleUpdateBookingStatus(b._id, 'rejected')}>
+                                                        <button className="btn btn-sm" style={{ background: '#EF4444', color: '#2D3748', border: 'none', borderRadius: '6px', fontWeight: 800 }} onClick={() => handleUpdateBookingStatus(b._id, 'rejected')}>
                                                             <XCircle size={14} />
                                                         </button>
                                                     )}
@@ -1386,7 +1396,7 @@ const ClientDashboard = () => {
                                                     )}
                                                     <button 
                                                         className="btn btn-sm btn-ghost" 
-                                                        style={{ color: '#94A3B8', padding: '6px' }}
+                                                        style={{ color: '#718096', padding: '6px' }}
                                                         onClick={() => {
                                                             if(window.confirm('Remove this appointment record?')) {
                                                                 handleDeleteBooking(b._id);
@@ -1404,10 +1414,10 @@ const ClientDashboard = () => {
                                         <tr>
                                             <td colSpan="5">
                                                 <div style={{ padding: '32px', textAlign: 'center', background: '#F8FAFC', borderRadius: '24px', border: '2px dashed #E2E8F0' }}>
-                                                    <div style={{ width: '60px', height: '60px', background: '#F1F5F9', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#94A3B8' }}>
+                                                    <div style={{ width: '60px', height: '60px', background: '#F1F5F9', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#718096' }}>
                                                         <Calendar size={32} />
                                                     </div>
-                                                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A', marginBottom: '8px' }}>No appointments yet</h3>
+                                                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#2D3748', marginBottom: '8px' }}>No appointments yet</h3>
                                                     <p style={{ color: '#64748B', fontWeight: 600, margin: 0 }}>Active appointments will appear here once booked.</p>
                                                 </div>
                                             </td>
@@ -1459,7 +1469,7 @@ const ClientDashboard = () => {
                                                 <Users size={20} />
                                             </div>
                                             <div>
-                                                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 900, color: '#0F172A' }}>{sectorName} Sector</h3>
+                                                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 900, color: '#2D3748' }}>{sectorName} Sector</h3>
                                                 <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 600 }}>{sectorCustomers.length} Total Customers</span>
                                             </div>
                                         </div>
@@ -1469,15 +1479,15 @@ const ClientDashboard = () => {
                                                 <div key={c._id} style={{ background: '#F8FAFC', padding: '20px', borderRadius: '16px', border: '1px solid #E2E8F0', transition: 'transform 0.2s' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                                                         <div>
-                                                            <div style={{ fontWeight: 800, fontSize: '16px', color: '#0F172A' }}>{c.name}</div>
+                                                            <div style={{ fontWeight: 800, fontSize: '16px', color: '#2D3748' }}>{c.name}</div>
                                                             <div style={{ fontSize: '12px', color: '#64748B' }}>{c.email}</div>
                                                         </div>
                                                         <span style={{ background: '#E0F2FE', color: '#0369A1', padding: '4px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: 900 }}>{c.totalBookings || 0} BOOKINGS</span>
                                                     </div>
                                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', paddingTop: '12px', borderTop: '1px solid #E2E8F0' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                            <Clock size={12} color="#94A3B8" />
-                                                            <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600 }}>Last seen: {c.lastBooking || 'New Joiner'}</span>
+                                                            <Clock size={12} color="#718096" />
+                                                            <span style={{ fontSize: '11px', color: '#718096', fontWeight: 600 }}>Last seen: {c.lastBooking || 'New Joiner'}</span>
                                                         </div>
                                                         <button 
                                                             onClick={() => handleDeleteUser(c._id)}
@@ -1496,7 +1506,7 @@ const ClientDashboard = () => {
                             {customers.length === 0 && (
                                 <div style={{ background: 'white', padding: '80px', borderRadius: '32px', textAlign: 'center', border: '1px solid #E2E8F0' }}>
                                     <Users size={64} color="#E2E8F0" style={{ marginBottom: '20px' }} />
-                                    <h3 style={{ color: '#0F172A', fontWeight: 900 }}>No User Data</h3>
+                                    <h3 style={{ color: '#2D3748', fontWeight: 900 }}>No User Data</h3>
                                     <p style={{ color: '#64748B' }}>Interactions will appear here once users start booking sessions.</p>
                                 </div>
                             )}
@@ -1514,13 +1524,13 @@ const ClientDashboard = () => {
                         
                         <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '32px' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                <div className="data-card" style={{ background: 'linear-gradient(135deg, #0F172A, #1E293B)', color: 'white' }}>
+                                <div className="data-card" style={{ background: 'linear-gradient(135deg, #FFFFFF, #1E293B)', color: '#2D3748' }}>
                                     <div className="badge badge-success" style={{ marginBottom: '16px' }}>{user.plan?.type === 'paid' ? 'PREMIUM ACCESS' : 'FREE TIER'}</div>
                                     <h1 style={{ fontSize: '32px', margin: '0 0 8px' }}>{user.plan?.type === 'paid' ? 'Pro Plan' : 'Basic Plan'}</h1>
                                     <p style={{ opacity: 0.8, fontSize: '13px', marginBottom: '32px' }}>
                                         {user.plan?.type === 'paid' ? 'Unlimited structural access active until expiry.' : 'Strict tenant quotas enforced. Upgrade today to uncap resource allocation limits.'}
                                     </p>
-                                    <div style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '8px' }}>
+                                    <div style={{ fontSize: '12px', background: 'rgba(90, 49, 93, 0.1)', padding: '12px', borderRadius: '8px' }}>
                                         <b>Expiry Date:</b> {user.plan?.expiryDate ? new Date(user.plan.expiryDate).toLocaleDateString() : 'Active indefinitely'}
                                     </div>
                                 </div>
@@ -1564,7 +1574,7 @@ const ClientDashboard = () => {
                                         </div>
                                     </div>
 
-                                    <button onClick={() => navigate('/billing')} style={{ background: '#4F46E5', color: 'white', padding: '12px 28px', borderRadius: '14px', border: 'none', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'center', marginTop: '16px' }}>
+                                    <button onClick={() => navigate('/billing')} style={{ background: '#4F46E5', color: '#2D3748', padding: '12px 28px', borderRadius: '14px', border: 'none', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'center', marginTop: '16px' }}>
                                         <Zap size={18} fill="currentColor" /> UPGRADE NOW
                                     </button>
                                 </div>
@@ -1575,20 +1585,20 @@ const ClientDashboard = () => {
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '8px' }}>
                                     {/* Basic Card */}
                                     <div style={{ background: 'white', padding: '20px', borderRadius: '16px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', transition: 'transform 0.2s' }}>
-                                        <div style={{ fontSize: '14px', fontWeight: 900, color: '#0F172A', marginBottom: '4px' }}>Basic Plan</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 900, color: '#2D3748', marginBottom: '4px' }}>Basic Plan</div>
                                         <div style={{ fontSize: '22px', fontWeight: 900, color: 'var(--primary)', marginBottom: '12px' }}>Rs.0</div>
                                         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px', color: '#64748B', fontSize: '11px', display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
                                             <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><ArrowRight size={12} /> 50 Bookings / mo</li>
                                             <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><ArrowRight size={12} /> 2 HR & Staff</li>
                                         </ul>
-                                        <div style={{ fontSize: '10px', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase' }}>Starter</div>
+                                        <div style={{ fontSize: '10px', fontWeight: 800, color: '#718096', textTransform: 'uppercase' }}>Starter</div>
                                     </div>
 
                                     {/* Pro Card */}
-                                    <div style={{ background: 'linear-gradient(135deg, var(--primary), #7C3AED)', padding: '20px', borderRadius: '16px', color: 'white', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 20px -5px rgba(79,70,229,0.3)', transform: 'translateY(-4px)' }}>
+                                    <div style={{ background: 'linear-gradient(135deg, var(--primary), #7C3AED)', padding: '20px', borderRadius: '16px', color: '#2D3748', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 20px -5px rgba(79,70,229,0.3)', transform: 'translateY(-4px)' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                                             <div style={{ fontSize: '14px', fontWeight: 900 }}>Pro Plan</div>
-                                            <div style={{ background: '#F59E0B', color: 'white', fontSize: '8px', fontWeight: 900, padding: '2px 6px', borderRadius: '10px', textTransform: 'uppercase' }}>Popular</div>
+                                            <div style={{ background: '#F59E0B', color: '#2D3748', fontSize: '8px', fontWeight: 900, padding: '2px 6px', borderRadius: '10px', textTransform: 'uppercase' }}>Popular</div>
                                         </div>
                                         <div style={{ fontSize: '22px', fontWeight: 900, marginBottom: '12px' }}>Rs.299<span style={{ fontSize: '12px', opacity: 0.8 }}>/mo</span></div>
                                         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px', fontSize: '11px', display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, opacity: 0.9 }}>
@@ -1599,9 +1609,9 @@ const ClientDashboard = () => {
                                     </div>
 
                                     {/* Premium Card */}
-                                    <div style={{ background: '#0F172A', padding: '20px', borderRadius: '16px', color: 'white', display: 'flex', flexDirection: 'column' }}>
+                                    <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '16px', color: '#2D3748', display: 'flex', flexDirection: 'column' }}>
                                         <div style={{ fontSize: '14px', fontWeight: 900, marginBottom: '4px' }}>Premium</div>
-                                        <div style={{ fontSize: '22px', fontWeight: 900, color: '#38BDF8', marginBottom: '12px' }}>Rs.799<span style={{ fontSize: '12px', color: 'white', opacity: 0.7 }}>/mo</span></div>
+                                        <div style={{ fontSize: '22px', fontWeight: 900, color: '#38BDF8', marginBottom: '12px' }}>Rs.799<span style={{ fontSize: '12px', color: '#2D3748', opacity: 0.7 }}>/mo</span></div>
                                         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px', fontSize: '11px', display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, opacity: 0.8 }}>
                                             <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><ArrowRight size={12} /> Unlimited Bookings</li>
                                             <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><ArrowRight size={12} /> Unlimited Team</li>
@@ -1613,7 +1623,7 @@ const ClientDashboard = () => {
                                 {/* USAGE STATS CARD */}
                                 <div className="data-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', border: '1px solid #E2E8F0' }}>
                                     <div style={{ marginBottom: '8px' }}>
-                                        <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 900, color: '#0F172A' }}>📊 Resource Usage</h3>
+                                        <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 900, color: '#2D3748' }}>📊 Resource Usage</h3>
                                     </div>
                                     <div>
                                         <div className="flex-between" style={{ marginBottom: '12px' }}>
@@ -1651,7 +1661,7 @@ const ClientDashboard = () => {
                         
                         {/* 🏢 ORGANIZATION PROFILE SECTION */}
                         <div className="data-card" style={{ marginBottom: '40px', border: '2px solid var(--primary)', borderRadius: '24px' }}>
-                            <div style={{ padding: '24px', background: 'var(--primary)', color: 'white', borderRadius: '22px 22px 0 0' }}>
+                            <div style={{ padding: '24px', background: 'var(--primary)', color: '#2D3748', borderRadius: '22px 22px 0 0' }}>
                                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <Building size={20} /> Organization Profile
                                 </h3>
@@ -1667,6 +1677,17 @@ const ClientDashboard = () => {
                                         value={organizationForm.organizationName}
                                         onChange={e => setOrganizationForm({...organizationForm, organizationName: e.target.value})}
                                     />
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, marginBottom: '8px', color: '#1E293B' }}>ADMIN MOBILE NUMBER</label>
+                                    <input 
+                                        className="input-field" 
+                                        placeholder="e.g. +91 98765 43210"
+                                        value={organizationForm.phone}
+                                        onChange={e => setOrganizationForm({...organizationForm, phone: e.target.value})}
+                                    />
+                                    <p style={{ margin: '6px 0 0', fontSize: '11px', color: 'var(--text-gray)' }}>You will receive SMS notifications for trial extensions and critical alerts here.</p>
                                 </div>
 
                                 <div>
@@ -1843,13 +1864,13 @@ const ClientDashboard = () => {
                     <div style={{ background: 'white', width: '100%', maxWidth: '680px', borderRadius: '24px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)' }}>
                         
                         {/* Modal Header */}
-                        <div style={{ background: 'linear-gradient(135deg, var(--primary), #7C3AED)', padding: '24px 32px', color: 'white', borderRadius: '24px 24px 0 0', position: 'sticky', top: 0, zIndex: 1 }}>
+                        <div style={{ background: 'linear-gradient(135deg, var(--primary), #7C3AED)', padding: '24px 32px', color: '#2D3748', borderRadius: '24px 24px 0 0', position: 'sticky', top: 0, zIndex: 1 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div>
                                     <h2 style={{ margin: '0 0 4px', fontWeight: 900, fontSize: '20px' }}>{isServiceEdit ? 'Edit' : 'New'} {config.dashboard.serviceLabel.slice(0, -1)} Builder</h2>
                                     <p style={{ margin: 0, opacity: 0.8, fontSize: '13px' }}>{isServiceEdit ? `Modify your existing ${config.dashboard.serviceLabel.toLowerCase().slice(0, -1)} details and fields.` : `Define any ${config.dashboard.serviceLabel.toLowerCase().slice(0, -1)} — the system adapts to your sector automatically.`}</p>
                                 </div>
-                                <button onClick={() => setShowServiceModal(false)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '10px', padding: '8px', cursor: 'pointer', color: 'white' }}>
+                                <button onClick={() => setShowServiceModal(false)} style={{ background: 'rgba(90, 49, 93, 0.2)', border: 'none', borderRadius: '10px', padding: '8px', cursor: 'pointer', color: '#2D3748' }}>
                                     <X size={20} />
                                 </button>
                             </div>
@@ -1937,7 +1958,7 @@ const ClientDashboard = () => {
                                         <h3 style={{ fontSize: '14px', fontWeight: 900, color: 'var(--text-light)', textTransform: 'uppercase', margin: '0 0 4px', letterSpacing: '1px' }}>Custom Form Fields</h3>
                                         <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-light)' }}>What info do customers need to fill when booking this service?</p>
                                     </div>
-                                    <button type="button" onClick={addFormField} style={{ background: '#EFF6FF', border: '2px dashed #3B82F6', color: '#2563EB', borderRadius: '10px', padding: '8px 16px', cursor: 'pointer', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <button type="button" onClick={addFormField} style={{ background: '#EFF6FF', border: '2px dashed #5A315D', color: '#4A1C40', borderRadius: '10px', padding: '8px 16px', cursor: 'pointer', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         <Plus size={16} /> Add Field
                                     </button>
                                 </div>
@@ -1964,11 +1985,11 @@ const ClientDashboard = () => {
                                                     >
                                                         <span style={{ fontSize: '24px' }}>{tmpl.icon}</span>
                                                         <span style={{ fontSize: '11px', fontWeight: 800, color: '#374151' }}>{key}</span>
-                                                        <span style={{ fontSize: '10px', color: '#94A3B8' }}>{tmpl.suggestedFields.length} fields</span>
+                                                        <span style={{ fontSize: '10px', color: '#718096' }}>{tmpl.suggestedFields.length} fields</span>
                                                     </button>
                                                 ))}
                                             </div>
-                                            <p style={{ margin: '12px 0 0', fontSize: '11px', color: '#94A3B8' }}>
+                                            <p style={{ margin: '12px 0 0', fontSize: '11px', color: '#718096' }}>
                                                 Or click "Add Field" above to build from scratch.
                                             </p>
                                         </div>
@@ -2151,7 +2172,7 @@ const ClientDashboard = () => {
                                     <Building size={32} />
                                 </div>
                             </div>
-                            <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>
+                            <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#2D3748', marginBottom: '8px' }}>
                                 {onboardingStep === 3 ? 'Setup Complete!' : 'Welcome to your workspace!'}
                             </h2>
                             <p style={{ color: '#64748B', fontWeight: 600, fontSize: '16px' }}>
@@ -2170,8 +2191,8 @@ const ClientDashboard = () => {
                                             case 'Heart': return '#F43F5E';
                                             case 'Scissors': return '#EC4899';
                                             case 'Home': return '#F59E0B';
-                                            case 'Car': return '#3B82F6';
-                                            case 'Dumbbell': return '#10B981';
+                                            case 'Car': return '#5A315D';
+                                            case 'Dumbbell': return '#5A315D';
                                             case 'GraduationCap': return '#8B5CF6';
                                             case 'Laptop': return '#6366F1';
                                             case 'Cpu': return '#06B6D4';
@@ -2217,7 +2238,7 @@ const ClientDashboard = () => {
                                             onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.transform = 'translateY(0)'; }}
                                         >
                                             <div style={{ fontSize: '32px' }}>{iconComponent}</div>
-                                            <div style={{ fontWeight: 900, color: '#0F172A' }}>{sector.name}</div>
+                                            <div style={{ fontWeight: 900, color: '#2D3748' }}>{sector.name}</div>
                                             <div style={{ fontSize: '11px', color: '#64748B', textTransform: 'uppercase', fontWeight: 800 }}>{sector.category}</div>
                                         </div>
                                     );
@@ -2244,7 +2265,7 @@ const ClientDashboard = () => {
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.8)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: '24px' }}>
                     <div style={{ background: 'white', width: '100%', maxWidth: '600px', borderRadius: '24px', padding: '32px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                            <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A' }}>Select Training Package</h2>
+                            <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#2D3748' }}>Select Training Package</h2>
                             <button onClick={() => setShowTrainingPayment(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}><X size={24} /></button>
                         </div>
 
@@ -2266,12 +2287,12 @@ const ClientDashboard = () => {
                                 >
                                     <div style={{ fontSize: '30px' }}>{pkg.icon}</div>
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontWeight: 900, fontSize: '16px', color: '#0F172A' }}>{pkg.label}</div>
+                                        <div style={{ fontWeight: 900, fontSize: '16px', color: '#2D3748' }}>{pkg.label}</div>
                                         <div style={{ fontSize: '12px', color: '#64748B' }}>Duration: {pkg.duration}</div>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>
                                         <div style={{ fontWeight: 900, fontSize: '18px', color: '#4F46E5' }}>{pkg.price}</div>
-                                        <div style={{ fontSize: '10px', color: '#94A3B8' }}>ONE-TIME</div>
+                                        <div style={{ fontSize: '10px', color: '#718096' }}>ONE-TIME</div>
                                     </div>
                                 </div>
                             ))}
@@ -2303,7 +2324,7 @@ const ClientDashboard = () => {
                 </div>
             )}
 
-                </main>
+
     
                 {/* 10. ANNOUNCEMENTS */}
                 {activeTab === 'announcements' && (
@@ -2314,10 +2335,10 @@ const ClientDashboard = () => {
                         </div>
 
                         <div style={{ background: 'white', borderRadius: '32px', padding: '80px 40px', textAlign: 'center', maxWidth: '800px', margin: '0 auto', border: '1px solid #E2E8F0' }}>
-                            <div style={{ width: '80px', height: '80px', background: '#FEF3C7', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706', margin: '0 auto 24px' }}>
+                            <div style={{ width: '80px', height: '80px', background: '#FEF3C7', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#B76E79', margin: '0 auto 24px' }}>
                                 <Megaphone size={40} />
                             </div>
-                            <h3 style={{ margin: '0 0 12px', fontSize: '24px', fontWeight: 900, color: '#0F172A' }}>Announcements Module</h3>
+                            <h3 style={{ margin: '0 0 12px', fontSize: '24px', fontWeight: 900, color: '#2D3748' }}>Announcements Module</h3>
                             <p style={{ margin: 0, color: '#64748B', fontSize: '15px', maxWidth: '400px', marginInline: 'auto', marginBottom: '24px' }}>
                                 This feature is currently being tailored for the {config.label} dashboard. Stay tuned for upcoming tools.
                             </p>
@@ -2329,15 +2350,15 @@ const ClientDashboard = () => {
                 {/* --- FOOTER / TUTORIAL OVERLAY --- */}
                 <div style={{ padding: '60px 40px 40px', borderTop: '1px solid #E2E8F0', marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8FAFC' }}>
                     <div>
-                         <div style={{ fontSize: '11px', fontWeight: 900, color: '#94A3B8', marginBottom: '4px' }}>POWERED BY</div>
-                         <div style={{ fontSize: '16px', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.5px' }}>Forge India Connect</div>
+                         <div style={{ fontSize: '11px', fontWeight: 900, color: '#718096', marginBottom: '4px' }}>POWERED BY</div>
+                         <div style={{ fontSize: '16px', fontWeight: 900, color: '#2D3748', letterSpacing: '-0.5px' }}>Forge India Connect</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '12px', fontWeight: 700, color: '#64748B' }}>Smart Appointment Scheduling System</div>
-                        <div style={{ fontSize: '10px', fontWeight: 600, color: '#94A3B8' }}>(c) 2024 All Rights Reserved. v2.1.0</div>
+                        <div style={{ fontSize: '10px', fontWeight: 600, color: '#718096' }}>(c) 2024 All Rights Reserved. v2.1.0</div>
                     </div>
                 </div>
-            </div>
+            
 
             {/* TRIAL EXPIRED LOCKDOWN OVERLAY */}
             {user.plan?.type === 'free' && user.plan?.expiryDate && new Date(user.plan.expiryDate) < new Date() && (
@@ -2374,7 +2395,7 @@ const ClientDashboard = () => {
                             </>
                         ) : (
                             <div style={{ animation: 'fadeIn 0.3s ease' }}>
-                                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', marginBottom: '24px' }}>Choose Your Path</h2>
+                                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#2D3748', marginBottom: '24px' }}>Choose Your Path</h2>
                                 
                                 <div style={{ display: 'grid', gap: '16px', textAlign: 'left', marginBottom: '32px' }}>
                                     {[
@@ -2404,7 +2425,7 @@ const ClientDashboard = () => {
 
                                 {selectedPlan ? (
                                     <div style={{ padding: '24px', background: '#F8FAFC', borderRadius: '24px', marginBottom: '24px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
-                                        <h4 style={{ margin: '0 0 16px', fontSize: '15px', fontWeight: 900, color: '#0F172A', textAlign: 'left' }}>Confirm & Pay for {selectedPlan.name}</h4>
+                                        <h4 style={{ margin: '0 0 16px', fontSize: '15px', fontWeight: 900, color: '#2D3748', textAlign: 'left' }}>Confirm & Pay for {selectedPlan.name}</h4>
                                         
                                         <div style={{ padding: '16px', background: 'white', borderRadius: '16px', marginBottom: '24px', border: '1px solid #F1F5F9', textAlign: 'left' }}>
                                             <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Amount:</div>
@@ -2412,14 +2433,14 @@ const ClientDashboard = () => {
                                         </div>
 
                                         {/* ═══ DIRECT UPI PAYMENT OPTION ═══ */}
-                                        <div style={{ background: '#1A1A2E', borderRadius: '24px', padding: '24px', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 30px rgba(0,0,0,0.15)' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#5E239D', color: 'white', padding: '6px 14px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 16px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        <div style={{ background: '#1A1A2E', borderRadius: '24px', padding: '24px', marginBottom: '24px', border: '1px solid rgba(90, 49, 93, 0.1)', boxShadow: '0 15px 30px rgba(0,0,0,0.15)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#5E239D', color: '#2D3748', padding: '6px 14px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 16px', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                                 <Zap size={12} fill="currentColor" /> Direct Upgrade Payment
                                             </div>
 
                                             <div style={{ marginBottom: '20px' }}>
                                                 <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '2px' }}>Amount to Pay</div>
-                                                <div style={{ fontSize: '28px', fontWeight: 950, color: '#10B981' }}>{selectedPlan.price}</div>
+                                                <div style={{ fontSize: '28px', fontWeight: 950, color: '#5A315D' }}>{selectedPlan.price}</div>
                                             </div>
                                             
                                             <div style={{ position: 'relative', display: 'inline-block', padding: '12px', background: '#FFFFFF', borderRadius: '16px', marginBottom: '16px' }}>
@@ -2437,10 +2458,10 @@ const ClientDashboard = () => {
                                             </div>
                                             
                                             <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>Scan with any UPI App</div>
-                                            <div style={{ color: 'white', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
+                                            <div style={{ color: '#2D3748', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
 
-                                            <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                                                <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                                            <div style={{ background: 'rgba(90, 49, 93, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#5A315D', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(90, 49, 93, 0.2)' }}>
+                                                <div style={{ width: '6px', height: '6px', background: '#5A315D', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
                                                 Secure System Verification Active
                                             </div>
                                         </div>
@@ -2453,7 +2474,7 @@ const ClientDashboard = () => {
                                         </button>
                                     </div>
                                 ) : (
-                                    <div style={{ height: '116px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', fontSize: '13px', fontStyle: 'italic' }}>
+                                    <div style={{ height: '116px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#718096', fontSize: '13px', fontStyle: 'italic' }}>
                                         Please select a plan above to continue
                                     </div>
                                 )}
@@ -2488,7 +2509,7 @@ const ClientDashboard = () => {
                         {/* Header */}
                         <div style={{ background: '#F8FAFC', padding: '24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#0F172A' }}>{paymentData.title}</h3>
+                                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#2D3748' }}>{paymentData.title}</h3>
                                 <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Forge India SaaS Gateway</div>
                             </div>
                             <button onClick={() => setShowPaymentModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}>
@@ -2497,14 +2518,14 @@ const ClientDashboard = () => {
                         </div>
 
                         <div style={{ padding: '32px' }}>
-                                      <div style={{ background: '#1A1A2E', padding: '32px 24px', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }}>
-                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: 'white', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 28px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                      <div style={{ background: '#1A1A2E', padding: '32px 24px', borderRadius: '32px', border: '1px solid rgba(90, 49, 93, 0.1)', textAlign: 'center', marginBottom: '24px', position: 'relative', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }}>
+                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: '#2D3748', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 28px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                      <Smartphone size={16} /> Pay via PhonePe
                                  </div>
 
                                  <div style={{ marginBottom: '24px' }}>
                                      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>Amount Due</div>
-                                     <div style={{ fontSize: '38px', fontWeight: 950, color: '#10B981' }}>{paymentData.amount}</div>
+                                     <div style={{ fontSize: '38px', fontWeight: 950, color: '#5A315D' }}>{paymentData.amount}</div>
                                  </div>
 
                                  <div style={{ position: 'relative', display: 'inline-block', padding: '20px', background: '#FFFFFF', borderRadius: '24px', marginBottom: '20px' }}>
@@ -2525,15 +2546,15 @@ const ClientDashboard = () => {
                                          }}
                                      />
                                      {/* Decorative Corner Accents */}
-                                     <div style={{ position: 'absolute', top: '15px', left: '15px', width: '25px', height: '25px', borderTop: '2px solid rgba(255,255,255,0.2)', borderLeft: '2px solid rgba(255,255,255,0.2)', borderRadius: '6px 0 0 0' }}></div>
-                                     <div style={{ position: 'absolute', bottom: '15px', right: '15px', width: '25px', height: '25px', borderBottom: '2px solid rgba(255,255,255,0.2)', borderRight: '2px solid rgba(255,255,255,0.2)', borderRadius: '0 0 6px 0' }}></div>
+                                     <div style={{ position: 'absolute', top: '15px', left: '15px', width: '25px', height: '25px', borderTop: '2px solid rgba(90, 49, 93, 0.2)', borderLeft: '2px solid rgba(90, 49, 93, 0.2)', borderRadius: '6px 0 0 0' }}></div>
+                                     <div style={{ position: 'absolute', bottom: '15px', right: '15px', width: '25px', height: '25px', borderBottom: '2px solid rgba(90, 49, 93, 0.2)', borderRight: '2px solid rgba(90, 49, 93, 0.2)', borderRadius: '0 0 6px 0' }}></div>
                                  </div>
 
                                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>Scan with any UPI App</div>
-                                 <div style={{ color: 'white', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
+                                 <div style={{ color: '#2D3748', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
 
-                                 <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                                     <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                                 <div style={{ background: 'rgba(90, 49, 93, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#5A315D', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(90, 49, 93, 0.2)' }}>
+                                     <div style={{ width: '6px', height: '6px', background: '#5A315D', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
                                      Automated Transaction Syncing...
                                  </div>
                              </div>
@@ -2548,7 +2569,7 @@ const ClientDashboard = () => {
                                     background: paymentMethod === 'card' ? '#EEF2FF' : 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px'
                                 }}
                             >
-                                <div style={{ background: '#0F172A', color: 'white', padding: '10px', borderRadius: '12px' }}><CreditCard size={20} /></div>
+                                <div style={{ background: '#FFFFFF', color: '#2D3748', padding: '10px', borderRadius: '12px' }}><CreditCard size={20} /></div>
                                 <div style={{ flex: 1 }}>
                                     <div style={{ fontWeight: 800, fontSize: '14px' }}>Credit / Debit Card</div>
                                     <div style={{ fontSize: '11px', color: '#64748B' }}>Visa, Mastercard, RuPay</div>
@@ -2565,7 +2586,7 @@ const ClientDashboard = () => {
                                 {paymentStage !== 'idle' ? 'Processing Secure Payment...' : `Pay ${paymentData.amount} Now`}
                             </button>
                             
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '20px', color: '#94A3B8' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '20px', color: '#718096' }}>
                                 <ShieldAlert size={14} />
                                 <span style={{ fontSize: '11px', fontWeight: 700 }}>SSL SECURED & ENCRYPTED</span>
                             </div>
@@ -2577,30 +2598,30 @@ const ClientDashboard = () => {
             {/* TUTORIAL VIDEO MODAL */}
             {showTutorialModal && (
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 300000, padding: '24px' }}>
-                    <div style={{ background: '#0F172A', width: '100%', maxWidth: '1000px', borderRadius: '32px', overflow: 'hidden', boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div style={{ background: '#FFFFFF', width: '100%', maxWidth: '1000px', borderRadius: '32px', overflow: 'hidden', boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5)', border: '1px solid rgba(90, 49, 93, 0.1)' }}>
                         <div style={{ padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: '22px', fontWeight: 900, color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <h3 style={{ margin: 0, fontSize: '22px', fontWeight: 900, color: '#2D3748', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <div style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', padding: '10px', borderRadius: '12px', boxShadow: '0 10px 20px rgba(79, 70, 229, 0.3)' }}><Play size={20} fill="white" /></div>
                                     Step-by-Step Admin Walkthrough
                                 </h3>
-                                <div style={{ fontSize: '14px', color: '#94A3B8', marginTop: '6px', fontWeight: 600 }}>Master your dashboard in 3 simple steps.</div>
+                                <div style={{ fontSize: '14px', color: '#718096', marginTop: '6px', fontWeight: 600 }}>Master your dashboard in 3 simple steps.</div>
                             </div>
                             <button 
                                 onClick={() => setShowTutorialModal(false)} 
-                                style={{ background: 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', color: 'white', padding: '12px', borderRadius: '14px', transition: 'all 0.3s' }}
+                                style={{ background: 'rgba(90, 49, 93, 0.1)', border: 'none', cursor: 'pointer', color: '#2D3748', padding: '12px', borderRadius: '14px', transition: 'all 0.3s' }}
                                 onMouseEnter={(e) => e.target.style.background = '#EF4444'}
-                                onMouseLeave={(e) => e.target.style.background = 'rgba(255,255,255,0.1)'}
+                                onMouseLeave={(e) => e.target.style.background = 'rgba(90, 49, 93, 0.1)'}
                             >
                                 <X size={24} />
                             </button>
                         </div>
                         
-                        <div style={{ display: 'flex', background: '#0F172A', minHeight: '600px' }}>
+                        <div style={{ display: 'flex', background: '#FFFFFF', minHeight: '600px' }}>
                             {/* Cinematic Scene Progress */}
                             <div style={{ width: '320px', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '32px', background: 'rgba(255,255,255,0.02)' }}>
                                 <div style={{ marginBottom: '32px' }}>
-                                    <h4 style={{ color: 'white', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.6, marginBottom: '24px' }}>A-Z Business Flow</h4>
+                                    <h4 style={{ color: '#2D3748', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.6, marginBottom: '24px' }}>A-Z Business Flow</h4>
                                     {[
                                         { id: 1, title: '1. Instant Registration', desc: 'Starting your 24h Trial' },
                                         { id: 2, title: '2. Trial to Premium', desc: 'Expanding after 24 hours' },
@@ -2621,7 +2642,7 @@ const ClientDashboard = () => {
                                                 width: '32px', height: '32px', borderRadius: '10px', 
                                                 background: tutorialScene === s.id ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
                                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                color: tutorialScene === s.id ? 'white' : '#94A3B8',
+                                                color: tutorialScene === s.id ? 'white' : '#718096',
                                                 fontSize: '12px', fontWeight: 900,
                                                 boxShadow: tutorialScene === s.id ? '0 0 20px rgba(79, 70, 229, 0.4)' : 'none'
                                             }}>
@@ -2658,10 +2679,10 @@ const ClientDashboard = () => {
                                         {tutorialScene === 1 && (
                                             <>
                                                 <span style={{ fontSize: '11px', fontWeight: 900, color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: '1px' }}>Premium Access</span>
-                                                <h3 style={{ fontSize: '18px', fontWeight: 900, color: 'white', margin: '4px 0 12px' }}>Unlock All Advanced Features</h3>
+                                                <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#2D3748', margin: '4px 0 12px' }}>Unlock All Advanced Features</h3>
                                                 <p style={{ fontSize: '13px', color: '#A5B4FC', fontWeight: 600, lineHeight: 1.5, margin: 0 }}>Access professional themes, custom domains, and AI-driven insights for your business growth.</p>
-                                                <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6, marginTop: '20px' }}>Register your organization in seconds. Everyone starts with a full-access 24-hour training period to explore every feature.</p>
-                                                <div style={{ marginTop: '40px', padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                                <p style={{ color: '#718096', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6, marginTop: '20px' }}>Register your organization in seconds. Everyone starts with a full-access 24-hour training period to explore every feature.</p>
+                                                <div style={{ marginTop: '40px', padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: '24px', border: '1px solid rgba(90, 49, 93, 0.1)' }}>
                                                     <Clock size={48} color="var(--primary)" style={{ animation: 'spin 10s linear infinite' }} />
                                                 </div>
                                             </>
@@ -2669,34 +2690,34 @@ const ClientDashboard = () => {
 
                                         {tutorialScene === 2 && (
                                             <>
-                                                <div style={{ fontSize: '48px', fontWeight: 900, color: 'white', marginBottom: '16px' }}>Beyond <span style={{ color: '#EF4444' }}>The Trial</span></div>
-                                                <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6 }}>Once the 24-hour magic expires, our "Oops" lockdown keeps your data safe while you upgrade to a professional plan.</p>
+                                                <div style={{ fontSize: '48px', fontWeight: 900, color: '#2D3748', marginBottom: '16px' }}>Beyond <span style={{ color: '#EF4444' }}>The Trial</span></div>
+                                                <p style={{ color: '#718096', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6 }}>Once the 24-hour magic expires, our "Oops" lockdown keeps your data safe while you upgrade to a professional plan.</p>
                                                 <div style={{ marginTop: '40px', display: 'flex', gap: '20px' }}>
                                                     <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}><ShieldAlert size={32} color="#EF4444" /></div>
                                                     <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}><ArrowRight size={32} color="white" /></div>
-                                                    <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}><CreditCard size={32} color="#10B981" /></div>
+                                                    <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}><CreditCard size={32} color="#5A315D" /></div>
                                                 </div>
                                             </>
                                         )}
 
                                         {tutorialScene === 3 && (
                                             <>
-                                                <div style={{ fontSize: '48px', fontWeight: 900, color: 'white', marginBottom: '16px' }}>The <span style={{ color: '#F59E0B' }}>Team Hierarchy</span></div>
-                                                <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6 }}>Client Admin grants authority to HR. HR then creates and manages Employee accounts. Professional delegation at its best.</p>
+                                                <div style={{ fontSize: '48px', fontWeight: 900, color: '#2D3748', marginBottom: '16px' }}>The <span style={{ color: '#F59E0B' }}>Team Hierarchy</span></div>
+                                                <p style={{ color: '#718096', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6 }}>Client Admin grants authority to HR. HR then creates and manages Employee accounts. Professional delegation at its best.</p>
                                                 <div style={{ display: 'flex', gap: '40px', marginTop: '40px', alignItems: 'center' }}>
-                                                    <div style={{ textAlign: 'center' }}><div style={{ fontSize: '24px' }}>Client</div><div style={{ color: 'white', fontWeight: 900, fontSize: '12px', marginTop: '8px' }}>CLIENT</div></div>
+                                                    <div style={{ textAlign: 'center' }}><div style={{ fontSize: '24px' }}>Client</div><div style={{ color: '#2D3748', fontWeight: 900, fontSize: '12px', marginTop: '8px' }}>CLIENT</div></div>
                                                     <ArrowRight size={20} color="#64748B" />
-                                                    <div style={{ textAlign: 'center' }}><div style={{ fontSize: '24px' }}>HR</div><div style={{ color: 'white', fontWeight: 900, fontSize: '12px', marginTop: '8px' }}>HR MGR</div></div>
+                                                    <div style={{ textAlign: 'center' }}><div style={{ fontSize: '24px' }}>HR</div><div style={{ color: '#2D3748', fontWeight: 900, fontSize: '12px', marginTop: '8px' }}>HR MGR</div></div>
                                                     <ArrowRight size={20} color="#64748B" />
-                                                    <div style={{ textAlign: 'center' }}><div style={{ fontSize: '24px' }}>Staff</div><div style={{ color: 'white', fontWeight: 900, fontSize: '12px', marginTop: '8px' }}>EMPLOYEES</div></div>
+                                                    <div style={{ textAlign: 'center' }}><div style={{ fontSize: '24px' }}>Staff</div><div style={{ color: '#2D3748', fontWeight: 900, fontSize: '12px', marginTop: '8px' }}>EMPLOYEES</div></div>
                                                 </div>
                                             </>
                                         )}
 
                                         {tutorialScene === 4 && (
                                             <>
-                                                <div style={{ fontSize: '48px', fontWeight: 900, color: 'white', marginBottom: '16px' }}>Sector-Wise <span style={{ color: '#8B5CF6' }}>Slots</span></div>
-                                                <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6 }}>Employees manage their own availability specifically tailored to your industry (Salon, Clinic, or Education).</p>
+                                                <div style={{ fontSize: '48px', fontWeight: 900, color: '#2D3748', marginBottom: '16px' }}>Sector-Wise <span style={{ color: '#8B5CF6' }}>Slots</span></div>
+                                                <p style={{ color: '#718096', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6 }}>Employees manage their own availability specifically tailored to your industry (Salon, Clinic, or Education).</p>
                                                 <div style={{ marginTop: '40px', padding: '32px', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '32px', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
                                                     <GripVertical size={40} color="#8B5CF6" />
                                                 </div>
@@ -2705,11 +2726,11 @@ const ClientDashboard = () => {
 
                                         {tutorialScene === 5 && (
                                             <>
-                                                <div style={{ fontSize: '48px', fontWeight: 900, color: 'white', marginBottom: '16px' }}>Global <span style={{ color: '#10B981' }}>User Booking</span></div>
-                                                <p style={{ color: '#94A3B8', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6 }}>Finally, the user finds your public profile and books the exactly right slot. The circle of your business flow is complete.</p>
+                                                <div style={{ fontSize: '48px', fontWeight: 900, color: '#2D3748', marginBottom: '16px' }}>Global <span style={{ color: '#5A315D' }}>User Booking</span></div>
+                                                <p style={{ color: '#718096', fontSize: '18px', maxWidth: '600px', lineHeight: 1.6 }}>Finally, the user finds your public profile and books the exactly right slot. The circle of your business flow is complete.</p>
                                                 <div style={{ marginTop: '40px', display: 'flex', gap: '12px' }}>
-                                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', animation: 'pulse 1s infinite' }}></div>
-                                                    <div style={{ color: '#10B981', fontWeight: 900, fontSize: '14px' }}>LIVE BOOKING ENGINE ACTIVE</div>
+                                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#5A315D', animation: 'pulse 1s infinite' }}></div>
+                                                    <div style={{ color: '#5A315D', fontWeight: 900, fontSize: '14px' }}>LIVE BOOKING ENGINE ACTIVE</div>
                                                 </div>
                                             </>
                                         )}
@@ -2726,7 +2747,7 @@ const ClientDashboard = () => {
                                     
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                         {[1,2,3,4,5].map(i => (
-                                            <div key={i} style={{ width: '8px', height: '8px', borderRadius: '4px', background: tutorialScene === i ? 'var(--primary)' : 'rgba(255,255,255,0.1)', transition: 'all 0.3s' }} />
+                                            <div key={i} style={{ width: '8px', height: '8px', borderRadius: '4px', background: tutorialScene === i ? 'var(--primary)' : 'rgba(90, 49, 93, 0.1)', transition: 'all 0.3s' }} />
                                         ))}
                                     </div>
 
@@ -2766,6 +2787,8 @@ const ClientDashboard = () => {
                 </div>
             )}
 
+                </div>
+            </div>
             <FloatingSupport />
             <ChatWidget role="client" />
         </div>

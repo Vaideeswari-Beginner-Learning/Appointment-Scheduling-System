@@ -91,9 +91,9 @@ const ChatWidget = ({ role = 'user' }) => {
                         }}
                     >
                         {/* Header */}
-                        <div style={{ background: 'linear-gradient(135deg, #4F46E5, #818CF8)', padding: '24px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ background: 'linear-gradient(135deg, #4F46E5, #818CF8)', padding: '24px', color: '#2D3748', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <div style={{ width: '40px', height: '40px', background: 'rgba(90, 49, 93, 0.2)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <Sparkles size={20} />
                                 </div>
                                 <div>
@@ -103,7 +103,7 @@ const ChatWidget = ({ role = 'user' }) => {
                             </div>
                             <button 
                                 onClick={() => setIsOpen(false)}
-                                style={{ background: 'rgba(0,0,0,0.1)', border: 'none', color: 'white', padding: '8px', borderRadius: '10px', cursor: 'pointer' }}
+                                style={{ background: 'rgba(0,0,0,0.1)', border: 'none', color: '#2D3748', padding: '8px', borderRadius: '10px', cursor: 'pointer' }}
                             >
                                 <X size={20} />
                             </button>
@@ -126,7 +126,7 @@ const ChatWidget = ({ role = 'user' }) => {
                                     }}>
                                         {msg.text}
                                     </div>
-                                    <span style={{ fontSize: '10px', color: '#94A3B8', marginTop: '4px' }}>
+                                    <span style={{ fontSize: '10px', color: '#718096', marginTop: '4px' }}>
                                         {msg.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                 </div>
@@ -173,7 +173,7 @@ const ChatWidget = ({ role = 'user' }) => {
                             />
                             <button 
                                 onClick={handleSend}
-                                style={{ background: '#4F46E5', border: 'none', color: 'white', padding: '12px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                style={{ background: '#4F46E5', border: 'none', color: '#2D3748', padding: '12px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             >
                                 <Send size={20} />
                             </button>
@@ -198,7 +198,7 @@ const ChatWidget = ({ role = 'user' }) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'white'
+                    color: '#2D3748'
                 }}
             >
                 {isOpen ? <X size={28} /> : <MessageSquare size={28} />}

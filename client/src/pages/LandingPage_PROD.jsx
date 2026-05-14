@@ -218,8 +218,9 @@ const LandingPage = () => {
         <>
             {/* Removed AnimatePresence for scroll stability */}
 
-            <div className="landing-page-root" style={{ 
+            <div style={{ 
                 background: theme.bgSecondary, 
+                minHeight: '100vh', 
                 color: theme.text, 
                 fontFamily: "'Outfit', sans-serif",
                 position: 'relative',

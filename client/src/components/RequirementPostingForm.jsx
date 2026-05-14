@@ -41,7 +41,7 @@ const RequirementPostingForm = ({ clients = [], onRequirementPosted }) => {
                     <Target size={24} />
                 </div>
                 <div>
-                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0F172A' }}>Post Hiring Requirement</h3>
+                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#2D3748' }}>Post Hiring Requirement</h3>
                     <p style={{ margin: 0, fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Create a new vacancy or personnel request for your active clients.</p>
                 </div>
             </div>
@@ -93,7 +93,7 @@ const RequirementPostingForm = ({ clients = [], onRequirementPosted }) => {
                     padding: '12px 24px', 
                     borderRadius: '12px', 
                     background: '#F97316', 
-                    color: 'white', 
+                    color: '#2D3748', 
                     border: 'none', 
                     fontSize: '14px', 
                     fontWeight: 900, 

@@ -37,9 +37,9 @@ const DashboardStats = ({ role }) => {
     const cards = [
         { label: 'Total Bookings', value: stats.totalBookings || 0, icon: BarChart3, color: '#4F46E5', bg: '#EEF2FF' },
         { label: "Today's Appointments", value: stats.todayBookings || 0, icon: Calendar, color: '#0891B2', bg: '#ECFEFF' },
-        { label: 'Pending Requests', value: stats.pendingCount || 0, icon: Clock, color: '#D97706', bg: '#FEF3C7' },
+        { label: 'Pending Requests', value: stats.pendingCount || 0, icon: Clock, color: '#B76E79', bg: '#FEF3C7' },
         { label: 'Revenue (Paid)', value: `Rs. ${stats.revenue || 0}`, icon: IndianRupee, color: '#16A34A', bg: '#F0FDF4' },
-        { label: 'Confirmed', value: stats.confirmedCount || 0, icon: CheckCircle, color: '#059669', bg: '#D1FAE5' },
+        { label: 'Confirmed', value: stats.confirmedCount || 0, icon: CheckCircle, color: '#4A1C40', bg: '#D1FAE5' },
         { label: 'Completed', value: stats.completedCount || 0, icon: TrendingUp, color: '#7C3AED', bg: '#FAF5FF' },
         { label: 'Cancelled', value: stats.cancelledCount || 0, icon: XCircle, color: '#DC2626', bg: '#FEF2F2' },
         { label: 'This Week Trend', value: `${stats.last7Days?.slice(-1)[0]?.count || 0} today`, icon: AlertCircle, color: '#EA580C', bg: '#FFF7ED' },
@@ -61,7 +61,7 @@ const DashboardStats = ({ role }) => {
                             <card.icon size={22} color={card.color} />
                         </div>
                         <div>
-                            <div style={{ fontSize: '26px', fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{card.value}</div>
+                            <div style={{ fontSize: '26px', fontWeight: 900, color: '#2D3748', lineHeight: 1 }}>{card.value}</div>
                             <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>{card.label}</div>
                         </div>
                     </div>
@@ -78,8 +78,8 @@ const DashboardStats = ({ role }) => {
                             <card.icon size={18} color={card.color} />
                         </div>
                         <div>
-                            <div style={{ fontSize: '20px', fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{card.value}</div>
-                            <div style={{ fontSize: '10px', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', marginTop: '3px' }}>{card.label}</div>
+                            <div style={{ fontSize: '20px', fontWeight: 900, color: '#2D3748', lineHeight: 1 }}>{card.value}</div>
+                            <div style={{ fontSize: '10px', fontWeight: 800, color: '#718096', textTransform: 'uppercase', marginTop: '3px' }}>{card.label}</div>
                         </div>
                     </div>
                 ))}

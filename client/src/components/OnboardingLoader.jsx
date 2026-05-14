@@ -116,7 +116,7 @@ const OnboardingLoader = ({ onComplete }) => {
                 animate={{ opacity: 1, y: 0 }}
                 style={{ marginTop: '40px', textAlign: 'center' }}
             >
-                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>
+                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#2D3748', marginBottom: '8px' }}>
                     Welcome to the Future
                 </h2>
                 <p style={{ color: '#64748B', fontWeight: 600, fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>

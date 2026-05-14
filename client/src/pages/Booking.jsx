@@ -21,13 +21,16 @@ import { useToast } from '../context/ToastContext';
 const Booking = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+
     const socket = useSocket();
     const showToast = useToast();
 
     // Step management: 1=select service, 2=fill form, 3=pick slot & confirm
     const [step, setStep] = useState(1);
     const [config, setConfig] = useState(getSectorConfig(user?.sector || 'general'));
-    
+
+    const [staffModalServiceId, setStaffModalServiceId] = useState(null);
+
     // ... rest of state ...
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
@@ -54,7 +57,6 @@ const Booking = () => {
     const [staff, setStaff] = useState([]);
     const [showStaffModal, setShowStaffModal] = useState(false);
     const [staffLoading, setStaffLoading] = useState(false);
-    const [staffModalServiceId, setStaffModalServiceId] = useState(null);
 
     // Real-time slot listener
     useEffect(() => {
@@ -254,6 +256,8 @@ const Booking = () => {
         return `https://${url}`;
     };
 
+    if (!user) return null;
+
     return (
         <div className="booking-v3" style={{ background: '#F8FAFC', minHeight: '100vh', fontFamily: "'Inter', sans-serif", paddingBottom: '80px' }}>
             {bookingComplete ? (
@@ -281,7 +285,7 @@ const Booking = () => {
                                 <CheckCircle2 size={60} />
                             </motion.div>
                         </div>
-                        <h2 style={{ fontSize: '42px', fontWeight: 950, color: '#0F172A', marginBottom: '16px', background: 'linear-gradient(to right, #0F172A, #334155)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Thank You!</h2>
+                        <h2 style={{ fontSize: '42px', fontWeight: 950, color: '#2D3748', marginBottom: '16px', background: 'linear-gradient(to right, #FFFFFF, #334155)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Thank You!</h2>
                         <p style={{ color: '#64748B', fontWeight: 700, fontSize: '18px', lineHeight: 1.6, marginBottom: '32px' }}>
                             Your appointment has been successfully scheduled.
                         </p>
@@ -293,14 +297,14 @@ const Booking = () => {
 
                         {/* ═══ PREMIUM UPI PAYMENT SECTION ═══ */}
                         {selectedService?.price > 0 && (
-                                <div style={{ background: '#1A1A2E', borderRadius: '32px', padding: '32px', marginBottom: '32px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: 'white', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 24px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                <div style={{ background: '#1A1A2E', borderRadius: '32px', padding: '32px', marginBottom: '32px', textAlign: 'center', border: '1px solid rgba(90, 49, 93, 0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#5E239D', color: '#2D3748', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 24px', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                         <Smartphone size={16} /> Pay Securely via PhonePe
                                     </div>
                                     
                                     <div style={{ marginBottom: '24px' }}>
                                         <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>Amount to Pay</div>
-                                        <div style={{ fontSize: '42px', fontWeight: 950, color: '#10B981', textShadow: '0 0 20px rgba(16,185,129,0.3)' }}>Rs. {selectedService.price}</div>
+                                        <div style={{ fontSize: '42px', fontWeight: 950, color: '#5A315D', textShadow: '0 0 20px rgba(90, 49, 93,0.3)' }}>Rs. {selectedService.price}</div>
                                     </div>
 
                                     <div style={{ position: 'relative', display: 'inline-block', padding: '20px', background: '#FFFFFF', borderRadius: '24px', marginBottom: '20px' }}>
@@ -322,10 +326,10 @@ const Booking = () => {
                                 </div>
                                 
                                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: 700, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>Scan with any UPI App</div>
-                                <div style={{ color: 'white', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
+                                <div style={{ color: '#2D3748', fontSize: '18px', fontWeight: 950, letterSpacing: '0.5px' }}>{UPI_ID}</div>
                                 
-                                <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                                    <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                                <div style={{ background: 'rgba(90, 49, 93, 0.1)', padding: '10px 16px', borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#5A315D', fontWeight: 800, marginTop: '24px', border: '1px solid rgba(90, 49, 93, 0.2)' }}>
+                                    <div style={{ width: '6px', height: '6px', background: '#5A315D', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
                                     Secure Verification Active
                                 </div>
                             </div>
@@ -334,7 +338,7 @@ const Booking = () => {
                             <button 
                                 onClick={() => navigate('/dashboard')} 
                                 className="btn btn-primary" 
-                                style={{ height: '60px', fontSize: '18px', borderRadius: '16px', background: '#10B981', border: 'none', fontWeight: 900 }}
+                                style={{ height: '60px', fontSize: '18px', borderRadius: '16px', background: '#5A315D', border: 'none', fontWeight: 900 }}
                             >
                                 I Have Paid - Go to Dashboard
                             </button>
@@ -357,12 +361,12 @@ const Booking = () => {
                 <style>{`
                 .stepper { display: flex; gap: 40px; margin-bottom: 40px; justify-content: center; background: white; padding: 24px; border-radius: 20px; border: 1px solid #E2E8F0; }
                 .step-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; alignItems: center; justify-content: center; font-weight: 900; font-size: 14px; transition: 0.3s; }
-                .step-dot.active { background: var(--primary); color: white; box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3); }
-                .step-dot.pending { background: #E2E8F0; color: #94A3B8; }
+                .step-dot.active { background: var(--primary); color: white; box-shadow: 0 8px 15px rgba(90, 49, 93, 0.3); }
+                .step-dot.pending { background: #E2E8F0; color: #718096; }
                 .glass-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 40px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
                 .slot-card { border: 2px solid #F1F5F9; border-radius: 16px; padding: 16px; text-align: center; cursor: pointer; transition: 0.2s; background: #F8FAFC; }
                 .slot-card:hover { border-color: var(--primary); transform: translateY(-3px); }
-                .slot-card.selected { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 8px 15px rgba(59, 130, 246, 0.4); }
+                .slot-card.selected { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 8px 15px rgba(90, 49, 93, 0.4); }
                 .service-btn { background: white; border: 1px solid #E2E8F0; border-radius: 24px; padding: 32px; text-align: left; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
                 .service-btn:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1); }
             `}</style>
@@ -374,8 +378,8 @@ const Booking = () => {
                             <img src={organization.organizationLogo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         </div>
                     ) : (
-                        <div style={{ background: 'var(--primary)', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '14px', color: 'white' }}>
-                            <Building2 size={24} />
+                        <div style={{ background: 'white', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '14px', color: '#2D3748', boxShadow: '0 8px 20px rgba(0,0,0,0.1)', border: '1px solid #E2E8F0' }}>
+                            <img src="/logo.png" alt="Logo" style={{ height: '24px' }} onError={(e) => e.target.src = 'https://cdn-icons-png.flaticon.com/512/3061/3061341.png'} />
                         </div>
                     )}
                     <h1 style={{ fontSize: '20px', fontWeight: 900 }}>
@@ -419,7 +423,7 @@ const Booking = () => {
                     {[1, 2, 3].map(n => (
                         <div key={n} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div className={`step-dot ${step >= n ? 'active' : 'pending'}`}>{n}</div>
-                            <span style={{ fontWeight: 800, color: step >= n ? 'var(--text-dark)' : '#94A3B8', fontSize: '14px' }}>
+                            <span style={{ fontWeight: 800, color: step >= n ? 'var(--text-dark)' : '#718096', fontSize: '14px' }}>
                                 {n === 1 ? 'Service' : n === 2 ? 'Details' : 'Schedule'}
                             </span>
                             {n < 3 && <div style={{ width: '40px', height: '2px', background: step > n ? 'var(--primary)' : '#E2E8F0' }} />}
@@ -442,7 +446,7 @@ const Booking = () => {
                                     )}
                                     <div style={{ flex: 1 }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                                            <h2 style={{ color: 'white', fontSize: '32px', margin: 0, fontWeight: 900 }}>
+                                            <h2 style={{ color: '#2D3748', fontSize: '32px', margin: 0, fontWeight: 900 }}>
                                                 {organization?.organizationName || organization?.name || `${config.label} Portal`}
                                             </h2>
                                             {organization?.organizationWebsite && (
@@ -454,12 +458,12 @@ const Booking = () => {
                                                         display: 'inline-flex', 
                                                         alignItems: 'center', 
                                                         gap: '6px', 
-                                                        background: 'rgba(255,255,255,0.2)', 
+                                                        background: 'rgba(90, 49, 93, 0.2)', 
                                                         backdropFilter: 'blur(10px)',
                                                         padding: '6px 14px', 
                                                         borderRadius: '30px', 
                                                         textDecoration: 'none', 
-                                                        color: 'white', 
+                                                        color: '#2D3748', 
                                                         fontSize: '12px', 
                                                         fontWeight: 800,
                                                         border: '1px solid rgba(255,255,255,0.3)'
@@ -478,12 +482,12 @@ const Booking = () => {
                         </div>
 
                         <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-                            <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', marginBottom: '12px' }}>What can we help you with today?</h2>
+                            <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#2D3748', marginBottom: '12px' }}>What can we help you with today?</h2>
                             <p style={{ color: '#64748B', fontWeight: 600 }}>Browse our {config.dashboard.serviceLabel.toLowerCase()} or use the search bar to find what you need.</p>
                         </div>
                         
                         <div style={{ position: 'relative', marginBottom: '40px', maxWidth: '600px', margin: '0 auto 40px' }}>
-                            <Search size={22} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                            <Search size={22} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#718096' }} />
                             <input 
                                 className="input-field" 
                                 placeholder="Search 'Doctor', 'Technical', 'HR'..." 
@@ -541,7 +545,7 @@ const Booking = () => {
                                                 <div style={{ fontSize: '11px', fontWeight: 900, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.05em' }}>
                                                     {s.category || organization?.sector || 'Professional Category'}
                                                 </div>
-                                                <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#0F172A', margin: '0 0 12px' }}>{s.name}</h3>
+                                                <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#2D3748', margin: '0 0 12px' }}>{s.name}</h3>
                                                 
                                                 {/* ASSIGNED STAFF NAMES DISPLAY */}
                                                 {s.assignedStaff && s.assignedStaff.length > 0 && (
@@ -575,7 +579,7 @@ const Booking = () => {
                                                     <div style={{ fontSize: '13px', fontWeight: 800, color: '#475569', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         <Clock size={14} /> {s.duration}m
                                                     </div>
-                                                    {s.price > 0 && <div style={{ fontSize: '13px', fontWeight: 800, color: '#3B82F6' }}>Rs. {s.price}</div>}
+                                                    {s.price > 0 && <div style={{ fontSize: '13px', fontWeight: 800, color: '#5A315D' }}>Rs. {s.price}</div>}
                                                 </div>
                                                 <button 
                                                     onClick={(e) => {
@@ -609,10 +613,10 @@ const Booking = () => {
                         ) : (
                             <div style={{ animation: 'fadeIn 0.4s ease' }}>
                                 <div style={{ padding: '60px', textAlign: 'center', background: 'white', borderRadius: '32px', border: '1px solid #E2E8F0', boxShadow: '0 10px 30px -10px rgba(0,0,0,0.05)', marginBottom: '40px' }}>
-                                    <div style={{ width: '64px', height: '64px', background: '#F1F5F9', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#94A3B8' }}>
+                                    <div style={{ width: '64px', height: '64px', background: '#F1F5F9', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#718096' }}>
                                         <Users size={32} />
                                     </div>
-                                    <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#0F172A', marginBottom: '12px' }}>Meet Our Professional {config.dashboard.employeeRole}s</h3>
+                                    <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#2D3748', marginBottom: '12px' }}>Meet Our Professional {config.dashboard.employeeRole}s</h3>
                                     <p style={{ color: '#64748B', fontWeight: 600, maxWidth: '500px', margin: '0 auto 32px' }}>While we don't have specific services listed yet, you can browse our team members below and book a consultation directly.</p>
                                     
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px', textAlign: 'left' }}>
@@ -639,7 +643,7 @@ const Booking = () => {
                                                 </button>
                                             </div>
                                         )) : (
-                                            <div style={{ gridColumn: '1/-1', textAlign: 'center', color: '#94A3B8', fontSize: '14px', fontWeight: 600 }}>
+                                            <div style={{ gridColumn: '1/-1', textAlign: 'center', color: '#718096', fontSize: '14px', fontWeight: 600 }}>
                                                 No team members found for this organization.
                                             </div>
                                         )}
@@ -659,19 +663,19 @@ const Booking = () => {
                             </h2>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, marginBottom: '8px', color: '#94A3B8', textTransform: 'uppercase' }}>Phone Number</label>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, marginBottom: '8px', color: '#718096', textTransform: 'uppercase' }}>Phone Number</label>
                                     <input className="input-field" type="tel" value={patientPhone} onChange={e => setPatientPhone(e.target.value)} required style={{ paddingLeft: '20px', height: '56px' }} />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, marginBottom: '8px', color: '#94A3B8', textTransform: 'uppercase' }}>Email Address</label>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, marginBottom: '8px', color: '#718096', textTransform: 'uppercase' }}>Email Address</label>
                                     <input className="input-field" type="email" value={patientEmail} onChange={e => setPatientEmail(e.target.value)} style={{ paddingLeft: '20px', height: '56px' }} />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, marginBottom: '8px', color: '#94A3B8', textTransform: 'uppercase' }}>City / Location</label>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, marginBottom: '8px', color: '#718096', textTransform: 'uppercase' }}>City / Location</label>
                                     <input className="input-field" type="text" placeholder="e.g. Mumbai" value={city} onChange={e => setCity(e.target.value)} required style={{ paddingLeft: '20px', height: '56px' }} />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, marginBottom: '8px', color: '#94A3B8', textTransform: 'uppercase' }}>Full Address</label>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, marginBottom: '8px', color: '#718096', textTransform: 'uppercase' }}>Full Address</label>
                                     <input className="input-field" type="text" placeholder="Street, Area..." value={address} onChange={e => setAddress(e.target.value)} style={{ paddingLeft: '20px', height: '56px' }} />
                                 </div>
                             </div>
@@ -718,7 +722,7 @@ const Booking = () => {
                             <h2 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '32px' }}>Pick a Date & Time</h2>
                             
                             <div style={{ background: '#F8FAFC', padding: '24px', borderRadius: '24px', border: '1px solid #E2E8F0', marginBottom: '40px' }}>
-                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, color: '#94A3B8', marginBottom: '12px', textTransform: 'uppercase' }}>Select Calendar Day</label>
+                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 900, color: '#718096', marginBottom: '12px', textTransform: 'uppercase' }}>Select Calendar Day</label>
                                 <input 
                                     type="date" 
                                     min={new Date().toISOString().split('T')[0]} 
@@ -745,7 +749,7 @@ const Booking = () => {
                                             <Clock size={16} style={{ marginBottom: '4px' }} />
                                             <div style={{ fontWeight: 900 }}>{s.startTime}</div>
                                             <div style={{ fontSize: '10px', opacity: 0.8 }}>{selectedService.duration} min</div>
-                                            <div style={{ fontSize: '11px', color: manualTime === s.startTime ? 'white' : 'var(--primary)', fontWeight: 800, marginTop: '8px', padding: '4px', borderRadius: '4px', background: manualTime === s.startTime ? 'rgba(255,255,255,0.2)' : 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <div style={{ fontSize: '11px', color: manualTime === s.startTime ? 'white' : 'var(--primary)', fontWeight: 800, marginTop: '8px', padding: '4px', borderRadius: '4px', background: manualTime === s.startTime ? 'rgba(90, 49, 93, 0.2)' : 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {`${config.dashboard.employeeRole}: ${s.professionalName || s.professionalId?.name || 'Staff'}`}
                                             </div>
                                         </div>
@@ -821,7 +825,7 @@ const Booking = () => {
                                 <div style={{ width: '64px', height: '64px', background: '#EEF2FF', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: 'var(--primary)' }}>
                                     <CheckCircle2 size={32} />
                                 </div>
-                                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Confirm Your Booking</h2>
+                                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#2D3748', margin: 0 }}>Confirm Your Booking</h2>
                                 <p style={{ color: '#64748B', marginTop: '8px', fontWeight: 600 }}>Please review your appointment details below.</p>
                             </div>
 
@@ -856,14 +860,14 @@ const Booking = () => {
 
                             {/* ═══ PREMIUM UPI PAYMENT SECTION ═══ */}
                             {selectedService?.price > 0 && (
-                                <div style={{ background: '#1A1A2E', borderRadius: '24px', padding: '24px', marginBottom: '32px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 15px 30px rgba(0,0,0,0.2)' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#5E239D', color: 'white', padding: '8px 16px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 20px', fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                <div style={{ background: '#1A1A2E', borderRadius: '24px', padding: '24px', marginBottom: '32px', textAlign: 'center', border: '1px solid rgba(90, 49, 93, 0.1)', boxShadow: '0 15px 30px rgba(0,0,0,0.2)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#5E239D', color: '#2D3748', padding: '8px 16px', borderRadius: '100px', width: 'fit-content', margin: '0 auto 20px', fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                         <Smartphone size={14} /> Pay via PhonePe
                                     </div>
                                     
                                     <div style={{ marginBottom: '20px' }}>
                                         <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '2px' }}>Amount Due</div>
-                                        <div style={{ fontSize: '32px', fontWeight: 950, color: '#10B981' }}>Rs. {selectedService.price}</div>
+                                        <div style={{ fontSize: '32px', fontWeight: 950, color: '#5A315D' }}>Rs. {selectedService.price}</div>
                                     </div>
 
                                     <div style={{ position: 'relative', display: 'inline-block', padding: '15px', background: '#FFFFFF', borderRadius: '20px', marginBottom: '16px' }}>
@@ -884,7 +888,7 @@ const Booking = () => {
                                     </div>
                                     
                                     <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px', fontWeight: 700, marginBottom: '4px' }}>SCAN TO PAY SECURELY</div>
-                                    <div style={{ color: 'white', fontSize: '14px', fontWeight: 800 }}>{UPI_ID}</div>
+                                    <div style={{ color: '#2D3748', fontSize: '14px', fontWeight: 800 }}>{UPI_ID}</div>
                                 </div>
                             )}
 
@@ -896,13 +900,13 @@ const Booking = () => {
                                         width: '100%', 
                                         height: '64px', 
                                         background: 'var(--primary)', 
-                                        color: 'white', 
+                                        color: '#2D3748', 
                                         border: 'none', 
                                         borderRadius: '18px', 
                                         fontSize: '18px', 
                                         fontWeight: 800, 
                                         cursor: 'pointer',
-                                        boxShadow: '0 10px 15px -3px rgba(59, 130, 246, 0.3)',
+                                        boxShadow: '0 10px 15px -3px rgba(90, 49, 93, 0.3)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -955,7 +959,7 @@ const Booking = () => {
                                 <div style={{ width: '48px', height: '48px', background: 'var(--bg-light)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--primary)' }}>
                                     <User size={24} />
                                 </div>
-                                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Meet Your {config.dashboard.employeeRole}</h2>
+                                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#2D3748', margin: 0 }}>Meet Your {config.dashboard.employeeRole}</h2>
                                 <p style={{ color: '#64748B', fontWeight: 600, marginTop: '4px' }}>Qualified professional assigned to this service</p>
                             </div>
 
@@ -984,18 +988,18 @@ const Booking = () => {
                                                     display: 'flex', 
                                                     alignItems: 'center', 
                                                     justifyContent: 'center', 
-                                                    color: 'white',
+                                                    color: '#2D3748',
                                                     fontSize: '32px',
                                                     fontWeight: 900,
                                                     margin: '0 auto 20px',
                                                     overflow: 'hidden',
                                                     border: '4px solid white',
-                                                    boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.4)'
+                                                    boxShadow: '0 10px 25px -5px rgba(90, 49, 93, 0.4)'
                                                 }}>
                                                     {s.avatar ? <img src={s.avatar} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : s.name.charAt(0)}
                                                 </div>
                                                 
-                                                <h3 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', marginBottom: '4px' }}>{s.name}</h3>
+                                                <h3 style={{ fontSize: '24px', fontWeight: 900, color: '#2D3748', marginBottom: '4px' }}>{s.name}</h3>
                                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
                                                     <span style={{ fontSize: '12px', fontWeight: 900, background: 'white', color: 'var(--primary)', padding: '6px 16px', borderRadius: '99px', border: '1px solid #E2E8F0', textTransform: 'uppercase' }}>
                                                         {s.specialty || s.role || config.dashboard.employeeRole}
@@ -1007,14 +1011,14 @@ const Booking = () => {
                                                 </p>
 
                                                 <div style={{ background: 'white', padding: '16px', borderRadius: '20px', border: '1px solid #E2E8F0' }}>
-                                                    <div style={{ fontSize: '11px', fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '8px' }}>Upcoming Slots</div>
+                                                    <div style={{ fontSize: '11px', fontWeight: 900, color: '#718096', textTransform: 'uppercase', marginBottom: '8px' }}>Upcoming Slots</div>
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
                                                         {s.availableSlots?.length > 0 ? s.availableSlots.slice(0, 3).map((slot, sidx) => (
                                                             <span key={sidx} style={{ fontSize: '11px', fontWeight: 800, color: '#475569', background: '#F1F5F9', padding: '4px 10px', borderRadius: '6px' }}>
                                                                 {slot.startTime}
                                                             </span>
                                                         )) : (
-                                                            <span style={{ fontSize: '12px', color: '#94A3B8' }}>Consult availability below</span>
+                                                            <span style={{ fontSize: '12px', color: '#718096' }}>Consult availability below</span>
                                                         )}
                                                     </div>
                                                 </div>

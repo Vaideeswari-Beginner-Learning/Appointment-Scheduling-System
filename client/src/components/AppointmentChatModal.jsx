@@ -62,7 +62,7 @@ const AppointmentChatModal = ({ appointment, onClose }) => {
             <div style={{ background: 'white', borderRadius: '20px', width: '480px', maxWidth: '95vw', maxHeight: '80vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px rgba(0,0,0,0.2)', overflow: 'hidden' }}>
                 {/* Header */}
                 <div style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'white' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#2D3748' }}>
                         <MessageCircle size={20} />
                         <div>
                             <div style={{ fontWeight: 900, fontSize: '16px' }}>Chat Support</div>
@@ -71,16 +71,16 @@ const AppointmentChatModal = ({ appointment, onClose }) => {
                             </div>
                         </div>
                     </div>
-                    <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: 'white', display: 'flex' }}>
+                    <button onClick={onClose} style={{ background: 'rgba(90, 49, 93, 0.2)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: '#2D3748', display: 'flex' }}>
                         <X size={18} />
                     </button>
                 </div>
 
                 {/* Messages */}
                 <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', background: '#F8FAFC' }}>
-                    {loading && <div style={{ textAlign: 'center', color: '#94A3B8', padding: '20px' }}>Loading messages...</div>}
+                    {loading && <div style={{ textAlign: 'center', color: '#718096', padding: '20px' }}>Loading messages...</div>}
                     {!loading && messages.length === 0 && (
-                        <div style={{ textAlign: 'center', color: '#94A3B8', padding: '40px 20px' }}>
+                        <div style={{ textAlign: 'center', color: '#718096', padding: '40px 20px' }}>
                             <MessageCircle size={40} style={{ margin: '0 auto 12px', display: 'block', opacity: 0.3 }} />
                             <p style={{ fontSize: '14px' }}>No messages yet. Start the conversation!</p>
                         </div>
@@ -90,7 +90,7 @@ const AppointmentChatModal = ({ appointment, onClose }) => {
                             <div style={{
                                 maxWidth: '70%', padding: '10px 14px', borderRadius: isMe(msg) ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                                 background: isMe(msg) ? '#4F46E5' : 'white',
-                                color: isMe(msg) ? 'white' : '#0F172A',
+                                color: isMe(msg) ? 'white' : '#FFFFFF',
                                 boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
                                 border: isMe(msg) ? 'none' : '1px solid #E2E8F0'
                             }}>
@@ -115,7 +115,7 @@ const AppointmentChatModal = ({ appointment, onClose }) => {
                     />
                     <button type="submit" disabled={sending || !newMsg.trim()} style={{
                         background: newMsg.trim() ? '#4F46E5' : '#E2E8F0', border: 'none', borderRadius: '12px',
-                        padding: '12px 16px', cursor: newMsg.trim() ? 'pointer' : 'not-allowed', color: newMsg.trim() ? 'white' : '#94A3B8',
+                        padding: '12px 16px', cursor: newMsg.trim() ? 'pointer' : 'not-allowed', color: newMsg.trim() ? 'white' : '#718096',
                         display: 'flex', alignItems: 'center', transition: 'all 0.2s'
                     }}>
                         <Send size={18} />

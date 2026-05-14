@@ -39,6 +39,7 @@ const corsOptions = {
             'https://appointmentscheduling-system.onrender.com',
             'http://localhost:5173',
             'http://localhost:5002',
+            /^http:\/\/localhost:\d+$/,
             /^https:\/\/.*\.vercel\.app$/,
             /^https:\/\/.*\.onrender\.com$/
         ];

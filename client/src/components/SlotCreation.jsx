@@ -51,10 +51,10 @@ const SlotCreation = ({ onSlotCreated, doctors = [] }) => {
             animation: 'fadeIn 0.4s ease'
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                <div style={{ width: '40px', height: '40px', background: '#EFF6FF', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6' }}>
+                <div style={{ width: '40px', height: '40px', background: '#EFF6FF', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5A315D' }}>
                     <Plus size={24} />
                 </div>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0F172A' }}>Create New Availability Slot</h3>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#2D3748' }}>Create New Availability Slot</h3>
             </div>
 
             <form onSubmit={handleSubmit} style={{ 
@@ -111,8 +111,8 @@ const SlotCreation = ({ onSlotCreated, doctors = [] }) => {
                 <button type="submit" disabled={loading} style={{ 
                     padding: '12px 24px', 
                     borderRadius: '12px', 
-                    background: '#0F172A', 
-                    color: 'white', 
+                    background: '#FFFFFF', 
+                    color: '#2D3748', 
                     border: 'none', 
                     fontSize: '14px', 
                     fontWeight: 900, 

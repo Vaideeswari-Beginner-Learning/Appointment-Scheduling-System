@@ -36,11 +36,11 @@ const ServiceCreationForm = ({ onServiceCreated }) => {
             animation: 'fadeIn 0.4s ease'
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                <div style={{ width: '40px', height: '40px', background: '#EFF6FF', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6' }}>
+                <div style={{ width: '40px', height: '40px', background: '#EFF6FF', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5A315D' }}>
                     <Activity size={24} />
                 </div>
                 <div>
-                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0F172A' }}>Configure New Service</h3>
+                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#2D3748' }}>Configure New Service</h3>
                     <p style={{ margin: 0, fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Define a new service offering for the recruitment or medical pipeline.</p>
                 </div>
             </div>
@@ -92,8 +92,8 @@ const ServiceCreationForm = ({ onServiceCreated }) => {
                 <button type="submit" disabled={loading} style={{ 
                     padding: '12px 24px', 
                     borderRadius: '12px', 
-                    background: '#3B82F6', 
-                    color: 'white', 
+                    background: '#5A315D', 
+                    color: '#2D3748', 
                     border: 'none', 
                     fontSize: '14px', 
                     fontWeight: 900, 
@@ -102,7 +102,7 @@ const ServiceCreationForm = ({ onServiceCreated }) => {
                     alignItems: 'center', 
                     justifyContent: 'center', 
                     gap: '10px',
-                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
+                    boxShadow: '0 4px 12px rgba(90, 49, 93, 0.2)',
                     opacity: loading ? 0.7 : 1,
                     transition: 'all 0.2s',
                     minWidth: '160px'

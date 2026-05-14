@@ -23,7 +23,7 @@ const StaffOnboardingForm = ({ onStaffOnboarded }) => {
                 'Orthopedic', 'Dermatologist', 'Psychiatrist'
             ],
             icon: <Stethoscope size={24} />,
-            color: '#10B981'
+            color: '#5A315D'
         },
         interview: {
             title: 'Onboard Hiring Expert',
@@ -37,7 +37,7 @@ const StaffOnboardingForm = ({ onStaffOnboarded }) => {
                 'Backend specialist', 'HR Manager', 'Project Lead', 'Product Manager'
             ],
             icon: <Briefcase size={24} />,
-            color: '#3B82F6'
+            color: '#5A315D'
         },
         service: {
             title: 'Onboard Service Technician',
@@ -66,7 +66,7 @@ const StaffOnboardingForm = ({ onStaffOnboarded }) => {
                 'Business Relations', 'Customer Success Manager'
             ],
             icon: <UserPlus size={24} />,
-            color: '#0F172A'
+            color: '#2D3748'
         }
     };
 
@@ -136,7 +136,7 @@ const StaffOnboardingForm = ({ onStaffOnboarded }) => {
                     {current.icon}
                 </div>
                 <div>
-                    <h3 style={{ margin: 0, fontSize: '22px', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.5px' }}>{current.title}</h3>
+                    <h3 style={{ margin: 0, fontSize: '22px', fontWeight: 900, color: '#2D3748', letterSpacing: '-0.5px' }}>{current.title}</h3>
                     <p style={{ margin: 0, fontSize: '13px', color: '#64748B', fontWeight: 600 }}>{current.subtitle}</p>
                 </div>
             </div>
@@ -197,7 +197,7 @@ const StaffOnboardingForm = ({ onStaffOnboarded }) => {
                     marginTop: '8px',
                     borderRadius: '16px', 
                     background: current.color, 
-                    color: 'white', 
+                    color: '#2D3748', 
                     border: 'none', 
                     fontSize: '15px', 
                     fontWeight: 900, 

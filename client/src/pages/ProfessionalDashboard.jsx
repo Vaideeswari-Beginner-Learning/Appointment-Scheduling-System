@@ -16,16 +16,17 @@ import { getSectorConfig } from '../config/sectorConfig';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSocket } from '../context/SocketContext';
 import { useToast } from '../context/ToastContext';
+import FloatingSupport from '../components/FloatingSupport';
 
 const StatusBadge = ({ status }) => {
 // ... existing StatusBadge code ...
     const map = {
-        pending:   { bg: '#FEF3C7', color: '#D97706', label: 'Pending' },
+        pending:   { bg: '#FEF3C7', color: '#B76E79', label: 'Pending' },
         confirmed: { bg: '#E0F2FE', color: '#0284C7', label: 'Confirmed' },
         approved:  { bg: '#E0F2FE', color: '#0284C7', label: 'Confirmed' },
         accepted:  { bg: '#E0F2FE', color: '#0284C7', label: 'Accepted' },
         ongoing:   { bg: '#EDE9FE', color: '#7C3AED', label: 'LIVE' },
-        completed: { bg: '#D1FAE5', color: '#059669', label: 'Completed' },
+        completed: { bg: '#D1FAE5', color: '#4A1C40', label: 'Completed' },
         rejected:  { bg: '#FEE2E2', color: '#DC2626', label: 'Rejected' },
     };
     const s = map[status] || { bg: '#F3F4F6', color: '#6B7280', label: status };
@@ -40,29 +41,36 @@ const StatusBadge = ({ status }) => {
 const ProfessionalDashboard = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+
+    if (!user) return null;
     const socket = useSocket();
     const showToast = useToast();
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({ today: 0, pending: 0, completed: 0, total: 0 });
     const [activeTab, setActiveTab] = useState('overview');
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab) setActiveTab(tab);
+    }, [window.location.search]);
+
     const [activeChatApp, setActiveChatApp] = useState(null);
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [profileForm, setProfileForm] = useState({ name: '', email: '', gender: '', specialty: '', phone: '' });
     const [isSaving, setIsSaving] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     const config = getSectorConfig(user?.sector || 'general');
 
-    // Real-time listener
     useEffect(() => {
         if (!socket) return;
-
         socket.on('slot_booked', () => {
             console.log('📡 Data refresh triggered by real-time event');
             showToast('New appointment booked! Refreshing dashboard...', 'success');
             fetchData();
         });
-
         return () => socket.off('slot_booked');
     }, [socket, showToast]);
 
@@ -85,7 +93,6 @@ const ProfessionalDashboard = () => {
         try {
             const res = await axios.get(`${API_BASE_URL}/appointments/my-appointments`, { headers: { 'x-auth-token': token } });
             setAppointments(res.data);
-            
             const today = new Date().toISOString().split('T')[0];
             const data = res.data;
             setStats({
@@ -117,72 +124,12 @@ const ProfessionalDashboard = () => {
             const token = localStorage.getItem('token');
             await axios.patch(`${API_BASE_URL}/users/profile`, profileForm, { headers: { 'x-auth-token': token } });
             showToast('Profile updated successfully!', 'success');
-            // Refresh user data if possible, or just local alert
         } catch (err) {
             showToast(err.response?.data?.message || 'Failed to update profile', 'error');
         } finally {
             setIsSaving(false);
         }
     };
-
-    const renderSidebar = () => (
-        <aside style={{ width: '280px', background: '#0F172A', color: 'white', display: 'flex', flexDirection: 'column', height: '100vh', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ padding: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '42px', height: '42px', background: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px -4px rgba(139,92,246,0.5)' }}>
-                    <User size={22} color="white" />
-                </div>
-                <div>
-                    <div style={{ fontSize: '18px', fontWeight: 900, letterSpacing: '-0.5px' }}>STAFF HUB</div>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>{user?.specialty || 'Professional'}</div>
-                </div>
-            </div>
-
-            <nav style={{ flex: 1, padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {[
-                    { id: 'overview', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
-                    { id: 'appointments', icon: <Calendar size={18} />, label: 'My Appointments' },
-                    { id: 'availability', icon: <Clock size={18} />, label: 'Availability' },
-                    { id: 'schedule', icon: <FileText size={18} />, label: 'Schedule' },
-                    { id: 'notifications', icon: <Bell size={18} />, label: 'Notifications' },
-                    { id: 'profile', icon: <User size={18} />, label: 'Profile' },
-                    { id: 'reports', icon: <BarChart2 size={18} />, label: 'Reports' },
-                    { id: 'settings', icon: <Settings size={18} />, label: 'Settings' }
-                ].map(item => (
-                    <button 
-                        key={item.id} 
-                        onClick={() => setActiveTab(item.id)} 
-                        style={{ 
-                            display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px', borderRadius: '14px', border: 'none', 
-                            background: activeTab === item.id ? 'rgba(139,92,246,0.1)' : 'transparent',
-                            color: activeTab === item.id ? '#A78BFA' : '#94A3B8',
-                            fontWeight: 800, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s'
-                        }}
-                    >
-                        {item.icon}
-                        {item.label}
-                        {activeTab === item.id && <motion.div layoutId="activeTabEmp" style={{ marginLeft: 'auto', width: '5px', height: '5px', borderRadius: '50%', background: '#A78BFA' }} />}
-                    </button>
-                ))}
-            </nav>
-
-            <div style={{ padding: '20px 24px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '12px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(139,92,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A78BFA' }}>
-                        <ShieldAlert size={14} />
-                    </div>
-                    <div>
-                        <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Access Role</div>
-                        <div style={{ fontSize: '13px', fontWeight: 900, color: 'white', textTransform: 'capitalize' }}>
-                            {user?.role === 'client' ? 'Admin' : user?.role === 'hr' ? 'HR Manager' : user?.role || 'Professional'}
-                        </div>
-                    </div>
-                </div>
-                <button onClick={() => { logout(); navigate('/login'); }} style={{ background: 'rgba(239,68,68,0.1)', border: 'none', color: '#F87171', width: '100%', padding: '12px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <LogOut size={16} /> Logout
-                </button>
-            </div>
-        </aside>
-    );
 
     if (loading) return (
         <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}>
@@ -193,76 +140,34 @@ const ProfessionalDashboard = () => {
     );
 
     return (
-        <div style={{ display: 'flex', height: '100vh', background: '#F8FAFC', fontFamily: "'Outfit', sans-serif", overflow: 'hidden' }}>
-            {renderSidebar()}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px', background: 'white', borderBottom: '1px solid #F1F5F9', position: 'sticky', top: 0, zIndex: 50 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
-                        <div>
-                            <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 900, letterSpacing: '-0.5px' }}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h1>
-                            <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748B', fontWeight: 600 }}>Welcome back, {user?.name}.</p>
-                        </div>
-                        
-                        <motion.div 
-                            style={{ 
-                                display: 'flex', alignItems: 'center', background: '#F1F5F9', padding: '10px 20px', borderRadius: '16px',
-                                width: '350px', border: '1px solid transparent'
-                            }}
-                            whileFocus={{ width: '450px', borderColor: '#8B5CF6', background: 'white', boxShadow: '0 10px 25px -5px rgba(139,92,246,0.1)' }}
-                        >
-                            <Search size={18} color="#94A3B8" />
-                            <input 
-                                placeholder="Search tasks, patients or history..." 
-                                style={{ border: 'none', background: 'transparent', outline: 'none', marginLeft: '12px', width: '100%', fontWeight: 700, fontSize: '14px' }}
-                            />
-                        </motion.div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <AvailabilityToggle currentStatus={user?.availabilityStatus} />
-                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', cursor: 'pointer' }}>
-                            <Bell size={20} color="#64748B" />
-                            {stats.pending > 0 && <div style={{ position: 'absolute', top: '-5px', right: '-5px', width: '18px', height: '18px', background: '#EF4444', borderRadius: '50%', border: '3px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: 'white', fontWeight: 900 }}>{stats.pending}</div>}
-                        </div>
-                        <div 
-                            onClick={() => setActiveTab('settings')}
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '6px 12px', background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', cursor: 'pointer' }}
-                        >
-                            <div style={{ width: '32px', height: '32px', borderRadius: '10px', overflow: 'hidden', border: '2px solid white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white' }}>
-                                {user?.avatar ? (
-                                    <img src={user.avatar} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                ) : (
-                                    user?.role === 'hr' ? <ShieldCheck size={18} color="#8B5CF6" /> : <User size={18} color="#6366F1" />
-                                )}
-                            </div>
-                            <div style={{ textAlign: 'left' }}>
-                                <div style={{ fontSize: '12px', fontWeight: 900, color: '#0F172A' }}>{user?.name?.split(' ')[0]}</div>
-                                <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>{user?.role === 'hr' ? 'HR' : 'Staff'}</div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
+        <div className="fade-in">
+            <header style={{ marginBottom: '40px', borderBottom: '1px solid var(--border-color)', paddingBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                    <h1 style={{ fontSize: '36px', fontWeight: 900 }}>Staff <span className="text-gold">Workstation</span></h1>
+                    <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Manage your professional appointments and availability.</p>
+                </div>
+                <AvailabilityToggle currentStatus={user?.availabilityStatus} />
+            </header>
 
-                <main style={{ flex: 1, overflowY: 'auto', padding: '40px' }}>
+            <div style={{ flex: 1 }}>
                     <AnimatePresence mode="wait">
                         {activeTab === 'overview' && (
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '40px' }}>
-                                    <div style={{ background: 'white', borderRadius: '24px', padding: '24px', border: '1px solid #E2E8F0' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', marginBottom: '8px' }}>TODAY'S TASKS</div>
-                                        <div style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A' }}>{stats.today}</div>
-                                    </div>
-                                    <div style={{ background: 'white', borderRadius: '24px', padding: '24px', border: '1px solid #E2E8F0' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', marginBottom: '8px' }}>PENDING REVIEW</div>
-                                        <div style={{ fontSize: '32px', fontWeight: 900, color: '#D97706' }}>{stats.pending}</div>
-                                    </div>
-                                    <div style={{ background: 'white', borderRadius: '24px', padding: '24px', border: '1px solid #E2E8F0' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', marginBottom: '8px' }}>COMPLETED</div>
-                                        <div style={{ fontSize: '32px', fontWeight: 900, color: '#059669' }}>{stats.completed}</div>
-                                    </div>
-                                    <div style={{ background: 'white', borderRadius: '24px', padding: '24px', border: '1px solid #E2E8F0' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', marginBottom: '8px' }}>TOTAL RECORD</div>
-                                        <div style={{ fontSize: '32px', fontWeight: 900, color: '#6366F1' }}>{stats.total}</div>
-                                    </div>
+                                    {[
+                                        { label: "Today's Tasks", value: stats.today, icon: <LayoutDashboard size={20}/>, color: 'var(--primary)', bg: 'rgba(2, 44, 34, 0.05)' },
+                                        { label: 'Pending Review', value: stats.pending, icon: <Clock size={20}/>, color: 'var(--accent)', bg: 'rgba(183, 110, 121, 0.05)' },
+                                        { label: 'Completed', value: stats.completed, icon: <CheckCircle size={20}/>, color: '#10B981', bg: 'rgba(16, 185, 129, 0.05)' },
+                                        { label: 'Total Record', value: stats.total, icon: <BarChart2 size={20}/>, color: '#6366F1', bg: 'rgba(99, 102, 241, 0.05)' }
+                                    ].map((s, i) => (
+                                        <div key={i} style={{ background: 'white', borderRadius: '20px', padding: '24px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                            <div style={{ background: s.bg, color: s.color, width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.icon}</div>
+                                            <div>
+                                                <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
+                                                <div style={{ fontSize: '28px', fontWeight: 950, color: 'var(--primary)', marginTop: '2px' }}>{s.value}</div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '32px' }}>
@@ -279,14 +184,14 @@ const ProfessionalDashboard = () => {
                                                         </div>
                                                     </div>
                                                     <div style={{ display: 'flex', gap: '10px' }}>
-                                                        <button onClick={() => handleUpdateStatus(b._id, 'completed')} style={{ background: '#D1FAE5', color: '#059669', border: 'none', padding: '10px 16px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <button onClick={() => handleUpdateStatus(b._id, 'completed')} style={{ background: '#D1FAE5', color: '#4A1C40', border: 'none', padding: '10px 16px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                             <Check size={16} /> Complete
                                                         </button>
                                                         <button onClick={() => setSelectedAppointment(b)} style={{ background: 'white', border: '1px solid #E2E8F0', padding: '10px 16px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer' }}>Details</button>
                                                     </div>
                                                 </div>
                                             ))}
-                                            {appointments.filter(a => ['confirmed', 'accepted', 'approved'].includes(a.status)).length === 0 && <div style={{ textAlign: 'center', padding: '40px', color: '#94A3B8' }}>No confirmed tasks for today.</div>}
+                                            {appointments.filter(a => ['confirmed', 'accepted', 'approved'].includes(a.status)).length === 0 && <div style={{ textAlign: 'center', padding: '40px', color: '#718096' }}>No confirmed tasks for today.</div>}
                                         </div>
                                     </div>
 
@@ -298,12 +203,12 @@ const ProfessionalDashboard = () => {
                                                     <div style={{ fontWeight: 800, marginBottom: '4px' }}>{b.patientName || 'Guest User'}</div>
                                                     <div style={{ fontSize: '12px', color: '#92400E', fontWeight: 700, marginBottom: '16px' }}>{b.date || b.manualDate} at {b.manualTime || b.slotId?.startTime}</div>
                                                     <div style={{ display: 'flex', gap: '10px' }}>
-                                                        <button onClick={() => handleUpdateStatus(b._id, 'confirmed')} style={{ flex: 1, background: '#D97706', color: 'white', border: 'none', padding: '10px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer' }}>Accept</button>
+                                                        <button onClick={() => handleUpdateStatus(b._id, 'confirmed')} style={{ flex: 1, background: '#B76E79', color: '#2D3748', border: 'none', padding: '10px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer' }}>Accept</button>
                                                         <button onClick={() => handleUpdateStatus(b._id, 'rejected')} style={{ flex: 1, background: 'white', border: '1px solid #FDE68A', color: '#92400E', padding: '10px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer' }}>Decline</button>
                                                     </div>
                                                 </div>
                                             ))}
-                                            {appointments.filter(a => a.status === 'pending').length === 0 && <div style={{ textAlign: 'center', padding: '40px', color: '#94A3B8' }}>All requests are processed.</div>}
+                                            {appointments.filter(a => a.status === 'pending').length === 0 && <div style={{ textAlign: 'center', padding: '40px', color: '#718096' }}>All requests are processed.</div>}
                                         </div>
                                     </div>
                                 </div>
@@ -330,7 +235,12 @@ const ProfessionalDashboard = () => {
                                                     <div style={{ fontSize: '11px', color: '#8B5CF6', fontWeight: 800 }}>{item.date || item.manualDate}</div>
                                                 </td>
                                                 <td style={{ padding: '20px 32px', fontWeight: 700 }}>{item.purpose || 'General'}</td>
-                                                <td style={{ padding: '20px 32px' }}><StatusBadge status={item.status} /></td>
+                                                <td style={{ padding: '20px 32px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <StatusBadge status={item.status} />
+                                                        {item.booking_type === 'offline' && <span className="badge badge-manual">Manual Booking</span>}
+                                                    </div>
+                                                </td>
                                                 <td style={{ padding: '20px 32px' }}>
                                                     <button onClick={() => setSelectedAppointment(item)} style={{ background: 'none', border: '1px solid #E2E8F0', padding: '8px 16px', borderRadius: '10px', fontSize: '12px', fontWeight: 800, cursor: 'pointer' }}>View Details</button>
                                                 </td>
@@ -358,7 +268,7 @@ const ProfessionalDashboard = () => {
                                                 user?.role === 'hr' ? <ShieldCheck size={48} color="#8B5CF6" /> : <User size={48} color="#6366F1" />
                                             )}
                                         </div>
-                                        <button style={{ position: 'absolute', bottom: '-10px', right: '-10px', width: '36px', height: '36px', borderRadius: '12px', background: '#8B5CF6', color: 'white', border: '4px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                                        <button style={{ position: 'absolute', bottom: '-10px', right: '-10px', width: '36px', height: '36px', borderRadius: '12px', background: '#8B5CF6', color: '#2D3748', border: '4px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                                             <Edit2 size={16} />
                                         </button>
                                     </div>
@@ -395,7 +305,7 @@ const ProfessionalDashboard = () => {
                                     <button 
                                         disabled={isSaving}
                                         onClick={handleUpdateProfile}
-                                        style={{ height: '56px', padding: '0 32px', borderRadius: '16px', background: '#8B5CF6', color: 'white', border: 'none', fontWeight: 900, cursor: 'pointer', boxShadow: '0 10px 20px -5px rgba(139,92,246,0.4)' }}
+                                        style={{ height: '56px', padding: '0 32px', borderRadius: '16px', background: '#8B5CF6', color: '#2D3748', border: 'none', fontWeight: 900, cursor: 'pointer', boxShadow: '0 10px 20px -5px rgba(139,92,246,0.4)' }}
                                     >
                                         {isSaving ? 'Saving...' : 'Save Changes'}
                                     </button>
@@ -404,21 +314,28 @@ const ProfessionalDashboard = () => {
                         )}
                         {['availability', 'notifications', 'reports', 'settings'].includes(activeTab) && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: 'white', borderRadius: '32px', border: '1px solid #E2E8F0', padding: '80px 40px', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
-                                <div style={{ width: '80px', height: '80px', background: '#F1F5F9', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', margin: '0 auto 24px' }}>
+                                <div style={{ width: '80px', height: '80px', background: '#F1F5F9', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#718096', margin: '0 auto 24px' }}>
                                     {activeTab === 'availability' && <Clock size={40} />}
                                     {activeTab === 'notifications' && <Bell size={40} />}
                                     {activeTab === 'reports' && <BarChart2 size={40} />}
                                     {activeTab === 'settings' && <Settings size={40} />}
                                 </div>
-                                <h3 style={{ margin: '0 0 12px', fontSize: '24px', fontWeight: 900, color: '#0F172A' }}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Module</h3>
+                                <h3 style={{ margin: '0 0 12px', fontSize: '24px', fontWeight: 900, color: '#2D3748' }}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Module</h3>
                                 <p style={{ margin: 0, color: '#64748B', fontSize: '15px', maxWidth: '400px', marginInline: 'auto' }}>
                                     This feature is currently being tailored for the {user?.specialty || 'professional'} dashboard. Stay tuned for upcoming tools.
                                 </p>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                </main>
-            </div>
+                    <footer style={{ 
+                        marginTop: 'auto', padding: '30px', textAlign: 'center', 
+                        color: '#D1FAE5', opacity: 0.5, fontSize: '12px', fontWeight: 700,
+                        borderTop: '1px solid rgba(217,119,6,0.1)'
+                    }}>
+                        © 2026 Forge India Connect Pvt Ltd • Professional Workstation Portal
+                    </footer>
+                </div>
+
 
             {/* APPOINTMENT DETAIL MODAL */}
             <AnimatePresence>
@@ -431,7 +348,7 @@ const ProfessionalDashboard = () => {
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '20px', background: '#F8FAFC', borderRadius: '20px' }}>
-                                    <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#8B5CF6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '24px', fontWeight: 900 }}>{selectedAppointment.patientName?.[0]}</div>
+                                    <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#8B5CF6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2D3748', fontSize: '24px', fontWeight: 900 }}>{selectedAppointment.patientName?.[0]}</div>
                                     <div>
                                         <div style={{ fontSize: '18px', fontWeight: 900 }}>{selectedAppointment.patientName}</div>
                                         <div style={{ fontSize: '14px', color: '#64748B' }}>{selectedAppointment.patientPhone}</div>
@@ -457,12 +374,12 @@ const ProfessionalDashboard = () => {
                                 <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
                                     {selectedAppointment.status === 'pending' ? (
                                         <>
-                                            <button onClick={() => handleUpdateStatus(selectedAppointment._id, 'confirmed')} style={{ flex: 1, padding: '14px', borderRadius: '14px', background: '#8B5CF6', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}>Accept Task</button>
+                                            <button onClick={() => handleUpdateStatus(selectedAppointment._id, 'confirmed')} style={{ flex: 1, padding: '14px', borderRadius: '14px', background: '#8B5CF6', color: '#2D3748', border: 'none', fontWeight: 800, cursor: 'pointer' }}>Accept Task</button>
                                             <button onClick={() => handleUpdateStatus(selectedAppointment._id, 'rejected')} style={{ flex: 1, padding: '14px', borderRadius: '14px', background: 'white', border: '1px solid #EF4444', color: '#EF4444', fontWeight: 800, cursor: 'pointer' }}>Reject</button>
                                         </>
                                     ) : (
                                         <>
-                                            <button onClick={() => handleUpdateStatus(selectedAppointment._id, 'completed')} style={{ flex: 1, padding: '14px', borderRadius: '14px', background: '#10B981', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                            <button onClick={() => handleUpdateStatus(selectedAppointment._id, 'completed')} style={{ flex: 1, padding: '14px', borderRadius: '14px', background: '#5A315D', color: '#2D3748', border: 'none', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                                 <CheckCircle size={18} /> Mark Completed
                                             </button>
                                             <button onClick={() => setActiveChatApp(selectedAppointment)} style={{ flex: 1, padding: '14px', borderRadius: '14px', background: 'white', border: '1px solid #E2E8F0', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
@@ -483,6 +400,7 @@ const ProfessionalDashboard = () => {
                     onClose={() => setActiveChatApp(null)} 
                 />
             )}
+            <FloatingSupport />
         </div>
     );
 };

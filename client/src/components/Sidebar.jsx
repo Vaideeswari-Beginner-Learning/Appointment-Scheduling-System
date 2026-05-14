@@ -15,7 +15,11 @@ import {
     Activity,
     Briefcase,
     Mic,
-    Wrench
+    Wrench,
+    Building2,
+    Bell,
+    Crown,
+    MoreHorizontal
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -44,34 +48,67 @@ const Sidebar = ({ isOpen, onClose }) => {
     }
 
     const menuItems = [
-        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard', roles: ['user', 'admin', 'hr'] },
+        // GLOBAL / SHARED
+        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard', roles: ['user', 'admin', 'super-admin', 'hr', 'client'] },
+        
+        // USER SPECIFIC
         { name: 'Book Session', icon: <PlusCircle size={20} />, path: '/book', roles: ['user'] },
-        { name: apptListName, icon: <ClipboardList size={20} />, path: '/my-appointments', roles: ['user', 'admin', 'hr'] },
-        { name: calendarName, icon: <Calendar size={20} />, path: '/calendar', roles: ['user', 'admin', 'hr'] },
-        { name: 'System Settings', icon: <Settings size={20} />, path: '/settings', roles: ['user', 'admin', 'hr'] },
+        
+        // ADMIN SPECIFIC (Platform Control)
+        { name: 'Organizations', icon: <Building2 size={20} />, path: '/dashboard?tab=clients', roles: ['admin', 'super-admin'] },
+        { name: 'Industry Sectors', icon: <Briefcase size={20} />, path: '/dashboard?tab=sectors', roles: ['admin', 'super-admin'] },
+        { name: 'Client Requests', icon: <Bell size={20} />, path: '/dashboard?tab=requests', roles: ['admin', 'super-admin'] },
+        { name: 'Subscription Plans', icon: <Crown size={20} />, path: '/dashboard?tab=plans', roles: ['admin', 'super-admin'] },
+        { name: 'Announcements', icon: <Mic size={20} />, path: '/dashboard?tab=announcements', roles: ['admin', 'super-admin'] },
+
+        // HR / CLIENT SPECIFIC (Business Management)
+        { name: 'Employees', icon: <Users size={20} />, path: '/dashboard?tab=employees', roles: ['hr', 'client'] },
+        { name: 'Services', icon: <Wrench size={20} />, path: '/dashboard?tab=services', roles: ['client'] },
+        { name: 'Availability', icon: <Clock size={20} />, path: '/dashboard?tab=availability', roles: ['hr', 'client'] },
+        
+        // SHARED OPERATIONAL
+        { name: apptListName, icon: <ClipboardList size={20} />, path: '/my-appointments', roles: ['user', 'admin', 'super-admin', 'hr', 'client'] },
+        { name: calendarName, icon: <Calendar size={20} />, path: '/calendar', roles: ['user', 'admin', 'super-admin', 'hr', 'client'] },
+        { name: 'Account Settings', icon: <Settings size={20} />, path: '/settings', roles: ['user', 'admin', 'super-admin', 'hr', 'client'] },
     ];
 
     const serviceLinks = [
-        { name: 'Hospital Module', icon: <Stethoscope size={20} />, path: '/dashboard?module=hospital', color: '#059669' },
-        { name: 'Services Module', icon: <Wrench size={20} />, path: '/dashboard?module=service', color: '#D97706' },
-        { name: 'Client Module', icon: <Briefcase size={20} />, path: '/dashboard?module=client', color: '#3B82F6' },
+        { name: 'Hospital Module', icon: <Stethoscope size={20} />, path: '/dashboard?module=hospital', color: '#4A1C40' },
+        { name: 'Services Module', icon: <Wrench size={20} />, path: '/dashboard?module=service', color: '#B76E79' },
+        { name: 'Client Module', icon: <Briefcase size={20} />, path: '/dashboard?module=client', color: '#5A315D' },
         { name: 'Interview Module', icon: <Mic size={20} />, path: '/dashboard?module=interview', color: '#8B5CF6' },
     ];
 
     const filteredItems = menuItems.filter(item => item.roles.includes(user?.role));
 
     return (
-        <div className="sidebar" style={{ backgroundColor: 'white', borderRight: '1px solid var(--border-color)', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <div className="sidebar-header" style={{ padding: '32px' }}>
-                <Link to="/" className="nav-logo" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', justifyContent: 'center' }}>
-                    <img src="/logo.png" alt="Forge India Logo" style={{ height: '80px', width: 'auto', objectFit: 'contain' }} onError={(e) => e.target.style.display='none'} />
-                </Link>
+        <div className="sidebar" style={{ 
+            background: '#022C22', 
+            border: 'none', 
+            height: '100vh', 
+            display: 'flex', 
+            flexDirection: 'column',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            width: '280px',
+            zIndex: 1000
+        }}>
+            <div className="sidebar-header" style={{ padding: '30px 24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ background: 'white', padding: '6px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                     <img src="/logo.png" alt="Logo" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+                    <span style={{ color: 'white', fontWeight: 900, fontSize: '18px', letterSpacing: '-0.5px' }}>Forge India</span>
+                    <span style={{ color: '#D97706', fontWeight: 800, fontSize: '10px', letterSpacing: '1px' }}>CONNECT</span>
+                </div>
             </div>
 
-            <nav className="sidebar-nav" style={{ flex: 1, padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <p style={{ padding: '0 16px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text-light)', marginBottom: '16px', letterSpacing: '1px' }}>Main Menu</p>
+            <nav className="sidebar-nav" style={{ flex: 1, padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '6px', overflowY: 'auto' }}>
+                <p style={{ padding: '20px 16px 10px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px' }}>MAIN MENU</p>
                 {filteredItems.map((item) => {
-                    const isActive = location.pathname === item.path && !location.search;
+                    const isActive = location.pathname === item.path.split('?')[0] && 
+                                   (item.path.includes('?') ? location.search.includes(item.path.split('?')[1]) : !location.search);
                     return (
                         <Link
                             key={item.name}
@@ -81,60 +118,40 @@ const Sidebar = ({ isOpen, onClose }) => {
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'space-between',
-                                padding: '14px 16px',
-                                borderRadius: '16px',
+                                padding: '12px 18px',
+                                borderRadius: '14px',
                                 textDecoration: 'none',
-                                fontWeight: 600,
+                                fontWeight: 800,
                                 fontSize: '14px',
-                                transition: 'all 0.2s',
-                                background: isActive ? 'linear-gradient(135deg, var(--primary) 0%, #1D4ED8 100%)' : 'transparent',
-                                color: isActive ? 'white' : 'var(--text-gray)',
-                                boxShadow: isActive ? '0 10px 15px -3px rgba(37, 99, 235, 0.4)' : 'none'
+                                transition: 'all 0.3s',
+                                background: isActive ? 'rgba(0,0,0,0.2)' : 'transparent',
+                                color: isActive ? '#B76E79' : 'rgba(255,255,255,0.6)',
                              }}
-                             onMouseOver={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = '#EFF6FF'; }}
-                             onMouseOut={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <span style={{ opacity: isActive ? 1 : 0.6 }}>{item.icon}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <span style={{ color: isActive ? '#B76E79' : 'inherit' }}>{item.icon}</span>
                                 <span>{item.name}</span>
                             </div>
-                            {isActive && <ChevronRight size={14} />}
                         </Link>
                     );
                 })}
 
-                {/* Footer or Logout could go here */}
+                <p style={{ padding: '30px 16px 10px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px' }}>ADDITIONAL</p>
+                <div style={{ padding: '0 16px', color: 'rgba(255,255,255,0.6)', fontSize: '14px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <MoreHorizontal size={20} />
+                        <span>More Functions</span>
+                    </div>
+                    <ChevronRight size={16} />
+                </div>
             </nav>
 
-            <div className="sidebar-footer" style={{ padding: '24px', borderTop: '1px solid var(--border-color)' }}>
-                <div style={{ background: 'var(--bg-light)', padding: '16px', borderRadius: '16px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ 
-                        width: '40px', 
-                        height: '40px', 
-                        background: 'var(--primary)', 
-                        borderRadius: '10px', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        color: 'white', 
-                        fontWeight: 900,
-                        boxShadow: '0 4px 6px rgba(59, 130, 246, 0.2)'
-                    }}>
-                        {user?.name?.charAt(0) || 'U'}
-                    </div>
-                    <div style={{ overflow: 'hidden' }}>
-                        <p style={{ fontSize: '14px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>{user?.name}</p>
-                        <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--primary)', textTransform: 'uppercase', margin: 0 }}>{user?.role}</p>
-                    </div>
-                </div>
+            <div className="sidebar-footer" style={{ padding: '32px 24px' }}>
                 <button 
                     onClick={logout}
-                    style={{ background: 'none', border: 'none', width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', color: '#9CA3AF', cursor: 'pointer', fontWeight: 700, transition: 'all 0.2s' }}
-                    onMouseOver={(e) => { e.currentTarget.style.background = '#FEF2F2'; e.currentTarget.style.color = '#EF4444'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#9CA3AF'; }}
+                    style={{ background: '#FEE2E2', border: 'none', width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 20px', borderRadius: '18px', color: '#B91C1C', cursor: 'pointer', fontWeight: 900, transition: 'all 0.3s' }}
                 >
-                    <LogOut size={18} /> Logout Account
+                    <LogOut size={20} /> Sign Out
                 </button>
             </div>
         </div>

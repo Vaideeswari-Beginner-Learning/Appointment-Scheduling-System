@@ -58,10 +58,10 @@ const ClientPicker = () => {
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#EEF2FF', color: '#4F46E5', padding: '8px 16px', borderRadius: '99px', fontSize: '13px', fontWeight: 800, marginBottom: '16px', textTransform: 'uppercase' }}>
                         Available in {sectorCfg.label}
                     </div>
-                    <h2 style={{ fontSize: '36px', fontWeight: 900, color: '#0F172A', marginBottom: '32px' }}>Pick a {sectorCfg.dashboard.userRole === 'Guest' ? 'Hotel' : (sectorCfg.dashboard.userRole === 'Student' ? 'College' : 'Organization')}</h2>
+                    <h2 style={{ fontSize: '36px', fontWeight: 900, color: '#2D3748', marginBottom: '32px' }}>Pick a {sectorCfg.dashboard.userRole === 'Guest' ? 'Hotel' : (sectorCfg.dashboard.userRole === 'Student' ? 'College' : 'Organization')}</h2>
                     
                     <div style={{ position: 'relative', maxWidth: '600px', margin: '0 auto' }}>
-                        <Search size={22} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                        <Search size={22} style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#718096' }} />
                         <input 
                             placeholder={`Search ${sectorCfg.label} names...`}
                             value={searchTerm}
@@ -86,14 +86,14 @@ const ClientPicker = () => {
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '100px' }}>
                         <div style={{ width: '40px', height: '40px', border: '4px solid #E2E8F0', borderTopColor: '#4F46E5', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 20px' }} />
-                        <span style={{ fontWeight: 800, color: '#94A3B8' }}>Loading organizations...</span>
+                        <span style={{ fontWeight: 800, color: '#718096' }}>Loading organizations...</span>
                     </div>
                 ) : filteredClients.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '100px', background: 'white', borderRadius: '32px', border: '2px dashed #E2E8F0' }}>
                         <Building2 size={64} color="#E2E8F0" style={{ marginBottom: '20px' }} />
                         <h3 style={{ fontWeight: 800, color: '#64748B' }}>No organizations found</h3>
-                        <p style={{ color: '#94A3B8' }}>Be the first to register a business in this sector!</p>
-                        <button onClick={() => navigate('/client-register')} style={{ background: '#4F46E5', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', marginTop: '16px' }}>Register Business</button>
+                        <p style={{ color: '#718096' }}>Be the first to register a business in this sector!</p>
+                        <button onClick={() => navigate('/client-register')} style={{ background: '#4F46E5', color: '#2D3748', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', marginTop: '16px' }}>Register Business</button>
                     </div>
                 ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
@@ -128,14 +128,14 @@ const ClientPicker = () => {
                                         flexShrink: 0,
                                         overflow: 'hidden'
                                     }}>
-                                        {!client.avatar && <Building2 size={28} color="#94A3B8" />}
+                                        {!client.avatar && <Building2 size={28} color="#718096" />}
                                     </div>
                                     <div style={{ flex: 1 }}>
-                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#0F172A' }}>{client.name}</h3>
+                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#2D3748' }}>{client.name}</h3>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
                                             <Star size={14} fill="#F59E0B" color="#F59E0B" />
                                             <span style={{ fontSize: '13px', fontWeight: 800, color: '#F59E0B' }}>4.8</span>
-                                            <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>(120+ reviews)</span>
+                                            <span style={{ fontSize: '12px', color: '#718096', fontWeight: 600 }}>(120+ reviews)</span>
                                         </div>
                                     </div>
                                 </div>

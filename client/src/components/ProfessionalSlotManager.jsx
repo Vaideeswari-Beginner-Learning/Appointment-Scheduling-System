@@ -141,7 +141,7 @@ const ProfessionalSlotManager = ({ sector }) => {
                     </div>
 
                     <button type="submit" disabled={loading} style={{ 
-                        padding: '16px', borderRadius: '12px', background: '#0F172A', color: 'white', border: 'none', fontSize: '14px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '10px', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)', opacity: loading ? 0.7 : 1
+                        padding: '16px', borderRadius: '12px', background: '#FFFFFF', color: '#2D3748', border: 'none', fontSize: '14px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '10px', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)', opacity: loading ? 0.7 : 1
                     }}>
                         <Zap size={18} fill={loading ? 'none' : 'currentColor'} /> {loading ? 'Saving...' : 'Confirm Availability'}
                     </button>
@@ -153,12 +153,12 @@ const ProfessionalSlotManager = ({ sector }) => {
                 <h3 style={{ margin: '0 0 24px', fontSize: '18px', fontWeight: 800 }}>My Active Slots</h3>
                 
                 {fetching ? (
-                    <div style={{ padding: '40px', textAlign: 'center', color: '#94A3B8' }}>Loading availability...</div>
+                    <div style={{ padding: '40px', textAlign: 'center', color: '#718096' }}>Loading availability...</div>
                 ) : slots.length === 0 ? (
                     <div style={{ padding: '40px', textAlign: 'center', background: '#F8FAFC', borderRadius: '20px', border: '2px dashed #E2E8F0' }}>
                         <Calendar size={40} color="#CBD5E1" style={{ marginBottom: '16px' }} />
                         <p style={{ margin: 0, fontWeight: 700, color: '#64748B' }}>No slots created yet</p>
-                        <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#94A3B8' }}>Your clients can't book you until you add slots.</p>
+                        <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#718096' }}>Your clients can't book you until you add slots.</p>
                     </div>
                 ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>

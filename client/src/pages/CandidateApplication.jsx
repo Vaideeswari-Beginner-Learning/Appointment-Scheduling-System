@@ -108,7 +108,7 @@ const CandidateApplication = ({ onComplete }) => {
                 <div style={{ width: '80px', height: '80px', background: '#DCFCE7', color: '#16A34A', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
                     <CheckCircle size={40} />
                 </div>
-                <h2 style={{ fontSize: '28px', fontWeight: 900, color: '#0F172A', marginBottom: '12px' }}>Saved and updated successfully!</h2>
+                <h2 style={{ fontSize: '28px', fontWeight: 900, color: '#2D3748', marginBottom: '12px' }}>Saved and updated successfully!</h2>
                 <p style={{ color: '#64748B', maxWidth: '400px', margin: '0 auto' }}>Your AI-analyzed application has been securely recorded. Check your dashboard for the latest updates and status.</p>
             </motion.div>
         );
@@ -118,7 +118,7 @@ const CandidateApplication = ({ onComplete }) => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px', alignItems: 'start' }}>
             <div className="data-card" style={{ padding: '40px' }}>
                 <div style={{ marginBottom: '32px' }}>
-                    <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Interview Application</h2>
+                    <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#2D3748', marginBottom: '8px' }}>Interview Application</h2>
                     <p style={{ color: '#64748B', fontSize: '14px' }}>Complete the form below to apply with AI-powered candidate screening.</p>
                 </div>
 
@@ -176,11 +176,11 @@ const CandidateApplication = ({ onComplete }) => {
                             onClick={() => document.getElementById('resume-upload').click()}
                         >
                             <input type="file" id="resume-upload" hidden onChange={handleFileChange} accept=".pdf,.doc,.docx" />
-                            <Upload size={32} color={resume ? 'var(--primary)' : '#94A3B8'} style={{ marginBottom: '12px' }} />
-                            <p style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: resume ? '#0F172A' : '#64748B' }}>
+                            <Upload size={32} color={resume ? 'var(--primary)' : '#718096'} style={{ marginBottom: '12px' }} />
+                            <p style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: resume ? '#FFFFFF' : '#64748B' }}>
                                 {resume ? resume.name : 'Click or Drag Resume here'}
                             </p>
-                            <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#94A3B8' }}>Maximum file size: 5MB</p>
+                            <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#718096' }}>Maximum file size: 5MB</p>
                         </div>
                     </div>
 
@@ -226,12 +226,12 @@ const CandidateApplication = ({ onComplete }) => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             className="data-card" 
-                            style={{ padding: '32px', textAlign: 'center', background: 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)', color: 'white' }}
+                            style={{ padding: '32px', textAlign: 'center', background: 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)', color: '#2D3748' }}
                         >
                             <Sparkles size={40} style={{ marginBottom: '20px', animation: 'pulse 2s infinite' }} />
                             <h3 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '8px' }}>AI Engine Processing</h3>
                             <p style={{ fontSize: '13px', opacity: 0.8 }}>We are analyzing your resume keywords against industry standards for {role || 'the role'}.</p>
-                            <div style={{ height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '2px', overflow: 'hidden', marginTop: '24px' }}>
+                            <div style={{ height: '4px', background: 'rgba(90, 49, 93, 0.2)', borderRadius: '2px', overflow: 'hidden', marginTop: '24px' }}>
                                 <motion.div 
                                     initial={{ width: 0 }}
                                     animate={{ width: '100%' }}
@@ -264,7 +264,7 @@ const CandidateApplication = ({ onComplete }) => {
                                 <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.6, marginBottom: '24px' }}>{analysisResult.summary}</p>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    <p style={{ margin: 0, fontSize: '11px', fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase' }}>Identified Strengths</p>
+                                    <p style={{ margin: 0, fontSize: '11px', fontWeight: 900, color: '#718096', textTransform: 'uppercase' }}>Identified Strengths</p>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                                         {analysisResult.skills.map(s => (
                                             <span key={s} style={{ padding: '6px 12px', background: '#F1F5F9', color: '#475569', borderRadius: '80px', fontSize: '11px', fontWeight: 700 }}>{s}</span>
@@ -282,8 +282,8 @@ const CandidateApplication = ({ onComplete }) => {
                             style={{ padding: '32px', textAlign: 'center', border: '2px dashed #E2E8F0', background: 'transparent' }}
                         >
                             <Zap size={32} color="#CBD5E1" style={{ marginBottom: '16px' }} />
-                            <h3 style={{ fontSize: '15px', fontWeight: 900, color: '#94A3B8' }}>AI Insights Ready</h3>
-                            <p style={{ fontSize: '12px', color: '#94A3B8' }}>Upload your resume and click "AI Analysis" to see your matching potential.</p>
+                            <h3 style={{ fontSize: '15px', fontWeight: 900, color: '#718096' }}>AI Insights Ready</h3>
+                            <p style={{ fontSize: '12px', color: '#718096' }}>Upload your resume and click "AI Analysis" to see your matching potential.</p>
                         </motion.div>
                     )}
                 </AnimatePresence>

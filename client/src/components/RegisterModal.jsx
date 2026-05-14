@@ -115,10 +115,10 @@ const RegisterModal = ({ isOpen, onClose }) => {
 
                     {step < 4 && (
                         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                            <div style={{ background: '#6366F1', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', margin: '0 auto 20px' }}>
+                            <div style={{ background: '#6366F1', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2D3748', margin: '0 auto 20px' }}>
                                 <Sparkles size={24}/>
                             </div>
-                            <h2 style={{ fontSize: '28px', fontWeight: 900, color: '#0F172A', letterSpacing: '-1px' }}>Join ForgeIndia</h2>
+                            <h2 style={{ fontSize: '28px', fontWeight: 900, color: '#2D3748', letterSpacing: '-1px' }}>Join ForgeIndia</h2>
                             <p style={{ color: '#64748B', fontSize: '15px', marginTop: '8px' }}>Create your account to continue</p>
                         </div>
                     )}
@@ -176,7 +176,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                                 <div style={{ width: '64px', height: '64px', background: '#DCFCE7', color: '#16A34A', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
                                     <CheckCircle size={32} />
                                 </div>
-                                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Success!</h2>
+                                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#2D3748', marginBottom: '8px' }}>Success!</h2>
                                 <p style={{ color: '#64748B', fontSize: '14px' }}>Redirecting to your dashboard...</p>
                             </motion.div>
                         )}
@@ -185,7 +185,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     {step < 4 && (
                         <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
                             {step > 1 && <button onClick={() => setStep(prev => prev - 1)} style={{ flex: 1, padding: '14px', borderRadius: '16px', background: '#F1F5F9', color: '#475569', fontWeight: 800, border: 'none', cursor: 'pointer' }}>Back</button>}
-                            <button onClick={handleNext} disabled={isLoading} style={{ flex: 2, padding: '14px', borderRadius: '16px', background: '#6366F1', color: 'white', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            <button onClick={handleNext} disabled={isLoading} style={{ flex: 2, padding: '14px', borderRadius: '16px', background: '#6366F1', color: '#2D3748', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                 {isLoading ? 'Wait...' : (step === (formData.role === 'client' ? 3 : 2) ? 'Create Account' : 'Continue')} <ArrowRight size={18}/>
                             </button>
                         </div>

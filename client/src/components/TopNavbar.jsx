@@ -13,46 +13,45 @@ const TopNavbar = ({ onMenuClick }) => {
     };
 
     return (
-        <div className="top-navbar">
+        <header className="fixed-header" style={{ justifyContent: 'space-between', padding: '0 40px', background: 'white', borderBottom: '1px solid #E2E8F0', height: '80px', position: 'sticky', top: 0, zIndex: 1000 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1 }}>
-                <button onClick={onMenuClick} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'lg:none' }}>
-                    <Menu size={22} />
-                </button>
-                <div style={{ position: 'relative', width: '100%', maxWidth: '360px' }}>
-                    <Search style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }} size={18} />
+                <div style={{ position: 'relative', width: '100%', maxWidth: '500px' }}>
+                    <Search style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6366F1' }} size={18} />
                     <input 
                         type="text" 
-                        placeholder="Quick search..." 
-                        style={{ width: '100%', padding: '10px 16px 10px 42px', border: '1px solid var(--border-color)', borderRadius: '12px', fontSize: '14px', outline: 'none', background: 'var(--bg-light)', color: 'var(--text-dark)' }}
+                        placeholder="Search for appointments, organizations, or sectors..." 
+                        style={{ 
+                            width: '100%', 
+                            padding: '12px 20px 12px 48px', 
+                            border: '1px solid #E2E8F0', 
+                            borderRadius: '30px', 
+                            fontSize: '14px', 
+                            outline: 'none', 
+                            background: '#F8FAFC', 
+                            color: '#475569', 
+                            fontWeight: 600,
+                            transition: 'all 0.3s'
+                        }}
                     />
                 </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div style={{ position: 'relative', padding: '10px', background: 'var(--bg-light)', borderRadius: '12px', cursor: 'pointer' }}>
-                    <Bell size={20} />
-                    <div style={{ position: 'absolute', top: '10px', right: '10px', width: '6px', height: '6px', background: 'var(--primary)', borderRadius: '50%', border: '2px solid white' }}></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
+                <div style={{ position: 'relative', cursor: 'pointer' }}>
+                    <div style={{ background: 'white', padding: '10px', borderRadius: '50%', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+                        <Bell size={20} color="#475569" />
+                    </div>
+                    <div style={{ position: 'absolute', top: '-5px', right: '-5px', width: '20px', height: '20px', background: '#EF4444', color: 'white', borderRadius: '50%', border: '2px solid white', fontSize: '10px', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</div>
                 </div>
                 
-                <div style={{ width: '1px', height: '32px', background: 'var(--border-color)', margin: '0 8px' }}></div>
-                
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
-                    <div style={{ textAlign: 'right' }}>
-                        <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-dark)' }}>{user?.name || 'Administrator'}</p>
-                        <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-light)', textTransform: 'uppercase' }}>{user?.role || 'Active Now'}</p>
-                    </div>
-                    <div style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-light)', color: 'var(--primary)', flexShrink: 0 }}>
-                        <UserIcon size={20} />
+                <div style={{ display: 'flex', alignItems: 'center', background: 'white', padding: '6px 6px 6px 20px', borderRadius: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', gap: '15px' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 900, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>SUPER ADMIN</span>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '14px', background: '#8B5CF6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 900 }}>
+                        {user?.name?.charAt(0) || 'S'}
                     </div>
                 </div>
-
-                <div style={{ width: '1px', height: '32px', background: 'var(--border-color)', margin: '0 4px' }}></div>
-
-                <button onClick={handleLogout} title="Logout" style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #FEE2E2', background: '#FEF2F2', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0 }} className="action-btn">
-                    <LogOut size={20} />
-                </button>
             </div>
-        </div>
+        </header>
     );
 };
 

@@ -40,7 +40,7 @@ const ClientRegistryForm = ({ onClientRegistered }) => {
                     <Building size={24} />
                 </div>
                 <div>
-                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0F172A' }}>Register Corporate Client</h3>
+                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#2D3748' }}>Register Corporate Client</h3>
                     <p style={{ margin: 0, fontSize: '12px', color: '#64748B', fontWeight: 600 }}>Onboard a new company or healthcare partner to your hiring portfolio.</p>
                 </div>
             </div>
@@ -87,7 +87,7 @@ const ClientRegistryForm = ({ onClientRegistered }) => {
                     padding: '12px 24px', 
                     borderRadius: '12px', 
                     background: '#8B5CF6', 
-                    color: 'white', 
+                    color: '#2D3748', 
                     border: 'none', 
                     fontSize: '14px', 
                     fontWeight: 900, 

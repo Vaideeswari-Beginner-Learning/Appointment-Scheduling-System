@@ -33,7 +33,7 @@ const RatingModal = ({ appointment, onClose, onSuccess }) => {
             <div style={{ background: 'white', borderRadius: '24px', padding: '32px', width: '420px', maxWidth: '90vw', boxShadow: '0 25px 50px rgba(0,0,0,0.2)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
                     <div>
-                        <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 900, color: '#0F172A' }}>Rate Your Experience</h2>
+                        <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 900, color: '#2D3748' }}>Rate Your Experience</h2>
                         <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '13px' }}>
                             {appointment.patientName || 'Your appointment'} - {appointment.manualDate}
                         </p>
@@ -79,7 +79,7 @@ const RatingModal = ({ appointment, onClose, onSuccess }) => {
                     <button onClick={onClose} style={{ flex: 1, padding: '12px', background: '#F1F5F9', border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', color: '#64748B' }}>
                         Cancel
                     </button>
-                    <button onClick={handleSubmit} disabled={loading} style={{ flex: 2, padding: '12px', background: rating ? '#4F46E5' : '#E2E8F0', border: 'none', borderRadius: '12px', fontWeight: 800, cursor: rating ? 'pointer' : 'not-allowed', color: rating ? 'white' : '#94A3B8', transition: 'all 0.2s' }}>
+                    <button onClick={handleSubmit} disabled={loading} style={{ flex: 2, padding: '12px', background: rating ? '#4F46E5' : '#E2E8F0', border: 'none', borderRadius: '12px', fontWeight: 800, cursor: rating ? 'pointer' : 'not-allowed', color: rating ? 'white' : '#718096', transition: 'all 0.2s' }}>
                         {loading ? 'Submitting...' : 'Submit Rating'}
                     </button>
                 </div>

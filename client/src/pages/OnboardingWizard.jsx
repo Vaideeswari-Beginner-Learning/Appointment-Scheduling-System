@@ -31,15 +31,11 @@ const sectorIcons = {
 };
 
 const OnboardingWizard = () => {
-    const [step, setStep] = useState('loader'); // loader, welcome, sectors, subsectors
-    const [selectedSector, setSelectedSector] = useState(null);
-    const [selectedSubCategory, setSelectedSubCategory] = useState(null);
-    const [organizationName, setOrganizationName] = useState('');
-    const [organizationLogo, setOrganizationLogo] = useState('');
-    const [organizationDescription, setOrganizationDescription] = useState('');
-    const [organizationWebsite, setOrganizationWebsite] = useState('');
     const { user, updateUser } = useAuth();
     const navigate = useNavigate();
+
+    if (!user) return null;
+    const [step, setStep] = useState('loader'); // loader, welcome, sectors, subsectors
 
     const handleLoaderComplete = () => {
         setStep('welcome');
@@ -129,7 +125,7 @@ const OnboardingWizard = () => {
                                 }}>
                                     <Sparkles size={40} />
                                 </div>
-                                <h1 style={{ fontSize: '40px', fontWeight: 900, color: '#0F172A', marginBottom: '16px' }}>
+                                <h1 style={{ fontSize: '40px', fontWeight: 900, color: '#2D3748', marginBottom: '16px' }}>
                                     Welcome, {user?.name?.split(' ')[0]}!
                                 </h1>
                                 <p style={{ fontSize: '18px', color: '#64748B', lineHeight: 1.6, marginBottom: '40px' }}>
@@ -139,7 +135,7 @@ const OnboardingWizard = () => {
                                     onClick={() => setStep('sectors')}
                                     style={{ 
                                         background: '#4F46E5', 
-                                        color: 'white', 
+                                        color: '#2D3748', 
                                         border: 'none', 
                                         padding: '18px 48px', 
                                         borderRadius: '16px', 
@@ -168,7 +164,7 @@ const OnboardingWizard = () => {
                         style={{ padding: '60px 20px', maxWidth: '1200px', margin: '0 auto' }}
                     >
                         <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                            <h2 style={{ fontSize: '36px', fontWeight: 900, color: '#0F172A', marginBottom: '16px' }}>Tell us about your industry</h2>
+                            <h2 style={{ fontSize: '36px', fontWeight: 900, color: '#2D3748', marginBottom: '16px' }}>Tell us about your industry</h2>
                             <p style={{ fontSize: '18px', color: '#64748B' }}>Select the primary sector your organization operates in.</p>
                         </div>
 
@@ -209,7 +205,7 @@ const OnboardingWizard = () => {
                                         }}>
                                             <Icon size={28} />
                                         </div>
-                                        <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A' }}>{config.label}</h3>
+                                        <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#2D3748' }}>{config.label}</h3>
                                     </motion.div>
                                 );
                             })}
@@ -244,7 +240,7 @@ const OnboardingWizard = () => {
                         </button>
 
                         <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                            <h2 style={{ fontSize: '36px', fontWeight: 900, color: '#0F172A', marginBottom: '16px' }}>
+                            <h2 style={{ fontSize: '36px', fontWeight: 900, color: '#2D3748', marginBottom: '16px' }}>
                                 Refine your {sectorConfig[selectedSector]?.label} Setup
                             </h2>
                             <p style={{ fontSize: '18px', color: '#64748B' }}>Which category best describes your specific focus?</p>
@@ -269,11 +265,11 @@ const OnboardingWizard = () => {
                                         justifyContent: 'space-between'
                                     }}
                                 >
-                                    <span style={{ fontSize: '18px', fontWeight: 800, color: selectedSubCategory === sub ? '#4F46E5' : '#0F172A' }}>
+                                    <span style={{ fontSize: '18px', fontWeight: 800, color: selectedSubCategory === sub ? '#4F46E5' : '#FFFFFF' }}>
                                         {sub}
                                     </span>
                                     {selectedSubCategory === sub && (
-                                        <div style={{ width: '28px', height: '28px', background: '#4F46E5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                                        <div style={{ width: '28px', height: '28px', background: '#4F46E5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2D3748' }}>
                                             <Check size={18} />
                                         </div>
                                     )}
@@ -288,7 +284,7 @@ const OnboardingWizard = () => {
                                 style={{ marginTop: '40px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '24px' }}
                             >
                                 <div style={{ background: 'white', padding: '32px', borderRadius: '24px', border: '1px solid #E2E8F0' }}>
-                                    <h4 style={{ margin: '0 0 24px', fontSize: '18px', fontWeight: 900, color: '#0F172A' }}>
+                                    <h4 style={{ margin: '0 0 24px', fontSize: '18px', fontWeight: 900, color: '#2D3748' }}>
                                         Complete your {sectorConfig[selectedSector]?.brandLabel} Profile
                                     </h4>
 
@@ -334,7 +330,7 @@ const OnboardingWizard = () => {
                                                 <div style={{ width: '40px', height: '40px', borderRadius: '8px', border: '1px solid #E2E8F0', overflow: 'hidden', background: '#F1F5F9' }}>
                                                     <img src={organizationLogo} alt="Logo Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => e.target.src='https://via.placeholder.com/40?text=Error'} />
                                                 </div>
-                                                <span style={{ fontSize: '12px', fontWeight: 700, color: '#10B981' }}>Logo Preview Loaded</span>
+                                                <span style={{ fontSize: '12px', fontWeight: 700, color: '#5A315D' }}>Logo Preview Loaded</span>
                                             </div>
                                         )}
                                     </div>
@@ -360,7 +356,7 @@ const OnboardingWizard = () => {
                                 onClick={handleFinish}
                                 style={{ 
                                     background: (selectedSubCategory && organizationName) ? '#4F46E5' : '#CBD5E1', 
-                                    color: 'white', 
+                                    color: '#2D3748', 
                                     border: 'none', 
                                     padding: '18px 60px', 
                                     borderRadius: '16px', 

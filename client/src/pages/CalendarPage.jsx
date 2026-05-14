@@ -95,7 +95,7 @@ const CalendarPage = () => {
                             <h3 style={{ margin: 0 }}>
                                 {isAdmin ? '+ Create Availability Slot' : 'Calendar: New Event Info'}
                             </h3>
-                            <button onClick={() => setShowNewEvent(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}><X size={20} /></button>
+                            <button onClick={() => setShowNewEvent(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#718096' }}><X size={20} /></button>
                         </div>
 
                         {isAdmin ? (
@@ -144,7 +144,7 @@ const CalendarPage = () => {
             {activeMeeting && (
                 <div onClick={() => setActiveMeeting(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(6px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
                     <div onClick={e => e.stopPropagation()} className="data-card" style={{ maxWidth: '420px', width: '100%', padding: '40px', textAlign: 'center' }}>
-                        <div style={{ width: '72px', height: '72px', background: 'linear-gradient(135deg, #3B82F6, #1D4ED8)', borderRadius: '20px', margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 10px 20px -5px rgba(59,130,246,0.5)' }}>
+                        <div style={{ width: '72px', height: '72px', background: 'linear-gradient(135deg, #5A315D, #1D4ED8)', borderRadius: '20px', margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2D3748', boxShadow: '0 10px 20px -5px rgba(90, 49, 93,0.5)' }}>
                             <Video size={32} />
                         </div>
                         <h3 style={{ marginBottom: '8px' }}>Join Your Session</h3>
@@ -281,13 +281,13 @@ const CalendarPage = () => {
                     </div>
 
                     {/* Calendar Sync Card */}
-                    <div style={{ marginTop: '24px', background: 'linear-gradient(135deg, #1E1B4B 0%, #1E3A8A 100%)', padding: '28px', borderRadius: '24px', color: 'white', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ marginTop: '24px', background: 'linear-gradient(135deg, #1E1B4B 0%, #1E3A8A 100%)', padding: '28px', borderRadius: '24px', color: '#2D3748', position: 'relative', overflow: 'hidden' }}>
                         <div style={{ position: 'absolute', top: 0, right: 0, padding: '20px', opacity: 0.08 }}><ExternalLink size={80} fill="white" /></div>
                         <h3 style={{ fontSize: '16px', fontWeight: 900, marginBottom: '8px' }}>Calendar Sync</h3>
                         <p style={{ fontSize: '12px', opacity: 0.7, marginBottom: '20px', lineHeight: 1.5 }}>
                             Connect your external calendars to sync all your sessions automatically.
                         </p>
-                        <button className="btn" style={{ background: 'rgba(255,255,255,0.12)', color: 'white', width: '100%', border: '1px solid rgba(255,255,255,0.2)', fontSize: '13px' }}>
+                        <button className="btn" style={{ background: 'rgba(90, 49, 93, 0.12)', color: '#2D3748', width: '100%', border: '1px solid rgba(90, 49, 93, 0.2)', fontSize: '13px' }}>
                             Configure Now
                         </button>
                     </div>
