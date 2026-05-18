@@ -324,6 +324,134 @@ const MiniWebsite = () => {
                     </div>
                 </div>
 
+                {/* 🌟 INTERACTIVE TEAM EVENTS SCHEDULING PREVIEW */}
+                <section style={{ marginBottom: '120px' }}>
+                    <div style={{ 
+                        background: 'white', 
+                        borderRadius: '48px', 
+                        border: '1px solid #E2E8F0', 
+                        padding: '60px', 
+                        boxShadow: '0 30px 60px rgba(15, 23, 42, 0.04)',
+                        display: 'grid', 
+                        gridTemplateColumns: '1fr 1.2fr', 
+                        gap: '60px',
+                        alignItems: 'center'
+                    }}>
+                        <div>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: primaryColor + '10', color: primaryColor, padding: '8px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 900, marginBottom: '24px', border: `1px solid ${primaryColor}20` }}>
+                                <Activity size={16} /> TEAM COLLABORATION
+                            </div>
+                            <h2 style={{ fontSize: '44px', fontWeight: 950, color: '#0F172A', lineHeight: 1.15, marginBottom: '24px', letterSpacing: '-2px' }}>
+                                Schedule Team Events Effortlessly
+                            </h2>
+                            <p style={{ fontSize: '18px', color: '#475569', lineHeight: 1.7, marginBottom: '32px', fontWeight: 500 }}>
+                                Coordinate multiple staff availability calendars in one central location. Clients can view aggregated slots or filter by their preferred team expert, keeping your workspace perfectly synchronized automatically.
+                            </p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                {[
+                                    'Multi-member availability merging',
+                                    'Automatic time-zone synchronization',
+                                    'Instant calendar conflict avoidance engine'
+                                ].map((item, idx) => (
+                                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '15px', fontWeight: 700, color: '#334155' }}>
+                                        <CheckCircle2 size={18} color={primaryColor} />
+                                        <span>{item}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Interactive Simulator Panel */}
+                        <div style={{ 
+                            background: '#0F172A', 
+                            borderRadius: '32px', 
+                            padding: '30px', 
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            color: 'white',
+                            position: 'relative',
+                            overflow: 'hidden'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#EF4444' }}></div>
+                                    <span style={{ fontSize: '14px', fontWeight: 900, color: '#94A3B8' }}>Team Scheduling Simulator</span>
+                                </div>
+                                <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.08)', padding: '4px 10px', borderRadius: '8px', color: '#38BDF8', fontWeight: 800 }}>LIVE DEMO</span>
+                            </div>
+
+                            {/* Interactive Scheduler Container */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                {/* Member Selector Row */}
+                                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '8px' }}>
+                                    {[
+                                        { id: 'all', name: 'All Team members', avatar: '👥' },
+                                        { id: 'sarah', name: 'Sarah Jenkins', avatar: '👩‍⚕️' },
+                                        { id: 'michael', name: 'Michael Chen', avatar: '👨‍⚕️' }
+                                    ].map((mem) => (
+                                        <button 
+                                            key={mem.id} 
+                                            style={{ 
+                                                background: 'rgba(255,255,255,0.05)', 
+                                                border: '1px solid rgba(255,255,255,0.1)', 
+                                                borderRadius: '16px', 
+                                                padding: '10px 20px', 
+                                                color: '#E2E8F0', 
+                                                fontSize: '13px', 
+                                                fontWeight: 800, 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                gap: '8px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <span>{mem.avatar}</span>
+                                            <span>{mem.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Timeline representation */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#64748B', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px' }}>
+                                        <span>Time Slot</span>
+                                        <span>Event & Member Assigned</span>
+                                    </div>
+
+                                    {[
+                                        { time: '10:00 AM', event: 'Initial Consultation Meeting', member: 'Sarah Jenkins', badge: 'Confirmed', badgeColor: '#10B981' },
+                                        { time: '11:30 AM', event: 'Strategic Workflow Alignment', member: 'Michael Chen', badge: 'In Progress', badgeColor: '#3B82F6' },
+                                        { time: '02:00 PM', event: 'Client Portfolio Review', member: 'Emma Thompson', badge: 'Available', badgeColor: '#8B5CF6' }
+                                    ].map((slot, index) => (
+                                        <motion.div 
+                                            key={index}
+                                            whileHover={{ x: 6, background: 'rgba(255,255,255,0.04)' }}
+                                            style={{ 
+                                                display: 'grid', 
+                                                gridTemplateColumns: '1fr 2fr', 
+                                                alignItems: 'center', 
+                                                padding: '12px 16px', 
+                                                borderRadius: '12px', 
+                                                background: 'rgba(255,255,255,0.02)',
+                                                border: '1px solid rgba(255,255,255,0.04)'
+                                            }}
+                                        >
+                                            <span style={{ fontSize: '13px', fontWeight: 900, color: '#38BDF8' }}>{slot.time}</span>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div>
+                                                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#E2E8F0' }}>{slot.event}</div>
+                                                    <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>Assigned to: {slot.member}</div>
+                                                </div>
+                                                <span style={{ fontSize: '11px', fontWeight: 900, background: slot.badgeColor + '20', color: slot.badgeColor, padding: '4px 8px', borderRadius: '6px' }}>{slot.badge}</span>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* 👨‍💼 TEAM SECTION */}
                 <section id="team" style={{ marginBottom: '120px' }}>
                     <div style={{ textAlign: 'center', marginBottom: '64px' }}>

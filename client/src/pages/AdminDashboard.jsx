@@ -814,50 +814,129 @@ const AdminDashboard = () => {
 
                         {activeTab === 'clients' && (
                             <div className="data-table-container fade-in">
-                                <div className="table-header">
-                                    <h2>🏢 Organization Management</h2>
-                                    <div style={{ display: 'flex', gap: '15px' }}>
-                                        <button className="action-btn" onClick={() => alert("📤 Exporting clients to CSV...")}>
-                                            <ShoppingBag size={16} style={{ marginRight: '5px' }}/> Export CSV
-                                        </button>
-                                        <div className="search-bar" style={{ width: '300px' }}>
-                                            <Search size={18}/>
-                                            <input placeholder="Search organizations..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}/>
+                                {editingOrg ? (
+                                    <div style={{ padding: '10px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #E2E8F0', paddingBottom: '16px' }}>
+                                            <div>
+                                                <h2 style={{ fontSize: '24px', fontWeight: 950, color: '#0F172A', margin: 0 }}>🏢 Edit Organization</h2>
+                                                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748B', fontWeight: 600 }}>Update corporate parameters, subscription details, and sector routing.</p>
+                                            </div>
+                                            <button 
+                                                onClick={() => setEditingOrg(null)} 
+                                                style={{ 
+                                                    background: '#F1F5F9', border: 'none', cursor: 'pointer', color: '#475569', 
+                                                    padding: '10px 20px', borderRadius: '12px', fontWeight: 800, fontSize: '14px',
+                                                    display: 'flex', alignItems: 'center', gap: '8px', transition: '0.2s'
+                                                }}
+                                            >
+                                                Back to List
+                                            </button>
                                         </div>
+                                        <form onSubmit={handleUpdateOrg} style={{ maxWidth: '700px', background: '#F8FAFC', padding: '32px', borderRadius: '24px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                                <div>
+                                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Organization Name</label>
+                                                    <input 
+                                                        className="form-input" 
+                                                        value={editFormData.organizationName} 
+                                                        onChange={e => setEditFormData({...editFormData, organizationName: e.target.value})} 
+                                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #CBD5E1', fontSize: '15px', fontWeight: 600, background: 'white' }}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Admin Name</label>
+                                                    <input 
+                                                        className="form-input" 
+                                                        value={editFormData.name} 
+                                                        onChange={e => setEditFormData({...editFormData, name: e.target.value})} 
+                                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #CBD5E1', fontSize: '15px', fontWeight: 600, background: 'white' }}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email Address</label>
+                                                    <input 
+                                                        className="form-input" 
+                                                        value={editFormData.email} 
+                                                        onChange={e => setEditFormData({...editFormData, email: e.target.value})} 
+                                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #CBD5E1', fontSize: '15px', fontWeight: 600, background: 'white' }}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sector</label>
+                                                    <select 
+                                                        className="form-input" 
+                                                        value={editFormData.sector} 
+                                                        onChange={e => setEditFormData({...editFormData, sector: e.target.value})} 
+                                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #CBD5E1', fontSize: '15px', fontWeight: 600, background: 'white', cursor: 'pointer' }}
+                                                    >
+                                                        {sectors.map(s => <option key={s._id} value={s.name.toLowerCase()}>{s.name}</option>)}
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Plan Expiry Date</label>
+                                                    <input 
+                                                        type="date"
+                                                        className="form-input" 
+                                                        value={editFormData.expiryDate} 
+                                                        onChange={e => setEditFormData({...editFormData, expiryDate: e.target.value})} 
+                                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid #CBD5E1', fontSize: '15px', fontWeight: 600, background: 'white' }}
+                                                    />
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '16px', marginTop: '12px' }}>
+                                                    <button type="submit" className="action-btn" style={{ background: '#6366F1', color: 'white', padding: '14px 28px', borderRadius: '12px', fontWeight: 900, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(99,102,241,0.2)' }}>Save Changes</button>
+                                                    <button type="button" onClick={() => setEditingOrg(null)} className="action-btn" style={{ background: '#E2E8F0', color: '#475569', padding: '14px 28px', borderRadius: '12px', fontWeight: 900, border: 'none', cursor: 'pointer' }}>Cancel</button>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </div>
-                                </div>
-                                <table className="data-table">
-                                    <thead><tr><th>Organization</th><th>Industry</th><th>Expiry</th><th>Plan</th><th>Action</th></tr></thead>
-                                    <tbody>
-                                        {allUsers.filter(u => u.role === 'client' && (u.organizationName?.toLowerCase().includes(searchQuery.toLowerCase()) || u.name.toLowerCase().includes(searchQuery.toLowerCase()))).map((c, i) => (
-                                            <motion.tr key={c._id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
-                                                <td>
-                                                    <div style={{ fontWeight: 900, color: '#0F172A' }}>{c.organizationName || c.name}</div>
-                                                    <div style={{ fontSize: '11px', color: '#64748B' }}>{c.email}</div>
-                                                </td>
-                                                <td><span style={{ background: '#F1F5F9', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 700 }}>{c.sectorName || 'General'}</span></td>
-                                                <td><span style={{ color: c.plan?.expiryDate ? '#EF4444' : '#64748B', fontWeight: 700 }}>{c.plan?.expiryDate ? new Date(c.plan.expiryDate).toLocaleDateString() : 'Lifetime'}</span></td>
-                                                <td><span style={{ background: c.plan?.type === 'paid' ? '#EEF2FF' : '#F1F5F9', color: c.plan?.type === 'paid' ? '#6366F1' : '#64748B', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800 }}>{c.plan?.type?.toUpperCase() || 'FREE'}</span></td>
-                                                <td>
-                                                    <div style={{ display: 'flex', gap: '10px' }}>
-                                                        <button className="action-btn" title="Edit" onClick={() => handleEditClick(c)} style={{ color: '#6366F1' }}><Edit2 size={16}/></button>
-                                                        <button 
-                                                           className="action-btn" 
-                                                           title={c.isBlocked ? "Activate" : "Deactivate"} 
-                                                           onClick={() => handleToggleStatus(c._id)}
-                                                           style={{ color: c.isBlocked ? '#10B981' : '#EF4444' }}
-                                                        >
-                                                            {c.isBlocked ? <CheckCircle size={16}/> : <XCircle size={16}/>}
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </motion.tr>
-                                        ))}
-                                        {allUsers.filter(u => u.role === 'client').length === 0 && (
-                                            <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>No organizations found.</td></tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                                ) : (
+                                    <>
+                                        <div className="table-header">
+                                            <h2>🏢 Organization Management</h2>
+                                            <div style={{ display: 'flex', gap: '15px' }}>
+                                                <button className="action-btn" onClick={() => alert("📤 Exporting clients to CSV...")}>
+                                                    <ShoppingBag size={16} style={{ marginRight: '5px' }}/> Export CSV
+                                                </button>
+                                                <div className="search-bar" style={{ width: '300px' }}>
+                                                    <Search size={18}/>
+                                                    <input placeholder="Search organizations..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <table className="data-table">
+                                            <thead><tr><th>Organization</th><th>Industry</th><th>Expiry</th><th>Plan</th><th>Action</th></tr></thead>
+                                            <tbody>
+                                                {allUsers.filter(u => u.role === 'client' && (u.organizationName?.toLowerCase().includes(searchQuery.toLowerCase()) || u.name.toLowerCase().includes(searchQuery.toLowerCase()))).map((c, i) => (
+                                                    <motion.tr key={c._id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
+                                                        <td>
+                                                            <div style={{ fontWeight: 900, color: '#0F172A' }}>{c.organizationName || c.name}</div>
+                                                            <div style={{ fontSize: '11px', color: '#64748B' }}>{c.email}</div>
+                                                        </td>
+                                                        <td><span style={{ background: '#F1F5F9', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 700 }}>{c.sectorName || 'General'}</span></td>
+                                                        <td><span style={{ color: c.plan?.expiryDate ? '#EF4444' : '#64748B', fontWeight: 700 }}>{c.plan?.expiryDate ? new Date(c.plan.expiryDate).toLocaleDateString() : 'Lifetime'}</span></td>
+                                                        <td><span style={{ background: c.plan?.type === 'paid' ? '#EEF2FF' : '#F1F5F9', color: c.plan?.type === 'paid' ? '#6366F1' : '#64748B', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 800 }}>{c.plan?.type?.toUpperCase() || 'FREE'}</span></td>
+                                                        <td>
+                                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                                <button className="action-btn" title="Edit" onClick={() => handleEditClick(c)} style={{ color: '#6366F1' }}><Edit2 size={16}/></button>
+                                                                <button 
+                                                                   className="action-btn" 
+                                                                   title={c.isBlocked ? "Activate" : "Deactivate"} 
+                                                                   onClick={() => handleToggleStatus(c._id)}
+                                                                   style={{ color: c.isBlocked ? '#10B981' : '#EF4444' }}
+                                                                >
+                                                                    {c.isBlocked ? <CheckCircle size={16}/> : <XCircle size={16}/>}
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </motion.tr>
+                                                ))}
+                                                {allUsers.filter(u => u.role === 'client').length === 0 && (
+                                                    <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>No organizations found.</td></tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </>
+                                )}
                             </div>
                         )}
 
@@ -1039,79 +1118,7 @@ const AdminDashboard = () => {
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Edit Organization Modal */}
-                <AnimatePresence>
-                    {editingOrg && (
-                        <div className="modal-overlay" onClick={() => setEditingOrg(null)}>
-                            <motion.div 
-                                initial={{ scale: 0.9, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.9, opacity: 0 }}
-                                className="modal-content" 
-                                style={{ maxWidth: '500px', width: '90%' }}
-                                onClick={e => e.stopPropagation()}
-                            >
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                                    <h2 style={{ fontSize: '20px', fontWeight: 900 }}>Edit Organization</h2>
-                                    <button onClick={() => setEditingOrg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}><X size={24}/></button>
-                                </div>
-                                <form onSubmit={handleUpdateOrg}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                        <div>
-                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Organization Name</label>
-                                            <input 
-                                                className="form-input" 
-                                                value={editFormData.organizationName} 
-                                                onChange={e => setEditFormData({...editFormData, organizationName: e.target.value})} 
-                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Admin Name</label>
-                                            <input 
-                                                className="form-input" 
-                                                value={editFormData.name} 
-                                                onChange={e => setEditFormData({...editFormData, name: e.target.value})} 
-                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Email Address</label>
-                                            <input 
-                                                className="form-input" 
-                                                value={editFormData.email} 
-                                                onChange={e => setEditFormData({...editFormData, email: e.target.value})} 
-                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Sector</label>
-                                            <select 
-                                                className="form-input" 
-                                                value={editFormData.sector} 
-                                                onChange={e => setEditFormData({...editFormData, sector: e.target.value})} 
-                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
-                                            >
-                                                {sectors.map(s => <option key={s._id} value={s.name.toLowerCase()}>{s.name}</option>)}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Plan Expiry Date</label>
-                                            <input 
-                                                type="date"
-                                                className="form-input" 
-                                                value={editFormData.expiryDate} 
-                                                onChange={e => setEditFormData({...editFormData, expiryDate: e.target.value})} 
-                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
-                                            />
-                                        </div>
-                                        <button type="submit" className="action-btn" style={{ background: '#6366F1', color: 'white', padding: '12px', borderRadius: '12px', fontWeight: 900, marginTop: '10px' }}>Save Changes</button>
-                                    </div>
-                                </form>
-                            </motion.div>
-                        </div>
-                    )}
-                </AnimatePresence>
+
 
                 {/* Create Announcement Modal */}
                 <AnimatePresence>

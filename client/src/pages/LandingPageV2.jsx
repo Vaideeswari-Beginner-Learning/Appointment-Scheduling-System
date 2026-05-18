@@ -214,6 +214,83 @@ const LandingPageV2 = () => {
                 </div>
             </section>
 
+            {/* 🌟 ZOHO-STYLE DYNAMIC AVAILABILITY & STEPS */}
+            <section style={{ padding: '120px 40px', background: '#0F172A', overflow: 'hidden', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: '20%', right: '0', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%)', filter: 'blur(80px)', zIndex: 0 }}></div>
+                <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '80px', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+                    <div>
+                        <div style={{ color: '#6366F1', fontWeight: 900, fontSize: '14px', letterSpacing: '2px', marginBottom: '16px' }}>STEP-BY-STEP SCHEDULING</div>
+                        <h2 style={{ fontSize: '48px', fontWeight: 900, letterSpacing: '-2.5px', lineHeight: 1.15, marginBottom: '40px' }}>Streamline Your Booking In Seconds</h2>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                            {[
+                                { num: '01', title: 'Customize availability', desc: 'Have clients schedule appointments for their preferred time slots in just a few clicks.', active: true },
+                                { num: '02', title: 'Share your booking link', desc: 'Publish your customized booking link on your social profiles, emails, or embed it on your website.', active: false },
+                                { num: '03', title: 'Get booked', desc: 'Accept appointments directly into your calendar without back-and-forth messaging.', active: false }
+                            ].map((step, idx) => (
+                                <motion.div 
+                                    key={idx}
+                                    whileHover={{ x: 10 }}
+                                    style={{ 
+                                        display: 'flex', gap: '24px', padding: '24px', borderRadius: '24px', 
+                                        background: step.active ? 'rgba(99, 102, 241, 0.06)' : 'transparent',
+                                        border: step.active ? '1px solid rgba(99, 102, 241, 0.15)' : '1px solid transparent',
+                                        transition: '0.3s'
+                                    }}
+                                >
+                                    <div style={{ 
+                                        width: '48px', height: '48px', borderRadius: '16px', 
+                                        background: step.active ? '#6366F1' : 'rgba(255,255,255,0.05)',
+                                        color: step.active ? 'white' : '#94A3B8',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        fontSize: '16px', fontWeight: 900
+                                    }}>{step.num}</div>
+                                    <div>
+                                        <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px', color: step.active ? 'white' : '#E2E8F0' }}>{step.title}</h3>
+                                        <p style={{ color: '#94A3B8', lineHeight: 1.6, fontSize: '15px', margin: 0 }}>{step.desc}</p>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div style={{ position: 'relative' }}>
+                        <div style={{ 
+                            position: 'absolute', inset: '-10px', 
+                            background: 'linear-gradient(135deg, #6366F1, #C084FC)',
+                            borderRadius: '24px', filter: 'blur(30px)', zIndex: 0, opacity: 0.2
+                        }}></div>
+                        {/* Browser Mockup Frame */}
+                        <div style={{ 
+                            position: 'relative', zIndex: 1, background: '#1E293B', 
+                            borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)',
+                            boxShadow: '0 30px 60px rgba(0,0,0,0.5)'
+                        }}>
+                            {/* Browser Bar */}
+                            <div style={{ background: '#0F172A', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#EF4444' }}></div>
+                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#F59E0B' }}></div>
+                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981' }}></div>
+                                </div>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', color: '#64748B', fontSize: '11px', padding: '4px 20px', borderRadius: '6px', margin: '0 auto', width: '220px', textAlign: 'center', fontWeight: 600 }}>smart-scheduler.com/dashboard/availability</div>
+                            </div>
+                            {/* Video */}
+                            <video 
+                                autoPlay 
+                                loop 
+                                muted 
+                                playsInline 
+                                style={{ width: '100%', display: 'block', height: 'auto', borderBottomRightRadius: '24px', borderBottomLeftRadius: '24px' }}
+                            >
+                                <source src="https://www.zohowebstatic.com/sites/zweb/images/bookings/home/zbs-personalize-availability.mp4" type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* ✨ FEATURES SECTION */}
             <section id="features" style={{ padding: '120px 40px', maxWidth: '1400px', margin: '0 auto' }}>
                 <div style={{ textAlign: 'center', marginBottom: '80px' }}>
@@ -235,6 +312,53 @@ const LandingPageV2 = () => {
                             <p style={{ color: '#94A3B8', lineHeight: 1.7, fontSize: '15px' }}>{f.desc}</p>
                         </motion.div>
                     ))}
+                </div>
+            </section>
+
+            {/* 🌟 PERSONALIZED BUSINESS SHOWCASE */}
+            <section style={{ padding: '120px 40px', background: 'rgba(255,255,255,0.01)', overflow: 'hidden' }}>
+                <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '80px', alignItems: 'center' }}>
+                    <div style={{ position: 'relative' }}>
+                        <div style={{ 
+                            position: 'absolute', inset: '-10px', 
+                            background: 'linear-gradient(135deg, #10B981, #3B82F6)',
+                            borderRadius: '32px', filter: 'blur(30px)', zIndex: 0, opacity: 0.15
+                        }}></div>
+                        <motion.div 
+                            whileHover={{ scale: 1.02 }}
+                            style={{ 
+                                position: 'relative', zIndex: 1, borderRadius: '32px', overflow: 'hidden', 
+                                border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 100px -20px rgba(0,0,0,0.6)' 
+                            }}
+                        >
+                            <img 
+                                src="https://www.zohowebstatic.com/sites/zweb/images/bookings/home/zbs-businesses-img.webp" 
+                                alt="Customizable scheduling animations for your business" 
+                                style={{ width: '100%', height: 'auto', display: 'block' }}
+                            />
+                        </motion.div>
+                    </div>
+
+                    <div>
+                        <div style={{ color: '#10B981', fontWeight: 900, fontSize: '14px', letterSpacing: '2px', marginBottom: '16px' }}>PERSONALIZED BRANDING</div>
+                        <h2 style={{ fontSize: '48px', fontWeight: 900, letterSpacing: '-2.5px', lineHeight: 1.15, marginBottom: '24px' }}>Customized to Match Your Business Style</h2>
+                        <p style={{ color: '#94A3B8', fontSize: '18px', lineHeight: 1.7, marginBottom: '32px', fontWeight: 500 }}>
+                            Build an immersive client scheduling portal that perfectly encapsulates your brand identity. Upload logos, apply custom theme colors, customize notification email scripts, and tailor specific workflow logic for any industry vertical.
+                        </p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
+                            {[
+                                'Fully personalized web portals & booking URLs',
+                                'Custom widgets embedded directly onto your website',
+                                'Tailored SMS & email notifications with your brand banner'
+                            ].map((item, index) => (
+                                <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: 600, color: '#E2E8F0' }}>
+                                    <CheckCircle size={20} color="#10B981" />
+                                    <span>{item}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <button onClick={() => navigate('/register')} style={{ background: 'linear-gradient(135deg, #10B981, #3B82F6)', color: 'white', padding: '16px 36px', borderRadius: '16px', fontWeight: 900, fontSize: '16px', border: 'none', cursor: 'pointer', boxShadow: '0 20px 40px rgba(16,185,129,0.3)' }}>Get Started Now</button>
+                    </div>
                 </div>
             </section>
 
@@ -335,6 +459,46 @@ const LandingPageV2 = () => {
                                 </div>
                             ))}
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 🌟 16M+ APPOINTMENTS GLOBAL INDIGO BANNER */}
+            <section style={{ padding: '80px 40px', background: '#020617' }}>
+                <div style={{ 
+                    maxWidth: '1200px', margin: '0 auto', 
+                    background: 'linear-gradient(135deg, #1E1B4B, #312E81)', 
+                    borderRadius: '40px', padding: '60px 80px', 
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)',
+                    boxShadow: '0 30px 60px rgba(0,0,0,0.4)',
+                    flexWrap: 'wrap',
+                    gap: '40px'
+                }}>
+                    {/* Radial glow */}
+                    <div style={{ position: 'absolute', top: '-50%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 60%)', filter: 'blur(50px)', zIndex: 0 }}></div>
+                    
+                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '650px', textAlign: 'left' }}>
+                        <h2 style={{ fontSize: '44px', fontWeight: 950, color: 'white', lineHeight: 1.15, marginBottom: '16px', letterSpacing: '-2px' }}>
+                            16M+ appointments scheduled around the world
+                        </h2>
+                        <p style={{ color: '#C7D2FE', fontSize: '18px', fontWeight: 600, margin: 0 }}>
+                            With a new appointment scheduled every 4 seconds. Get started today and automate your corporate workspace bookings cleanly.
+                        </p>
+                    </div>
+
+                    <div style={{ position: 'relative', zIndex: 1 }}>
+                        <button 
+                            onClick={() => navigate('/register')} 
+                            style={{ 
+                                background: '#3B82F6', color: 'white', padding: '20px 48px', 
+                                borderRadius: '18px', fontWeight: 900, fontSize: '18px', 
+                                border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px',
+                                boxShadow: '0 15px 30px rgba(59,130,246,0.4)', transition: '0.2s'
+                            }}
+                        >
+                            GET STARTED <ArrowRight size={20} />
+                        </button>
                     </div>
                 </div>
             </section>
