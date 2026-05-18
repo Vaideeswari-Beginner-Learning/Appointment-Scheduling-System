@@ -32,14 +32,13 @@ const ProtectedRoute = ({ children, roles }) => {
     if (loading) return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-main)' }}>
             <motion.div 
-                animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+                animate={{ scale: [1, 1.05, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                style={{ color: '#4F46E5', marginBottom: '24px' }}
+                style={{ background: 'white', padding: '12px 24px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', marginBottom: '24px' }}
             >
-                <Zap size={64} fill="currentColor" />
+                <img src="/logo.png" alt="Forge India Logo" style={{ height: '70px', width: 'auto', objectFit: 'contain' }} />
             </motion.div>
             <div style={{ textAlign: 'center' }}>
-                <h2 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text-dark)', margin: '0 0 8px' }}>SmartScheduler</h2>
                 <p style={{ color: 'var(--text-gray)', fontWeight: 600 }}>Setting up your workspace...</p>
             </div>
         </div>

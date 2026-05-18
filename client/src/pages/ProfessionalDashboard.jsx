@@ -103,13 +103,13 @@ const ProfessionalDashboard = () => {
 
     const renderSidebar = () => (
         <aside style={{ width: '280px', background: '#0F172A', color: 'white', display: 'flex', flexDirection: 'column', height: '100vh', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ padding: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '42px', height: '42px', background: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px -4px rgba(139,92,246,0.5)' }}>
-                    <User size={22} color="white" />
+            <div style={{ padding: '24px 32px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '16px' }}>
+                <div style={{ background: 'white', padding: '6px 12px', borderRadius: '12px', display: 'inline-flex', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.15)', width: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
+                    <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
                 </div>
-                <div>
-                    <div style={{ fontSize: '18px', fontWeight: 900, letterSpacing: '-0.5px' }}>STAFF HUB</div>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>{user?.specialty || 'Professional'}</div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 900, color: '#A78BFA', textTransform: 'uppercase', letterSpacing: '2px' }}>Staff Hub</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', marginTop: '2px' }}>{user?.specialty || 'Professional'}</div>
                 </div>
             </div>
 

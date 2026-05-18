@@ -137,7 +137,9 @@ const Register = () => {
                     
                     {step < 4 && (
                         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                            <div style={{ background: '#6366F1', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', margin: '0 auto 20px', boxShadow: '0 10px 20px rgba(99,102,241,0.3)' }}><Sparkles size={24}/></div>
+                            <div style={{ background: 'white', padding: '6px 12px', borderRadius: '12px', display: 'inline-flex', boxShadow: '0 4px 12px rgba(0,0,0,0.06)', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
+                                <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
+                            </div>
                             <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', letterSpacing: '-1px' }}>Create Account</h2>
                             <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '12px' }}>
                                 {[1, 2, 3].map(i => (

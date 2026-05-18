@@ -816,36 +816,41 @@ const ClientDashboard = () => {
             <PaymentAnimationOverlay />
             {/* SIDEBAR */}
             <aside style={{ width: '280px', background: '#fff', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', background: 'var(--primary)', color: 'white' }}>
-                    <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Building size={20} /> {config.label} Management Portal
-                    </h2>
-                    <p style={{ margin: '4px 0 0', fontSize: '12px', opacity: 0.8 }}>Tenant ID: {user.clientId?.substring(0, 8)}</p>
-                    <a 
-                        href={`/org/${user._id || user.id}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ 
-                            display: 'inline-flex', 
-                            alignItems: 'center', 
-                            gap: '8px', 
-                            marginTop: '12px', 
-                            fontSize: '11px', 
-                            fontWeight: 900, 
-                            background: 'rgba(255,255,255,0.2)', 
-                            color: 'white', 
-                            padding: '6px 12px', 
-                            borderRadius: '8px', 
-                            textDecoration: 'none',
-                            transition: 'background 0.2s',
-                            width: '100%',
-                            justifyContent: 'center'
-                        }}
-                        onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
-                        onMouseLeave={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
-                    >
-                        <ExternalLink size={14} /> View My Public Website
-                    </a>
+                <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', background: 'var(--primary)', color: 'white', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ background: 'white', padding: '6px 12px', borderRadius: '12px', display: 'inline-flex', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.15)', width: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
+                        <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
+                    </div>
+                    <div>
+                        <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px', color: 'white' }}>
+                            {config.label} Portal
+                        </h2>
+                        <p style={{ margin: '4px 0 0', fontSize: '12px', opacity: 0.8 }}>Tenant ID: {user.clientId?.substring(0, 8)}</p>
+                        <a 
+                            href={`/org/${user._id || user.id}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{ 
+                                display: 'inline-flex', 
+                                alignItems: 'center', 
+                                gap: '8px', 
+                                marginTop: '12px', 
+                                fontSize: '11px', 
+                                fontWeight: 900, 
+                                background: 'rgba(255,255,255,0.2)', 
+                                color: 'white', 
+                                padding: '6px 12px', 
+                                borderRadius: '8px', 
+                                textDecoration: 'none',
+                                transition: 'background 0.2s',
+                                width: '100%',
+                                justifyContent: 'center'
+                            }}
+                            onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
+                            onMouseLeave={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+                        >
+                            <ExternalLink size={14} /> View My Public Website
+                        </a>
+                    </div>
                 </div>
                 
                 <div style={{ padding: '24px 16px', flex: 1, overflowY: 'auto' }}>

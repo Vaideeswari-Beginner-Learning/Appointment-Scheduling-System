@@ -42,6 +42,25 @@ const AdminDashboard = () => {
         sector: '',
         expiryDate: ''
     });
+
+    // Announcements State
+    const [announcements, setAnnouncements] = useState([]);
+    const [showAnnounceModal, setShowAnnounceModal] = useState(false);
+    const [announceForm, setAnnounceForm] = useState({
+        title: '',
+        message: '',
+        priority: 'normal',
+        targetRole: 'all',
+        targetDepartment: ''
+    });
+
+    // Edit User Role State
+    const [showRoleModal, setShowRoleModal] = useState(false);
+    const [selectedUserForRole, setSelectedUserForRole] = useState(null);
+    const [roleForm, setRoleForm] = useState({
+        role: '',
+        department: ''
+    });
     
     useEffect(() => { fetchAll(); }, []);
 
@@ -50,14 +69,16 @@ const AdminDashboard = () => {
         const token = localStorage.getItem('token');
         if (!token) return navigate('/login');
         try {
-            const [usersRes, saasRes, sectorsRes] = await Promise.all([
+            const [usersRes, saasRes, sectorsRes, announcementsRes] = await Promise.all([
                 axios.get(`${API_BASE_URL}/users`, { headers: { 'x-auth-token': token } }),
                 axios.get(`${API_BASE_URL}/saas/requests`, { headers: { 'x-auth-token': token } }).catch(() => ({ data: [] })),
-                axios.get(`${API_BASE_URL}/sectors`, { headers: { 'x-auth-token': token } }).catch(() => ({ data: [] }))
+                axios.get(`${API_BASE_URL}/sectors`, { headers: { 'x-auth-token': token } }).catch(() => ({ data: [] })),
+                axios.get(`${API_BASE_URL}/announcements`, { headers: { 'x-auth-token': token } }).catch(() => ({ data: [] }))
             ]);
             setAllUsers(usersRes.data);
             setSaasRequests(saasRes.data);
             setSectors(sectorsRes.data);
+            setAnnouncements(announcementsRes.data);
         } catch (err) { console.error(err); } finally { setLoading(false); }
     };
 
@@ -105,6 +126,82 @@ const AdminDashboard = () => {
         } catch (err) {
             console.error(err);
             alert('Failed to toggle status');
+        }
+    };
+
+    const handleCreateAnnouncement = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post(`${API_BASE_URL}/announcements`, announceForm, {
+                headers: { 'x-auth-token': token }
+            });
+            setShowAnnounceModal(false);
+            setAnnounceForm({
+                title: '',
+                message: '',
+                priority: 'normal',
+                targetRole: 'all',
+                targetDepartment: ''
+            });
+            fetchAll();
+            alert('Announcement published successfully');
+        } catch (err) {
+            console.error(err);
+            alert('Failed to publish announcement: ' + (err.response?.data?.message || err.message));
+        }
+    };
+
+    const handleDeleteAnnouncement = async (id) => {
+        if (!window.confirm('Delete this announcement?')) return;
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`${API_BASE_URL}/announcements/${id}`, {
+                headers: { 'x-auth-token': token }
+            });
+            fetchAll();
+        } catch (err) {
+            console.error(err);
+            alert('Failed to delete announcement');
+        }
+    };
+
+    const handleToggleAnnouncement = async (id) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`${API_BASE_URL}/announcements/${id}/toggle`, {}, {
+                headers: { 'x-auth-token': token }
+            });
+            fetchAll();
+        } catch (err) {
+            console.error(err);
+            alert('Failed to toggle status');
+        }
+    };
+
+    const handleEditRolePermission = (u) => {
+        setSelectedUserForRole(u);
+        setRoleForm({
+            role: u.role || 'user',
+            department: u.department || ''
+        });
+        setShowRoleModal(true);
+    };
+
+    const handleUpdateUserRole = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`${API_BASE_URL}/users/${selectedUserForRole._id}/role`, roleForm, {
+                headers: { 'x-auth-token': token }
+            });
+            setShowRoleModal(false);
+            setSelectedUserForRole(null);
+            fetchAll();
+            alert('User role updated successfully');
+        } catch (err) {
+            console.error(err);
+            alert('Failed to update user role');
         }
     };
 
@@ -176,9 +273,11 @@ const AdminDashboard = () => {
     return (
         <div className="admin-layout">
             <aside className="admin-sidebar" style={{ position: 'relative', overflow: 'hidden' }}>
-                <div className="sidebar-brand">
-                    <motion.div whileHover={{ scale: 1.1 }} className="brand-logo">F</motion.div>
-                    <div className="brand-name">ForgeIndia</div>
+                <div style={{ padding: '24px 25px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', borderBottom: '1px solid rgba(255,255,255,0.03)', marginBottom: '10px' }}>
+                    <div style={{ background: 'white', padding: '6px 12px', borderRadius: '12px', display: 'inline-flex', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.15)', width: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
+                        <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
+                    </div>
+                    <div style={{ fontSize: '12px', fontWeight: 900, color: '#818CF8', textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center' }}>Admin Portal</div>
                 </div>
                 
                 <nav className="admin-nav" style={{ overflowY: 'auto' }}>
@@ -527,28 +626,68 @@ const AdminDashboard = () => {
                             <div className="fade-in">
                                 <div className="table-header">
                                     <h2>📢 Announcement Module</h2>
-                                    <button className="action-btn" style={{ background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <button className="action-btn" onClick={() => setShowAnnounceModal(true)} style={{ background: '#6366F1', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Plus size={18} /> Create New
                                     </button>
                                 </div>
                                 <div className="data-table-container">
                                     <table className="data-table">
-                                        <thead><tr><th>Announcement Title</th><th>Target</th><th>Created</th><th>Status</th><th>Action</th></tr></thead>
+                                        <thead>
+                                            <tr>
+                                                <th>Announcement Detail</th>
+                                                <th>Target Audience</th>
+                                                <th>Priority</th>
+                                                <th>Published</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
-                                            <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                                <td><b>System Maintenance Alert</b></td>
-                                                <td>All Clients</td>
-                                                <td>Today</td>
-                                                <td><span className="status-badge status-paid">SENT</span></td>
-                                                <td><button className="action-btn">History</button></td>
-                                            </motion.tr>
-                                            <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
-                                                <td><b>New Premium Features</b></td>
-                                                <td>Free Users</td>
-                                                <td>2 Days ago</td>
-                                                <td><span className="status-badge" style={{ background: '#eee' }}>DRAFT</span></td>
-                                                <td><button className="action-btn">Edit</button></td>
-                                            </motion.tr>
+                                            {announcements.map((ann, i) => (
+                                                <motion.tr key={ann._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}>
+                                                    <td>
+                                                        <div style={{ fontWeight: 800, color: '#0F172A' }}>{ann.title}</div>
+                                                        <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 500, marginTop: '4px', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={ann.message}>
+                                                            {ann.message}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#4F46E5', background: '#EEF2FF', padding: '4px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>
+                                                            {ann.targetRole} {ann.targetDepartment ? `(${ann.targetDepartment})` : ''}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span style={{ 
+                                                            fontSize: '11px', fontWeight: 900, textTransform: 'uppercase',
+                                                            color: ann.priority === 'high' ? '#EF4444' : ann.priority === 'low' ? '#6B7280' : '#F59E0B'
+                                                        }}>
+                                                            ● {ann.priority}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ fontSize: '12px' }}>{new Date(ann.createdAt).toLocaleDateString()}</td>
+                                                    <td>
+                                                        <button 
+                                                            onClick={() => handleToggleAnnouncement(ann._id)}
+                                                            style={{
+                                                                border: 'none', background: ann.isActive ? '#D1FAE5' : '#F3F4F6',
+                                                                color: ann.isActive ? '#059669' : '#6B7280',
+                                                                padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: 900,
+                                                                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px'
+                                                            }}
+                                                        >
+                                                            {ann.isActive ? 'ACTIVE' : 'INACTIVE'}
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button className="action-btn" style={{ color: '#EF4444', border: 'none', background: 'transparent', cursor: 'pointer' }} onClick={() => handleDeleteAnnouncement(ann._id)} title="Delete">
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </td>
+                                                </motion.tr>
+                                            ))}
+                                            {announcements.length === 0 && (
+                                                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>No announcements published yet.</td></tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
@@ -755,12 +894,38 @@ const AdminDashboard = () => {
                                                             {u.role}
                                                         </span>
                                                     </td>
-                                                    <td><span style={{ color: '#10B981', fontWeight: 700, fontSize: '12px' }}>● ACTIVE</span></td>
+                                                    <td>
+                                                        <span style={{ 
+                                                            color: u.isBlocked ? '#EF4444' : '#10B981', 
+                                                            fontWeight: 900, 
+                                                            fontSize: '11px',
+                                                            textTransform: 'uppercase',
+                                                            background: u.isBlocked ? '#FEE2E2' : '#D1FAE5',
+                                                            padding: '4px 10px',
+                                                            borderRadius: '8px'
+                                                        }}>
+                                                            ● {u.isBlocked ? 'BLOCKED' : 'ACTIVE'}
+                                                        </span>
+                                                    </td>
                                                     <td style={{ fontSize: '12px' }}>{new Date(u.createdAt).toLocaleDateString()}</td>
                                                     <td>
                                                         <div style={{ display: 'flex', gap: '10px' }}>
-                                                            <button className="action-btn" title="Edit Permissions"><Shield size={16}/></button>
-                                                            <button className="action-btn" title="Ban User" style={{ color: '#EF4444' }}><XCircle size={16}/></button>
+                                                            <button 
+                                                                className="action-btn" 
+                                                                title="Edit Permissions" 
+                                                                onClick={() => handleEditRolePermission(u)}
+                                                                style={{ color: '#4F46E5' }}
+                                                            >
+                                                                <Shield size={16}/>
+                                                            </button>
+                                                            <button 
+                                                                className="action-btn" 
+                                                                title={u.isBlocked ? "Unban User" : "Ban User"} 
+                                                                onClick={() => handleToggleStatus(u._id)}
+                                                                style={{ color: u.isBlocked ? '#10B981' : '#EF4444' }}
+                                                            >
+                                                                {u.isBlocked ? <CheckCircle size={16}/> : <XCircle size={16}/>}
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 </motion.tr>
@@ -941,6 +1106,155 @@ const AdminDashboard = () => {
                                             />
                                         </div>
                                         <button type="submit" className="action-btn" style={{ background: '#6366F1', color: 'white', padding: '12px', borderRadius: '12px', fontWeight: 900, marginTop: '10px' }}>Save Changes</button>
+                                    </div>
+                                </form>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* Create Announcement Modal */}
+                <AnimatePresence>
+                    {showAnnounceModal && (
+                        <div className="modal-overlay" onClick={() => setShowAnnounceModal(false)}>
+                            <motion.div 
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                className="modal-content" 
+                                style={{ maxWidth: '500px', width: '90%' }}
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                                    <h2 style={{ fontSize: '20px', fontWeight: 900 }}>Create New Announcement</h2>
+                                    <button onClick={() => setShowAnnounceModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}><X size={24}/></button>
+                                </div>
+                                <form onSubmit={handleCreateAnnouncement}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Announcement Title</label>
+                                            <input 
+                                                required
+                                                className="form-input" 
+                                                placeholder="e.g. System Upgrade Notification"
+                                                value={announceForm.title} 
+                                                onChange={e => setAnnounceForm({...announceForm, title: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Announcement Message</label>
+                                            <textarea 
+                                                required
+                                                className="form-input" 
+                                                placeholder="Enter full details of the announcement..."
+                                                rows={4}
+                                                value={announceForm.message} 
+                                                onChange={e => setAnnounceForm({...announceForm, message: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0', fontFamily: 'inherit', resize: 'vertical' }}
+                                            />
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                            <div>
+                                                <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Priority Level</label>
+                                                <select 
+                                                    className="form-input" 
+                                                    value={announceForm.priority} 
+                                                    onChange={e => setAnnounceForm({...announceForm, priority: e.target.value})} 
+                                                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                                >
+                                                    <option value="normal">Normal</option>
+                                                    <option value="high">High Priority</option>
+                                                    <option value="low">Low Priority</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Target Role</label>
+                                                <select 
+                                                    className="form-input" 
+                                                    value={announceForm.targetRole} 
+                                                    onChange={e => setAnnounceForm({...announceForm, targetRole: e.target.value})} 
+                                                    style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                                >
+                                                    <option value="all">All Audiences</option>
+                                                    <option value="client">Organizations (Clients)</option>
+                                                    <option value="hr">HR Managers</option>
+                                                    <option value="employee">Staff / Employees</option>
+                                                    <option value="user">Customers / Users</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Target Sector/Department (Optional)</label>
+                                            <select 
+                                                className="form-input" 
+                                                value={announceForm.targetDepartment} 
+                                                onChange={e => setAnnounceForm({...announceForm, targetDepartment: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                            >
+                                                <option value="">System Wide (All Sectors)</option>
+                                                {sectors.map(s => <option key={s._id} value={s.name.toLowerCase()}>{s.name}</option>)}
+                                            </select>
+                                        </div>
+                                        <button type="submit" className="action-btn" style={{ background: '#6366F1', color: 'white', padding: '12px', borderRadius: '12px', fontWeight: 900, marginTop: '10px' }}>Publish Announcement</button>
+                                    </div>
+                                </form>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* Edit Permissions Modal */}
+                <AnimatePresence>
+                    {showRoleModal && selectedUserForRole && (
+                        <div className="modal-overlay" onClick={() => { setShowRoleModal(false); setSelectedUserForRole(null); }}>
+                            <motion.div 
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                className="modal-content" 
+                                style={{ maxWidth: '450px', width: '90%' }}
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                                    <h2 style={{ fontSize: '20px', fontWeight: 900 }}>Edit Permissions</h2>
+                                    <button onClick={() => { setShowRoleModal(false); setSelectedUserForRole(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}><X size={24}/></button>
+                                </div>
+                                <form onSubmit={handleUpdateUserRole}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#F8FAFC', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0', marginBottom: '8px' }}>
+                                            <div style={{ width: '40px', height: '40px', background: '#6366F1', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>{selectedUserForRole.name[0]}</div>
+                                            <div>
+                                                <div style={{ fontWeight: 800, color: '#0F172A' }}>{selectedUserForRole.name}</div>
+                                                <div style={{ fontSize: '12px', color: '#64748B' }}>{selectedUserForRole.email}</div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Assigned System Role</label>
+                                            <select 
+                                                className="form-input" 
+                                                value={roleForm.role} 
+                                                onChange={e => setRoleForm({...roleForm, role: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                            >
+                                                <option value="user">User / Guest</option>
+                                                <option value="employee">Employee / Professional</option>
+                                                <option value="hr">HR Manager</option>
+                                                <option value="client">Client (Tenant Admin)</option>
+                                                <option value="admin">System Admin</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '6px' }}>Department / Specialty Designation</label>
+                                            <input 
+                                                className="form-input" 
+                                                placeholder="e.g. Sales, Marketing, IT (Optional)"
+                                                value={roleForm.department} 
+                                                onChange={e => setRoleForm({...roleForm, department: e.target.value})} 
+                                                style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #E2E8F0' }}
+                                            />
+                                        </div>
+                                        <button type="submit" className="action-btn" style={{ background: '#6366F1', color: 'white', padding: '12px', borderRadius: '12px', fontWeight: 900, marginTop: '10px' }}>Apply Permissions</button>
                                     </div>
                                 </form>
                             </motion.div>

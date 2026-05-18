@@ -7,3 +7,4 @@ uploads/
 server/mongodb.zip
 server/tmp/
 client/build_output.txt
+.vercel

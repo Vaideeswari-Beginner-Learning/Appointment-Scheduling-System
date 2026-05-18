@@ -75,8 +75,8 @@ const ClientRegister = () => {
             {step === 1 && (
                 <div style={{ background: 'white', padding: '48px', borderRadius: '24px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.05)', border: '1px solid #E2E8F0', width: '100%', maxWidth: '440px' }}>
                     <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                        <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                            <Building2 size={32} color="#4F46E5" />
+                        <div style={{ background: 'white', padding: '6px 12px', borderRadius: '12px', display: 'inline-flex', boxShadow: '0 4px 12px rgba(0,0,0,0.06)', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
+                            <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
                         </div>
                         <h1 style={{ fontSize: '28px', fontWeight: 900, marginBottom: '8px', color: '#0F172A' }}>Register Your Business</h1>
                         <p style={{ color: '#64748B', fontSize: '15px' }}>Start managing appointments in minutes.</p>

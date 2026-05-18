@@ -492,9 +492,11 @@ const UserDashboard = () => {
             `}</style>
 
             <nav style={{ position:'sticky', top:0, zIndex:100, background: 'var(--navbar-bg, rgba(255,255,255,0.95))', backdropFilter:'blur(20px)', borderBottom:'1px solid var(--border-color)', padding:'12px 40px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-                    <div style={{ background:'#6366F1', padding:'8px', borderRadius:'12px', color:'white', display:'flex' }}><Activity size={20} /></div>
-                    <span style={{ fontSize:'20px', fontWeight:900, color: 'var(--text-dark)' }}>{config.label} <span style={{ color:'#6366F1' }}>Portal</span></span>
+                <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
+                    <div style={{ background: 'white', padding: '6px 12px', borderRadius: '10px', display: 'flex', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.08)' }}>
+                        <img src="/logo.png" alt="Forge India Logo" style={{ height: '28px', width: 'auto', objectFit: 'contain' }} />
+                    </div>
+                    <span style={{ fontSize:'18px', fontWeight:900, color: 'var(--text-dark)', textTransform: 'uppercase', letterSpacing: '-0.5px' }}>{config.label} <span style={{ color:'#6366F1' }}>Portal</span></span>
                 </div>
                 <div style={{ display:'flex', gap:'32px', fontWeight:700, color: 'var(--text-gray)', fontSize:'14px' }}>
                     {['Home','Services','Appointments','Reviews'].map(item => (
@@ -558,7 +560,7 @@ const UserDashboard = () => {
                     <div style={{ position:'absolute', top:'24px', right:'32px', background:'rgba(0,0,0,0.4)', backdropFilter:'blur(8px)', color:'white', padding:'6px 14px', borderRadius:'20px', fontSize:'12px', fontWeight:800 }}>
                         {heroSlide + 1} / {heroImages.length}
                     </div>
-                </div>iv>
+                </div>
 
                 {/* 2. QUICK BOOKING BAR */}
                 <div className="ud-section" style={{ marginTop:'-40px', position:'relative', zIndex:10 }}>
@@ -691,7 +693,7 @@ const UserDashboard = () => {
                         <div><h4 style={{ fontWeight:900, marginBottom:'16px' }}>Support</h4><p style={{ color:'#64748B', fontSize:'14px' }}><HelpCircle size={14} style={{ marginRight:'8px' }} />help@smartscheduler.com</p></div>
                         <div><h4 style={{ fontWeight:900, marginBottom:'16px' }}>Legal</h4><p style={{ color:'#64748B', fontSize:'14px' }}>Privacy Policy • Terms of Service</p></div>
                     </div>
-                    <div style={{ borderTop:'1px solid #E2E8F0', paddingTop:'20px', textAlign:'center', color:'#94A3B8', fontSize:'13px', fontWeight:600 }}>© 2026 SmartScheduler. All Rights Reserved.</div>
+                    <div style={{ borderTop:'1px solid #E2E8F0', paddingTop:'20px', textAlign:'center', color:'#94A3B8', fontSize:'13px', fontWeight:600 }}>© 2026 Forge India Connect Pvt. Ltd. All Rights Reserved.</div>
                 </footer>
             </main>
 

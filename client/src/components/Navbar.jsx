@@ -31,9 +31,10 @@ const Navbar = () => {
                 [data-theme='dark'] .btn-ghost:hover { background-color: rgba(255,255,255,0.05); }
             `}</style>
             <div className="flex-1">
-                <Link to="/" style={{ fontSize: '1.25rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit' }}>
-                    <Zap size={24} style={{ color: 'var(--primary)', fill: 'var(--primary)' }} /> 
-                    <span style={{ background: 'linear-gradient(to right, var(--primary), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>SmartSched</span>
+                <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                    <div style={{ background: 'white', padding: '4px 10px', borderRadius: '8px', display: 'flex', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}>
+                        <img src="/logo.png" alt="Forge India Logo" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} />
+                    </div>
                 </Link>
             </div>
             <div className="flex-none gap-2" style={{ display: 'flex', alignItems: 'center' }}>

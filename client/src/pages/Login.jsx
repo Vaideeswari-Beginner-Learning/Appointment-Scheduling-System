@@ -49,8 +49,8 @@ const Login = () => {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ width: '100%', maxWidth: '440px', background: 'white', padding: '48px', borderRadius: '32px', boxShadow: '0 20px 50px rgba(0,0,0,0.06)' }}>
                     
                     <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                        <div style={{ background: '#6366F1', width: '52px', height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', margin: '0 auto 20px', boxShadow: '0 10px 20px rgba(99,102,241,0.3)' }}>
-                            <LogIn size={24} />
+                        <div style={{ background: 'white', padding: '6px 12px', borderRadius: '12px', display: 'inline-flex', boxShadow: '0 4px 12px rgba(0,0,0,0.06)', marginBottom: '24px', border: '1px solid #E2E8F0' }}>
+                            <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
                         </div>
                         <h2 style={{ fontSize: '30px', fontWeight: 900, color: '#0F172A', marginBottom: '8px' }}>Welcome Back</h2>
                         <p style={{ color: '#64748B', fontWeight: 600, fontSize: '15px' }}>Login to your account</p>

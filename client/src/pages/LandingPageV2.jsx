@@ -85,10 +85,9 @@ const LandingPageV2 = () => {
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ background: 'linear-gradient(135deg, #6366F1, #A855F7)', padding: '8px', borderRadius: '12px', display: 'flex' }}>
-                        <Rocket color="white" size={24} />
+                    <div style={{ background: 'white', padding: '6px 12px', borderRadius: '10px', display: 'flex', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+                        <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
                     </div>
-                    <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '-1px' }}>Forge<span style={{ color: '#818CF8' }}>India</span></span>
                 </div>
 
                 <div style={{ display: 'flex', gap: '32px', fontWeight: 700, color: '#94A3B8', fontSize: '15px' }}>
@@ -346,8 +345,9 @@ const LandingPageV2 = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '80px', marginBottom: '80px' }}>
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-                                <div style={{ background: 'white', padding: '6px', borderRadius: '10px', display: 'flex' }}><Rocket color="#0F172A" size={24} /></div>
-                                <span style={{ fontSize: '24px', fontWeight: 900 }}>ForgeIndia</span>
+                                <div style={{ background: 'white', padding: '6px 12px', borderRadius: '10px', display: 'flex' }}>
+                                    <img src="/logo.png" alt="Forge India Logo" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
+                                </div>
                             </div>
                             <p style={{ color: '#64748B', lineHeight: 1.8, fontSize: '16px', maxWidth: '400px' }}>The world's most advanced scheduling engine for clinics, salons, and offices. Join 50,000+ businesses growing with ForgeIndia.</p>
                         </div>
