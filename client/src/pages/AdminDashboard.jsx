@@ -277,7 +277,10 @@ const AdminDashboard = () => {
                     <div style={{ background: 'white', padding: '6px 12px', borderRadius: '12px', display: 'inline-flex', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.15)', width: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
                         <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
                     </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 900, color: 'white', letterSpacing: '-0.5px', marginBottom: '4px' }}>Forge India Connect Pvt Ltd</div>
                     <div style={{ fontSize: '12px', fontWeight: 900, color: '#818CF8', textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center' }}>Admin Portal</div>
+                </div>
                 </div>
                 
                 <nav className="admin-nav" style={{ overflowY: 'auto' }}>

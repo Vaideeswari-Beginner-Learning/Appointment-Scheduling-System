@@ -822,7 +822,7 @@ const ClientDashboard = () => {
                     </div>
                     <div>
                         <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px', color: 'white' }}>
-                            {config.label} Portal
+                            Forge India Connect Pvt Ltd
                         </h2>
                         <p style={{ margin: '4px 0 0', fontSize: '12px', opacity: 0.8 }}>Tenant ID: {user.clientId?.substring(0, 8)}</p>
                         <a 
