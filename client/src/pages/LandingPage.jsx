@@ -96,7 +96,7 @@ const LandingPage = () => {
                         <div style={{ background: 'white', padding: '6px', borderRadius: '12px', display: 'flex' }}>
                             <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
                         </div>
-                        <span style={{ fontSize: '24px', fontWeight: 950, color: 'white', letterSpacing: '-0.5px' }}>Smart<span style={{ color: '#818CF8' }}>Scheduler</span></span>
+                        <span style={{ fontSize: '24px', fontWeight: 950, color: 'white', letterSpacing: '-0.5px' }}>Forge India Connect Pvt Ltd</span>
                     </Link>
 
                     <nav className="nav-links-desktop" style={{ display: 'flex', gap: '40px', alignItems: 'center', fontWeight: 600, color: '#94A3B8' }}>
@@ -421,7 +421,7 @@ const LandingPage = () => {
                                 <div style={{ background: 'white', padding: '6px', borderRadius: '10px', display: 'flex' }}>
                                     <img src="/logo.png" alt="Logo" style={{ height: '24px' }} />
                                 </div>
-                                <span style={{ fontSize: '20px', fontWeight: 900 }}>SmartScheduler</span>
+                                <span style={{ fontSize: '20px', fontWeight: 900 }}>Forge India Connect Pvt Ltd</span>
                             </div>
                             <p style={{ color: '#64748B', lineHeight: 1.8, fontSize: '15px' }}>
                                 The world's most advanced scheduling platform for the modern service economy. Automate your booking lifecycle and scale your business effortlessly.
