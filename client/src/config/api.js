@@ -8,8 +8,8 @@ const getBaseUrl = () => {
             return `http://${hostname}:5002`;
         }
         
-        // In production
-        return `https://${hostname.replace('vercel.app', 'onrender.com')}`; 
+        // In production, use our dedicated Render backend URL
+        return 'https://appointment-scheduling-system-il7s.onrender.com'; 
     }
     return 'http://localhost:5002';
 };
