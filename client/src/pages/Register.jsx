@@ -39,7 +39,6 @@ const Register = () => {
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
-        if (authUser) navigate('/dashboard');
         const fetchSectors = async () => {
             try {
                 const res = await axios.get(`${API_BASE_URL}/sectors`);

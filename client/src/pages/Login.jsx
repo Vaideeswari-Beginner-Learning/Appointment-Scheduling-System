@@ -31,9 +31,6 @@ const Login = () => {
         }
     };
 
-    React.useEffect(() => {
-        if (user) navigate('/dashboard');
-    }, [user, navigate]);
 
     return (
         <div style={{ minHeight: '100vh', display: 'flex', fontFamily: "'Outfit', sans-serif" }}>
