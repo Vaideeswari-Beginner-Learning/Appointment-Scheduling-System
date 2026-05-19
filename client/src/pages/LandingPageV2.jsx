@@ -318,8 +318,18 @@ const LandingPageV2 = () => {
                         </div>
                         <div style={{ display: 'grid', gap: '30px' }}>
                             {[
-                                { name: 'Dr. Anita Desai', role: 'Medical Director', text: 'ForgeIndia transformed our clinic operations. No more double bookings, and patients love the reminder alerts!' },
-                                { name: 'Rohan Sharma', role: 'Salon Owner', text: 'The QR payment system is a game changer. Clients pay even before they arrive!' }
+                                { 
+                                    name: 'Dr. Anita Desai', 
+                                    role: 'Medical Director', 
+                                    text: 'ForgeIndia transformed our clinic operations. No more double bookings, and patients love the reminder alerts!',
+                                    avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=150&h=150&q=80'
+                                },
+                                { 
+                                    name: 'Rohan Sharma', 
+                                    role: 'Salon Owner', 
+                                    text: 'The QR payment system is a game changer. Clients pay even before they arrive!',
+                                    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80'
+                                }
                             ].map((t, i) => (
                                 <div key={i} style={{ background: '#0F172A', padding: '40px', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                     <div style={{ display: 'flex', color: '#F59E0B', gap: '4px', marginBottom: '20px' }}>
@@ -327,7 +337,7 @@ const LandingPageV2 = () => {
                                     </div>
                                     <p style={{ fontSize: '18px', lineHeight: 1.6, color: '#E2E8F0', marginBottom: '32px', fontStyle: 'italic' }}>"{t.text}"</p>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                                        <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#6366F1' }}></div>
+                                        <img src={t.avatar} alt={t.name} style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.1)' }} />
                                         <div>
                                             <div style={{ fontWeight: 900 }}>{t.name}</div>
                                             <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 800 }}>{t.role}</div>
