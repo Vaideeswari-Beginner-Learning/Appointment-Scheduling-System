@@ -88,6 +88,7 @@ const LandingPageV2 = () => {
                     <div style={{ background: 'white', padding: '6px 12px', borderRadius: '10px', display: 'flex', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
                         <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
                     </div>
+                    <span style={{ fontSize: '20px', fontWeight: 950, color: 'white', letterSpacing: '-0.5px' }}>Forge India Connect</span>
                 </div>
 
                 <div style={{ display: 'flex', gap: '32px', fontWeight: 700, color: '#94A3B8', fontSize: '15px' }}>
