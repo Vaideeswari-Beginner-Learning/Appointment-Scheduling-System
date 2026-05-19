@@ -31,16 +31,14 @@ const Navbar = () => {
                 [data-theme='dark'] .btn-ghost:hover { background-color: rgba(255,255,255,0.05); }
             `}</style>
             <div className="flex-1">
-                <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
                     <div style={{ background: 'white', padding: '4px 10px', borderRadius: '8px', display: 'flex', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}>
                         <img src="/logo.png" alt="Forge India Logo" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} />
                     </div>
+                    <span style={{ fontSize: '18px', fontWeight: 900, color: 'var(--text-dark, #0F172A)', letterSpacing: '-0.5px' }}>Forge India Connect</span>
                 </Link>
             </div>
             <div className="flex-none gap-2" style={{ display: 'flex', alignItems: 'center' }}>
-                <button onClick={toggleTheme} className="btn btn-ghost btn-circle" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.2rem' }}>
-                    {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                </button>
                 {user ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', fontWeight: 600 }}>

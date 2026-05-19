@@ -179,10 +179,10 @@ const HRDashboard = () => {
                 <div style={{ background: 'white', padding: '6px 12px', borderRadius: '12px', display: 'inline-flex', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.15)', width: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
                     <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '4px' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 900, color: 'white', letterSpacing: '-0.5px' }}>Forge India Connect Pvt Ltd</div>
-                    <div style={{ fontSize: '12px', fontWeight: 900, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '2px' }}>HR Portal</div>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', marginTop: '2px' }}>{user?.department || 'General'}</div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 900, color: '#60A5FA', textTransform: 'uppercase', letterSpacing: '1px' }}>Forge India Connect</div>
+                    <div style={{ fontSize: '10px', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1.5px', marginTop: '2px' }}>HR Portal</div>
+                    <div style={{ fontSize: '9px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', marginTop: '2px' }}>{user?.department || 'General'}</div>
                 </div>
             </div>
 

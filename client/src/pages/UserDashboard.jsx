@@ -496,7 +496,7 @@ const UserDashboard = () => {
                     <div style={{ background: 'white', padding: '6px 12px', borderRadius: '10px', display: 'flex', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.08)' }}>
                         <img src="/logo.png" alt="Forge India Logo" style={{ height: '28px', width: 'auto', objectFit: 'contain' }} />
                     </div>
-                    <span style={{ fontSize:'18px', fontWeight:900, color: 'var(--text-dark)', letterSpacing: '-0.5px' }}>Forge India Connect Pvt Ltd</span>
+                    <span style={{ fontSize:'18px', fontWeight:900, color: 'var(--text-dark)', textTransform: 'uppercase', letterSpacing: '-0.5px' }}>Forge India Connect</span>
                 </div>
                 <div style={{ display:'flex', gap:'32px', fontWeight:700, color: 'var(--text-gray)', fontSize:'14px' }}>
                     {['Home','Services','Appointments','Reviews'].map(item => (

@@ -821,10 +821,11 @@ const ClientDashboard = () => {
                         <img src="/logo.png" alt="Forge India Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
                     </div>
                     <div>
-                        <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px', color: 'white' }}>
-                            Forge India Connect Pvt Ltd
+                        <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px', color: 'white' }}>
+                            Forge India Connect
                         </h2>
-                        <p style={{ margin: '4px 0 0', fontSize: '12px', opacity: 0.8 }}>Tenant ID: {user.clientId?.substring(0, 8)}</p>
+                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#E0E7FF', fontWeight: 700 }}>{config.label} Portal</p>
+                        <p style={{ margin: '4px 0 0', fontSize: '11px', opacity: 0.8 }}>Tenant ID: {user.clientId?.substring(0, 8)}</p>
                         <a 
                             href={`/org/${user._id || user.id}`} 
                             target="_blank" 

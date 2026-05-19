@@ -128,9 +128,6 @@ function App() {
                 <SocketProvider>
                     <Router>
                         <div style={{ minHeight: '100vh', background: darkMode ? '#0F172A' : '#F8FAFC', fontFamily: "'Inter', sans-serif", transition: 'background 0.3s' }}>
-                            <button className="dark-mode-toggle" onClick={() => setDarkMode(!darkMode)} title={darkMode ? 'Light Mode' : 'Dark Mode'}>
-                                {darkMode ? '☀️' : '🌙'}
-                            </button>
                             <Routes>
                                 <Route path="/" element={<LandingPageV2 />} />
                                 <Route path="/old-home" element={<LandingPage />} />
